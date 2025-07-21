@@ -56,7 +56,7 @@ Coming soon...
 ## Development Status
 
 - [x] Project structure setup
-- [ ] Environment configuration
+- [x] Environment configuration
 - [ ] Dataset preparation
 - [ ] CNN model implementation
 - [ ] Federated learning setup
@@ -65,7 +65,11 @@ Coming soon...
 
 ## Contributors
 
-- Your Name
+- Hemanth Kumar CS
+
+## Repository
+
+GitHub: https://github.com/HemanthKumar-CS/Fedrated_DDoS_Detection.git
 
 ## License
 
