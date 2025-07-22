@@ -1,0 +1,20 @@
+DATA CLEANUP REPORT
+==================
+
+Original size: 23912.1 MB
+Final size: 2239.8 MB
+Space saved: 23894.9 MB
+
+KEPT FILES:
+- data/optimized/ - Optimized dataset for FL training
+- data/raw/CSV-01-12.zip - Original dataset archive
+- All source code and notebooks
+
+REMOVED FILES:
+- data/raw/CSV-01-12/ - Extracted large CSV files
+- data/processed/ - Large processed dataset
+- data/federated/ - Large federated splits
+
+RECOMMENDATION:
+Use data/optimized/ for your federated learning training.
+It contains 50k samples with 4 attack types - perfect for demonstration.

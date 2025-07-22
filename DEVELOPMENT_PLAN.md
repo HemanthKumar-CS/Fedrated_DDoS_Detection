@@ -3,7 +3,7 @@
 ## Phase 1: Local Development (Weeks 1-4)
 
 - ✅ Environment setup with Python virtual environment
-- 🔄 Dataset preparation and preprocessing
+- ✅ Dataset preparation and preprocessing
 - 🔄 CNN model development and testing
 - 🔄 Basic FL implementation with Flower (single machine, multiple processes)
 
