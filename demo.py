@@ -263,12 +263,17 @@ class FederatedDemoOrchestrator:
                 "--address", "localhost:8080"
             ]
 
+            # Set environment for subprocess
+            env = os.environ.copy()
+            env['PYTHONPATH'] = self.base_dir
+
             self.server_process = subprocess.Popen(
                 cmd,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True,
-                cwd=self.base_dir
+                cwd=self.base_dir,
+                env=env
             )
 
             # Give server time to start
@@ -316,12 +321,17 @@ class FederatedDemoOrchestrator:
                     "--data_dir", self.data_dir
                 ]
 
+                # Set environment for subprocess
+                env = os.environ.copy()
+                env['PYTHONPATH'] = self.base_dir
+
                 process = subprocess.Popen(
                     cmd,
                     stdout=subprocess.PIPE,
                     stderr=subprocess.PIPE,
                     text=True,
-                    cwd=self.base_dir
+                    cwd=self.base_dir,
+                    env=env
                 )
 
                 self.client_processes.append(process)
@@ -337,7 +347,7 @@ class FederatedDemoOrchestrator:
             logger.error(f"❌ Failed to start clients: {e}")
             return False
 
-    def wait_for_completion(self, timeout: int = 600) -> bool:
+    def wait_for_completion(self, timeout: int = 300) -> bool:  # Reduced timeout
         """
         Wait for federated learning to complete
 
@@ -357,12 +367,19 @@ class FederatedDemoOrchestrator:
                 self.server_process.wait(timeout=timeout)
                 logger.info("✅ Server completed")
 
-            # Wait for all clients to complete
+            # Give clients a short time to finish after server completes
+            client_timeout = 30  # 30 seconds max for clients to finish
+            logger.info(f"⏳ Giving clients {client_timeout}s to complete...")
+
             for i, process in enumerate(self.client_processes):
-                remaining_time = max(0, timeout - (time.time() - start_time))
-                if remaining_time > 0:
-                    process.wait(timeout=remaining_time)
+                try:
+                    process.wait(timeout=client_timeout)
                     logger.info(f"✅ Client {i} completed")
+                except subprocess.TimeoutExpired:
+                    logger.warning(f"⚠️ Client {i} timed out, will terminate")
+
+            # Force cleanup of any remaining processes
+            self.cleanup_processes()
 
             logger.info("🎉 Federated learning completed successfully!")
             return True

@@ -244,12 +244,12 @@ class ModelTrainer:
         conf_matrix = confusion_matrix(y_test, y_pred)
 
         results = {
-            'test_loss': test_loss,
-            'test_accuracy': test_accuracy,
+            'test_loss': float(test_loss),
+            'test_accuracy': float(test_accuracy),
             'classification_report': class_report,
-            'confusion_matrix': conf_matrix,
-            'predictions': y_pred,
-            'prediction_probabilities': y_pred_proba
+            'confusion_matrix': conf_matrix.tolist(),  # Convert numpy array to list
+            'predictions': y_pred.tolist(),  # Convert numpy array to list
+            'prediction_probabilities': y_pred_proba.tolist()  # Convert numpy array to list
         }
 
         logger.info(f"✅ Test Accuracy: {test_accuracy:.4f}")
