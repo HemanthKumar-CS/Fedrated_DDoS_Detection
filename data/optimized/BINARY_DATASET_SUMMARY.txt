@@ -1,0 +1,28 @@
+BINARY CLASSIFICATION DATASET SUMMARY
+=====================================
+Total samples: 100,000
+Benign samples: 50,000 (50.0%)
+Attack samples: 50,000 (50.0%)
+
+Class distribution:
+Binary_Label
+0    50000
+1    50000
+Name: count, dtype: int64
+
+Features: 31 (excluding Label and Binary_Label)
+Memory usage: 29.7 MB
+
+✅ BINARY DATASET READY FOR FEDERATED LEARNING!
+
+Key advantages of binary classification:
+- Faster convergence in federated learning
+- More robust to data heterogeneity
+- Simpler model architecture
+- Better performance with limited data
+- Easier to interpret results
+
+Next steps:
+1. Run federated training with binary model
+2. Use binary_dataset.csv for centralized training
+3. Use client_*_train.csv and client_*_test.csv for FL simulation
