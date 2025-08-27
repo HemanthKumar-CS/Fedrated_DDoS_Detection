@@ -1,0 +1,19 @@
+{
+    "training_time": "0:03:35.382672",
+    "test_accuracy": 0.9116,
+    "test_precision": 0.9414414414414415,
+    "test_recall": 0.8778,
+    "test_f1_score": 0.9085075553715587,
+    "test_loss": 0.26640594005584717,
+    "dataset_info": {
+        "total_samples": 50000,
+        "train_samples": 40000,
+        "test_samples": 10000,
+        "features": 30,
+        "train_benign": 20000,
+        "train_attack": 20000,
+        "test_benign": 5000,
+        "test_attack": 5000
+    },
+    "roc_auc": 0.9641516000000001
+}

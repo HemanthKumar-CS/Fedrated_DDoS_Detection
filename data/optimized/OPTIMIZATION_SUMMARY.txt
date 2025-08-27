@@ -1,0 +1,23 @@
+OPTIMIZED DATASET SUMMARY
+=========================
+Attack types: 4 (reduced from 11)
+Total samples: 50,000 (reduced from 200k)
+Features: 31 (reduced from 50)
+Clients: 4
+Training samples: 52,000
+Test samples: 13,000
+
+Per-client distribution:
+Client 0: Train=13,000, Test=3,250
+  Primary attacks: DrDoS_DNS, Syn
+Client 1: Train=13,000, Test=3,250
+  Primary attacks: Syn, TFTP
+Client 2: Train=13,000, Test=3,250
+  Primary attacks: TFTP, UDPLag
+Client 3: Train=13,000, Test=3,250
+  Primary attacks: UDPLag, DrDoS_DNS
+
+Memory usage: ~15.2 MB
+Processing time: 0:03:03.023673
+
+OPTIMIZED DATASET READY FOR FEDERATED LEARNING!
