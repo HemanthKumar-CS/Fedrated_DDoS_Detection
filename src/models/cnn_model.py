@@ -82,9 +82,13 @@ class DDoSCNNModel:
         x = layers.Dense(128, activation='relu', name="dense_2")(x)
         x = layers.Dropout(0.3, name="dropout_4")(x)
 
-        # Output layer - Binary classification
-        outputs = layers.Dense(
-            self.num_classes, activation='sigmoid', name="classification_output")(x)
+        # Output layer
+        if self.num_classes == 1:
+            # Binary classification
+            outputs = layers.Dense(1, activation='sigmoid', name="classification_output")(x)
+        else:
+            # Multi-class classification (softmax)
+            outputs = layers.Dense(self.num_classes, activation='softmax', name="classification_output")(x)
 
         # Create model
         self.model = keras.Model(
@@ -106,9 +110,14 @@ class DDoSCNNModel:
 
         logger.info(f"Compiling model with learning_rate={learning_rate}")
 
+        if self.num_classes == 1:
+            loss_fn = 'binary_crossentropy'
+        else:
+            loss_fn = 'sparse_categorical_crossentropy'
+
         self.model.compile(
             optimizer=keras.optimizers.Adam(learning_rate=learning_rate),
-            loss='binary_crossentropy',  # For binary classification
+            loss=loss_fn,
             metrics=metrics
         )
 
@@ -190,7 +199,7 @@ class DDoSCNNModel:
         return X
 
 
-def create_ddos_cnn_model(input_features: int = 29, num_classes: int = 5, learning_rate: float = 0.001) -> DDoSCNNModel:
+def create_ddos_cnn_model(input_features: int = 29, num_classes: int = 1, learning_rate: float = 0.001) -> DDoSCNNModel:
     """
     Factory function to create and compile a DDoS CNN model
 
