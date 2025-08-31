@@ -172,7 +172,7 @@ Output Layer (1 unit) + Sigmoid
 ## 5. Training Process
 
 ### 5.1 Centralized Training
-**Script**: `train_balanced.py`
+Removed legacy script `train_balanced.py`; use `train_centralized.py` instead.
 
 **Training Configuration:**
 - **Epochs**: 50
@@ -222,7 +222,7 @@ Output Layer (1 unit) + Sigmoid
 ## 7. Testing the Model
 
 ### 7.1 Real-time Testing
-**Script**: `model_demo.py`
+Interactive demo script removed (streamlined repository).
 
 **How to test:**
 ```bash

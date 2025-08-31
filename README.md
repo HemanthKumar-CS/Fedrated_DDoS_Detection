@@ -200,55 +200,26 @@ def build(self):
     # Add your custom layers
 ```
 
-### Adjust Decentralized Parameters
+### Adjust Federated Parameters
 
-Edit `src/federated/flower_server.py`:
-
-```python
-strategy = DDoSFederatedStrategy(
-    min_fit_clients=2,      # Minimum nodes for training round
-    min_evaluate_clients=2, # Minimum nodes for evaluation
-    # Customize decentralized strategy parameters
-)
+Tune via CLI flags when starting the server:
+```bash
+python server.py --rounds 10 --f 0 --m -1 --min_fit 4 --min_eval 4 --min_available 4
 ```
+Deeper changes: edit strategy initialization in `server.py`.
 
-### Change Data Distribution
+### Data Distribution
 
-Edit `scripts/prepare_federated_data.py` to modify how data is distributed across decentralized nodes.
+Clean partitions already embedded; no generation script retained. To redesign distribution, recreate a preprocessing script or revert to earlier commit history.
 
 ## 🐛 Troubleshooting
 
 ### Common Issues
 
-**1. TensorFlow Import Errors**
-
-```bash
-# Ensure virtual environment is activated
-fl_env\Scripts\activate
-pip install tensorflow
-```
-
-**2. Port Already in Use**
-
-```bash
-# Change coordination server port
-python src/federated/flower_server.py --address localhost:8081
-python src/federated/flower_client.py --server localhost:8081
-```
-
-**3. Data Files Not Found**
-
-```bash
-# Verify data exists
-ls data/optimized/client_*_*.csv
-# Should show 8 files (4 train + 4 test) for 4 decentralized nodes
-```
-
-**4. Node Connection Issues**
-
-- Ensure coordination server is started first
-- Check firewall settings for peer-to-peer communication
-- Verify correct coordination server address
+1. Port in use → change `--address` (both server & clients).
+2. Missing partition file → verify path `data/optimized/clean_partitions` and file name pattern.
+3. All accuracies = 1.0 → confirm using clean partitions (no leakage) & not legacy files.
+4. Connection refused → start server first; confirm host/port.
 
 ## 📚 Documentation
 
