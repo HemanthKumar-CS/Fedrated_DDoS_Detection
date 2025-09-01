@@ -41,21 +41,50 @@ pip install -r requirements.txt
 
 The optimized dataset is already prepared in `data/optimized/` with:
 
-- **50,000 samples** (10K per attack type)
-- **4 federated clients** with non-IID distribution
-- **29 optimized features** selected for best performance
+### 2. Data Preparation
+
+Clean, deduplicated, globally split client partitions are already provided under:
+`data/optimized/clean_partitions/`
+
+Each client has two files: `client_<cid>_train.csv` and `client_<cid>_test.csv` (cid ∈ {0,1,2,3}). These were produced during earlier cleanup (duplicate removal and leakage mitigation). No regeneration scripts are retained in the trimmed repository; treat the partitions as authoritative for experiments.
+
+Use them directly for centralized or federated runs (examples below).
 
 ### 3. Run the System
+### Federated Setup (Current Implementation)
 
-#### Option A: Interactive Launcher (Recommended)
-
-```bash
-python launcher.py
+- **Framework**: Flower (flwr)
+- **Strategy**: FedAvg + Multi-Krum variant (robust subset selection) in standalone `server.py`
+- **Aggregation Metrics**: Separately records train vs test accuracy per round (`results/federated_metrics_history.json`)
+- **Clients**: `client.py` standalone process (NumPyClient) pointing to clean partitions
+- **Data Integrity**: New pipeline eliminates train/test leakage and duplicate rows
 ```
 
 This provides an interactive menu with options for:
 
 - Testing individual components
+**Standalone Robust FL (current):**
+
+Terminal 1 (server, e.g. 5 rounds):
+
+```bash
+python server.py --rounds 5 --address 127.0.0.1:8080
+```
+
+Terminals 2–5 (clients pointing to clean partitions):
+
+```bash
+python client.py --cid 0 --data_dir data/optimized/clean_partitions
+python client.py --cid 1 --data_dir data/optimized/clean_partitions
+python client.py --cid 2 --data_dir data/optimized/clean_partitions
+python client.py --cid 3 --data_dir data/optimized/clean_partitions
+```
+
+Check persisted metrics:
+
+```bash
+type results/federated_metrics_history.json
+```
 - Running traditional centralized baseline (for comparison)
 - Quick decentralized federated demo
 - Full system demonstration
@@ -68,33 +97,10 @@ This provides an interactive menu with options for:
 python src/models/trainer.py --test
 ```
 
-**Run Traditional Centralized Baseline (for comparison):**
+**Run Centralized Binary Baseline (current maintained baseline):**
 
 ```bash
-python demo.py --no_federated --centralized_epochs 10
-```
-
-**Run Decentralized Federated Learning:**
-
-Terminal 1 (Coordination Server):
-
-```bash
-python src/federated/flower_server.py --rounds 10 --clients 4
-```
-
-Terminal 2-5 (Decentralized Nodes):
-
-```bash
-python src/federated/flower_client.py --client_id 0
-python src/federated/flower_client.py --client_id 1
-python src/federated/flower_client.py --client_id 2
-python src/federated/flower_client.py --client_id 3
-```
-
-**Complete Demo:**
-
-```bash
-python demo.py
+python train_centralized.py --data_dir data/optimized/clean_partitions --epochs 25
 ```
 
 ## 📁 Project Structure
@@ -116,14 +122,12 @@ federated-ddos-detection/
 │   │   └── flower_server.py    # Coordination server (for aggregation only)
 │   ├── data/                   # Data processing modules
 │   └── evaluation/             # Evaluation utilities
-├── 📝 scripts/
-│   ├── data_explorer.py        # Dataset analysis
-│   ├── prepare_federated_data.py # Data preparation
-│   └── workspace_cleaner.py    # Workspace management
+├── 📝 (scripts removed)         # Legacy helper scripts pruned for minimal core
 ├── 📓 notebooks/
 │   └── data_analysis.ipynb     # Jupyter analysis notebook
-├── 🚀 launcher.py              # Interactive launcher
-├── 🎯 demo.py                  # Complete system demo
+├── server.py                   # Standalone FL server (Multi-Krum FedAvg)
+├── client.py                   # Standalone FL client
+├── train_centralized.py        # Centralized baseline training
 └── 📋 requirements.txt         # Dependencies
 ```
 
@@ -138,11 +142,10 @@ federated-ddos-detection/
 
 ### Decentralized Federated Setup
 
-- **Framework**: Flower (flwr) decentralized federated learning
-- **Strategy**: FedAvg (Federated Averaging) - aggregation happens at coordination server
-- **Nodes**: 4 decentralized nodes with non-IID data distribution
-- **Communication**: gRPC-based peer-to-peer communication with minimal coordination
-- **Privacy**: No raw data leaves individual nodes - only model parameters shared
+- **Framework**: Flower (flwr)
+- **Strategy**: FedAvg + Multi-Krum subset selection (robustness) in `server.py`
+- **Nodes**: 4 clients (can extend)
+- **Privacy**: Only model parameters exchanged
 
 ### Data Distribution
 
@@ -166,24 +169,12 @@ The system tracks:
 
 ## 🧪 Testing
 
-### Component Tests
-
+### Tests
+Ad-hoc testing scripts were removed. Validate using:
 ```bash
-# Test CNN model
-python src/models/trainer.py --test
-
-# Test decentralized node
-python src/federated/flower_client.py --test
-
-# Test coordination server
-python src/federated/flower_server.py --test
-```
-
-### Integration Tests
-
-```bash
-# Run complete system test
-python demo.py --centralized_epochs 5 --federated_rounds 5
+python train_centralized.py --data_dir data/optimized/clean_partitions --epochs 1
+python server.py --rounds 1 --address 127.0.0.1:8080 &
+python client.py --cid 0 --data_dir data/optimized/clean_partitions
 ```
 
 ## 📈 Results
@@ -209,55 +200,26 @@ def build(self):
     # Add your custom layers
 ```
 
-### Adjust Decentralized Parameters
+### Adjust Federated Parameters
 
-Edit `src/federated/flower_server.py`:
-
-```python
-strategy = DDoSFederatedStrategy(
-    min_fit_clients=2,      # Minimum nodes for training round
-    min_evaluate_clients=2, # Minimum nodes for evaluation
-    # Customize decentralized strategy parameters
-)
+Tune via CLI flags when starting the server:
+```bash
+python server.py --rounds 10 --f 0 --m -1 --min_fit 4 --min_eval 4 --min_available 4
 ```
+Deeper changes: edit strategy initialization in `server.py`.
 
-### Change Data Distribution
+### Data Distribution
 
-Edit `scripts/prepare_federated_data.py` to modify how data is distributed across decentralized nodes.
+Clean partitions already embedded; no generation script retained. To redesign distribution, recreate a preprocessing script or revert to earlier commit history.
 
 ## 🐛 Troubleshooting
 
 ### Common Issues
 
-**1. TensorFlow Import Errors**
-
-```bash
-# Ensure virtual environment is activated
-fl_env\Scripts\activate
-pip install tensorflow
-```
-
-**2. Port Already in Use**
-
-```bash
-# Change coordination server port
-python src/federated/flower_server.py --address localhost:8081
-python src/federated/flower_client.py --server localhost:8081
-```
-
-**3. Data Files Not Found**
-
-```bash
-# Verify data exists
-ls data/optimized/client_*_*.csv
-# Should show 8 files (4 train + 4 test) for 4 decentralized nodes
-```
-
-**4. Node Connection Issues**
-
-- Ensure coordination server is started first
-- Check firewall settings for peer-to-peer communication
-- Verify correct coordination server address
+1. Port in use → change `--address` (both server & clients).
+2. Missing partition file → verify path `data/optimized/clean_partitions` and file name pattern.
+3. All accuracies = 1.0 → confirm using clean partitions (no leakage) & not legacy files.
+4. Connection refused → start server first; confirm host/port.
 
 ## 📚 Documentation
 
@@ -288,6 +250,94 @@ This project is developed for educational and research purposes.
 ---
 
 **🚀 Ready to detect DDoS attacks with federated learning!** Run `python launcher.py` to get started.
+
+## 🔄 Iterative Debugging & Change Log (Summary)
+
+This section documents the major iterations performed to reach the current stable pipeline.
+
+1. Dependency Conflict Resolution
+    - Issue: `docker-compose` (PyPI) pinned `PyYAML<6` conflicting with security need for `pyyaml>=6`.
+    - Fix: Removed `docker-compose` from `requirements.txt`; rely on Docker CLI plugin. Pinned `numpy<2.0` for TF compatibility.
+
+2. Federated Prototype & Multi-Krum Integration
+    - Added standalone `server.py` with `MultiKrumFedAvg` strategy (subset selection for robustness) and `client.py` (Flower `NumPyClient`).
+    - Initial rounds fell back to FedAvg (insufficient clients for f=1); adjusted default `f=0`.
+
+3. Model Output Shape Mismatch
+    - Issue: Server initialized 5-class model vs clients using binary label → weight shape mismatch.
+    - Fix: Unified to binary classification (`num_classes=1`, sigmoid + BCE) in `cnn_model.py`, server forces binary init.
+
+4. Evaluation Metrics Misinterpretation
+    - Issue: Reported 1.0 "accuracy" was training accuracy only (test evaluation failing silently earlier).
+    - Fix: Refactored server strategy to separately aggregate `avg_client_train_accuracy` and `avg_client_test_accuracy` and persist to `results/federated_metrics_history.json`.
+
+5. Dataset Leakage & Perfect Predictors
+    - Symptom: Persistent 1.0 test accuracy across clients.
+    - Diagnosis: `scripts/diagnose_splits.py` showed high train/test row overlap (Jaccard up to 11%) and many perfect label-mapping features.
+    - Cause: Client-level splitting before global dedup + duplicated rows across partitions.
+
+6. Clean Partition Rebuild
+    - Implemented `scripts/rebuild_clean_partitions.py`:
+      * Deduplicated (50,000 → 30,919 unique rows; 19,081 duplicates removed).
+      * Global stratified train/test split before client partition.
+      * Stratified per-client partitioning with near-zero overlap (Jaccard ≤0.00156).
+    - Re-ran diagnostics: No perfect predictors; moderate feature-label correlations (≤0.465).
+
+7. Baselines after Cleanup
+    - Logistic baseline (`scripts/logistic_baseline.py`): ~0.75 accuracy, ROC-AUC ~0.89 → dataset non-trivial.
+    - Centralized CNN baseline (`train_centralized.py`): ~0.90 test accuracy (5 epochs example) on clean split.
+
+8. Federated Initialization from Centralized Model
+    - Added `--initial_model` to `server.py` to start FL from centralized trained weights for fair comparative convergence.
+
+9. History Persistence & Reporting
+    - Server now writes train/test accuracy time-series to `results/federated_metrics_history.json`.
+
+10. Scripts Added
+     - `scripts/diagnose_splits.py`: Overlap, correlations, perfect predictors.
+     - `scripts/rebuild_clean_partitions.py`: Clean, deduplicate, stratify, repartition.
+     - `train_centralized.py`: Aggregated centralized binary baseline.
+
+## 🧪 Centralized Baseline (Clean Partitions)
+
+```bash
+python train_centralized.py --data_dir data/optimized/clean_partitions --epochs 25 --batch 64 --lr 0.001
+```
+Outputs → model + metrics saved under `results/`.
+
+## 🔁 Federated Training Initialized from Centralized Weights
+
+Optional warm start for federated training using centralized baseline weights:
+
+```bash
+python server.py --rounds 10 --address 127.0.0.1:8080 \
+  --initial_model results/balanced_centralized_model.h5
+
+python client.py --cid 0 --data_dir data/optimized/clean_partitions
+python client.py --cid 1 --data_dir data/optimized/clean_partitions
+python client.py --cid 2 --data_dir data/optimized/clean_partitions
+python client.py --cid 3 --data_dir data/optimized/clean_partitions
+```
+
+Monitor history:
+
+```bash
+type results/federated_metrics_history.json
+```
+
+## 🔍 Diagnostics & Data Integrity
+
+Legacy diagnostic scripts (rebuild & overlap checks) were removed after producing stable clean partitions. If regeneration is needed, recreate tooling or restore from version control history.
+
+## 📌 Future Enhancements (Planned)
+
+- Add Trimmed Mean / Coordinate Median aggregators.
+- Norm clipping + cosine anomaly scoring before Multi-Krum selection.
+- Global ROC-AUC tracking in federated rounds.
+- Model export in Keras SavedModel format (`.keras`) + versioned artifacts.
+- Docker/Kubernetes orchestration & traffic capture (Wireshark/tshark) integration.
+
+---
 
 ## Quick Start
 

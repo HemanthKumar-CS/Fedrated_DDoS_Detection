@@ -1,0 +1,18 @@
+{
+  "input_rows": 50000,
+  "after_dedup_rows": 30919,
+  "duplicates_removed": 19081,
+  "leakage_features_removed": [],
+  "num_leakage_features_removed": 0,
+  "train_rows": 24735,
+  "test_rows": 6184,
+  "train_test_overlap_rows": 0,
+  "train_label_dist": {
+    "0": 0.6559935314331918,
+    "1": 0.34400646856680817
+  },
+  "test_label_dist": {
+    "0": 0.6560478654592496,
+    "1": 0.3439521345407503
+  }
+}
