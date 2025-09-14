@@ -6,7 +6,7 @@ A complete **decentralized** federated learning implementation for DDoS attack d
 
 This system implements:
 
-- **1D CNN Model** for network traffic classification (29 features → 5 attack types)
+- **1D CNN Model** for network traffic classification (29 features → Binary: Benign vs DDoS Attack)
 - **Decentralized Federated Learning** using Flower framework with 4 distributed nodes
 - **Non-IID Data Distribution** simulating real-world decentralized scenarios
 - **Comprehensive Evaluation** comparing traditional centralized vs decentralized federated approaches
@@ -111,11 +111,10 @@ python train_centralized.py --data_dir data/optimized/clean_partitions --epochs 
 ```
 federated-ddos-detection/
 ├── 📊 data/
-│   ├── optimized/              # Decentralized node datasets
-│   │   ├── client_0_train.csv  # Node 0 training data
-│   │   ├── client_0_test.csv   # Node 0 test data
-│   │   └── ...                 # Nodes 1-3 data
-│   └── raw/                    # Original dataset archive
+│   └── optimized/              # Decentralized node datasets
+│       ├── client_0_train.csv  # Node 0 training data
+│       ├── client_0_test.csv   # Node 0 test data
+│       └── ...                 # Nodes 1-3 data
 ├── 🧠 src/
 │   ├── models/
 │   │   ├── cnn_model.py        # 1D CNN model implementation
@@ -126,8 +125,7 @@ federated-ddos-detection/
 │   ├── data/                   # Data processing modules
 │   └── evaluation/             # Evaluation utilities
 ├── 📝 (scripts removed)         # Legacy helper scripts pruned for minimal core
-├── 📓 notebooks/
-│   └── data_analysis.ipynb     # Jupyter analysis notebook
+<!-- notebooks removed in trimmed repository -->
 ├── server.py                   # Standalone FL server (Multi-Krum FedAvg)
 ├── client.py                   # Standalone FL client
 ├── train_centralized.py        # Centralized baseline training
@@ -140,7 +138,7 @@ federated-ddos-detection/
 
 - **Input**: 29 numerical features (network traffic statistics)
 - **Architecture**: 1D CNN with 3 convolutional layers + dense layers
-- **Output**: 5-class softmax classification
+- **Output**: Binary sigmoid classification (0 = Benign, 1 = Attack)
 - **Optimization**: Adam optimizer with adaptive learning rate
 
 ### Decentralized Federated Setup
@@ -256,7 +254,7 @@ This project is developed for educational and research purposes.
 
 ---
 
-**🚀 Ready to detect DDoS attacks with federated learning!** Run `python launcher.py` to get started.
+**🚀 Ready to detect DDoS attacks with federated learning!**
 
 ## 🔄 Iterative Debugging & Change Log (Summary)
 
@@ -364,11 +362,11 @@ Coming soon...
 
 - [x] Project structure setup
 - [x] Environment configuration
-- [ ] Dataset preparation
-- [ ] CNN model implementation
-- [ ] Federated learning setup
-- [ ] Security mechanisms
-- [ ] Evaluation pipeline
+- [x] Dataset preparation (realistic datasets + clean partitions)
+- [x] CNN model implementation (binary, with results/best_enhanced_model.keras)
+- [x] Federated learning setup (server.py, client.py; metrics persisted)
+- [ ] Security mechanisms (next: secure aggregation/DP/TLS/mTLS)
+- [x] Evaluation pipeline (model_analysis.py, final_realistic_validation.py)
 
 ## Contributors
 
