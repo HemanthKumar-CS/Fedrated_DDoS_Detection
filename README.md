@@ -51,6 +51,7 @@ Each client has two files: `client_<cid>_train.csv` and `client_<cid>_test.csv` 
 Use them directly for centralized or federated runs (examples below).
 
 ### 3. Run the System
+
 ### Federated Setup (Current Implementation)
 
 - **Framework**: Flower (flwr)
@@ -58,7 +59,8 @@ Use them directly for centralized or federated runs (examples below).
 - **Aggregation Metrics**: Separately records train vs test accuracy per round (`results/federated_metrics_history.json`)
 - **Clients**: `client.py` standalone process (NumPyClient) pointing to clean partitions
 - **Data Integrity**: New pipeline eliminates train/test leakage and duplicate rows
-```
+
+````
 
 This provides an interactive menu with options for:
 
@@ -69,7 +71,7 @@ Terminal 1 (server, e.g. 5 rounds):
 
 ```bash
 python server.py --rounds 5 --address 127.0.0.1:8080
-```
+````
 
 Terminals 2–5 (clients pointing to clean partitions):
 
@@ -85,6 +87,7 @@ Check persisted metrics:
 ```bash
 type results/federated_metrics_history.json
 ```
+
 - Running traditional centralized baseline (for comparison)
 - Quick decentralized federated demo
 - Full system demonstration
@@ -170,7 +173,9 @@ The system tracks:
 ## 🧪 Testing
 
 ### Tests
+
 Ad-hoc testing scripts were removed. Validate using:
+
 ```bash
 python train_centralized.py --data_dir data/optimized/clean_partitions --epochs 1
 python server.py --rounds 1 --address 127.0.0.1:8080 &
@@ -203,9 +208,11 @@ def build(self):
 ### Adjust Federated Parameters
 
 Tune via CLI flags when starting the server:
+
 ```bash
 python server.py --rounds 10 --f 0 --m -1 --min_fit 4 --min_eval 4 --min_available 4
 ```
+
 Deeper changes: edit strategy initialization in `server.py`.
 
 ### Data Distribution
@@ -256,62 +263,72 @@ This project is developed for educational and research purposes.
 This section documents the major iterations performed to reach the current stable pipeline.
 
 1. Dependency Conflict Resolution
-    - Issue: `docker-compose` (PyPI) pinned `PyYAML<6` conflicting with security need for `pyyaml>=6`.
-    - Fix: Removed `docker-compose` from `requirements.txt`; rely on Docker CLI plugin. Pinned `numpy<2.0` for TF compatibility.
+
+   - Issue: `docker-compose` (PyPI) pinned `PyYAML<6` conflicting with security need for `pyyaml>=6`.
+   - Fix: Removed `docker-compose` from `requirements.txt`; rely on Docker CLI plugin. Pinned `numpy<2.0` for TF compatibility.
 
 2. Federated Prototype & Multi-Krum Integration
-    - Added standalone `server.py` with `MultiKrumFedAvg` strategy (subset selection for robustness) and `client.py` (Flower `NumPyClient`).
-    - Initial rounds fell back to FedAvg (insufficient clients for f=1); adjusted default `f=0`.
+
+   - Added standalone `server.py` with `MultiKrumFedAvg` strategy (subset selection for robustness) and `client.py` (Flower `NumPyClient`).
+   - Initial rounds fell back to FedAvg (insufficient clients for f=1); adjusted default `f=0`.
 
 3. Model Output Shape Mismatch
-    - Issue: Server initialized 5-class model vs clients using binary label → weight shape mismatch.
-    - Fix: Unified to binary classification (`num_classes=1`, sigmoid + BCE) in `cnn_model.py`, server forces binary init.
+
+   - Issue: Server initialized 5-class model vs clients using binary label → weight shape mismatch.
+   - Fix: Unified to binary classification (`num_classes=1`, sigmoid + BCE) in `cnn_model.py`, server forces binary init.
 
 4. Evaluation Metrics Misinterpretation
-    - Issue: Reported 1.0 "accuracy" was training accuracy only (test evaluation failing silently earlier).
-    - Fix: Refactored server strategy to separately aggregate `avg_client_train_accuracy` and `avg_client_test_accuracy` and persist to `results/federated_metrics_history.json`.
+
+   - Issue: Reported 1.0 "accuracy" was training accuracy only (test evaluation failing silently earlier).
+   - Fix: Refactored server strategy to separately aggregate `avg_client_train_accuracy` and `avg_client_test_accuracy` and persist to `results/federated_metrics_history.json`.
 
 5. Dataset Leakage & Perfect Predictors
-    - Symptom: Persistent 1.0 test accuracy across clients.
-    - Diagnosis: `scripts/diagnose_splits.py` showed high train/test row overlap (Jaccard up to 11%) and many perfect label-mapping features.
-    - Cause: Client-level splitting before global dedup + duplicated rows across partitions.
+
+   - Symptom: Persistent 1.0 test accuracy across clients.
+   - Diagnosis: `scripts/diagnose_splits.py` showed high train/test row overlap (Jaccard up to 11%) and many perfect label-mapping features.
+   - Cause: Client-level splitting before global dedup + duplicated rows across partitions.
 
 6. Clean Partition Rebuild
-    - Implemented `scripts/rebuild_clean_partitions.py`:
-      * Deduplicated (50,000 → 30,919 unique rows; 19,081 duplicates removed).
-      * Global stratified train/test split before client partition.
-      * Stratified per-client partitioning with near-zero overlap (Jaccard ≤0.00156).
-    - Re-ran diagnostics: No perfect predictors; moderate feature-label correlations (≤0.465).
+
+   - Implemented `scripts/rebuild_clean_partitions.py`:
+     - Deduplicated (50,000 → 30,919 unique rows; 19,081 duplicates removed).
+     - Global stratified train/test split before client partition.
+     - Stratified per-client partitioning with near-zero overlap (Jaccard ≤0.00156).
+   - Re-ran diagnostics: No perfect predictors; moderate feature-label correlations (≤0.465).
 
 7. Baselines after Cleanup
-    - Logistic baseline (`scripts/logistic_baseline.py`): ~0.75 accuracy, ROC-AUC ~0.89 → dataset non-trivial.
-    - Centralized CNN baseline (`train_centralized.py`): ~0.90 test accuracy (5 epochs example) on clean split.
+
+   - Logistic baseline (`scripts/logistic_baseline.py`): ~0.75 accuracy, ROC-AUC ~0.89 → dataset non-trivial.
+   - Centralized CNN baseline (`train_centralized.py`): ~0.90 test accuracy (5 epochs example) on clean split.
 
 8. Federated Initialization from Centralized Model
-    - Added `--initial_model` to `server.py` to start FL from centralized trained weights for fair comparative convergence.
+
+   - Added `--initial_model` to `server.py` to start FL from centralized trained weights for fair comparative convergence.
 
 9. History Persistence & Reporting
-    - Server now writes train/test accuracy time-series to `results/federated_metrics_history.json`.
+
+   - Server now writes train/test accuracy time-series to `results/federated_metrics_history.json`.
 
 10. Scripts Added
-     - `scripts/diagnose_splits.py`: Overlap, correlations, perfect predictors.
-     - `scripts/rebuild_clean_partitions.py`: Clean, deduplicate, stratify, repartition.
-     - `train_centralized.py`: Aggregated centralized binary baseline.
+    - `scripts/diagnose_splits.py`: Overlap, correlations, perfect predictors.
+    - `scripts/rebuild_clean_partitions.py`: Clean, deduplicate, stratify, repartition.
+    - `train_centralized.py`: Aggregated centralized binary baseline.
 
 ## 🧪 Centralized Baseline (Clean Partitions)
 
 ```bash
 python train_centralized.py --data_dir data/optimized/clean_partitions --epochs 25 --batch 64 --lr 0.001
 ```
+
 Outputs → model + metrics saved under `results/`.
 
 ## 🔁 Federated Training Initialized from Centralized Weights
 
-Optional warm start for federated training using centralized baseline weights:
+Optional warm start for federated training using the enhanced model weights:
 
 ```bash
 python server.py --rounds 10 --address 127.0.0.1:8080 \
-  --initial_model results/balanced_centralized_model.h5
+    --initial_model results/best_enhanced_model.keras
 
 python client.py --cid 0 --data_dir data/optimized/clean_partitions
 python client.py --cid 1 --data_dir data/optimized/clean_partitions

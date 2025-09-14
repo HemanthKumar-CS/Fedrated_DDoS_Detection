@@ -1,0 +1,57 @@
+{
+  "data_source": "Synthetic Data",
+  "train_samples": 7004,
+  "test_samples": 1500,
+  "features": 30,
+  "data_leakage": {
+    "identical_samples": 0,
+    "leakage_percentage": 0.0,
+    "is_clean": true
+  },
+  "statistical_similarity": {
+    "mean_feature_difference": 0.022467681269044828,
+    "similar_distributions": true
+  },
+  "class_distribution": {
+    "train": {
+      "class_0": 0.5,
+      "class_1": 0.5
+    },
+    "test": {
+      "class_0": 0.5,
+      "class_1": 0.5
+    },
+    "distribution_difference": 0.0,
+    "is_balanced": true
+  },
+  "feature_distributions": {
+    "mean_ks_statistic": 0.02223228631258329,
+    "max_ks_statistic": 0.03544983818770227,
+    "similar_distributions": true
+  },
+  "data_complexity": {
+    "linear_separability_score": 1.0,
+    "is_linearly_separable": true,
+    "complexity_assessment": "low"
+  },
+  "cross_validation": {
+    "cv_scores": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "mean_cv_score": 1.0,
+    "std_cv_score": 0.0,
+    "consistent_performance": true
+  },
+  "algorithm_comparison": {
+    "scores": {
+      "RandomForest": 1.0,
+      "LogisticRegression": 1.0
+    },
+    "score_variance": 0.0,
+    "all_high_performance": true
+  }
+}

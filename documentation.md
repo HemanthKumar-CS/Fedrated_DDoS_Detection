@@ -1,6 +1,7 @@
 # Federated DDoS Detection System - Comprehensive Documentation
 
 ## 📋 Table of Contents
+
 1. [Project Overview](#project-overview)
 2. [Dataset Analysis](#dataset-analysis)
 3. [Data Preprocessing Pipeline](#data-preprocessing-pipeline)
@@ -17,9 +18,11 @@
 ## 1. Project Overview
 
 ### 🎯 Objective
+
 Develop a federated learning-based DDoS detection system using Convolutional Neural Networks (CNN) that can effectively identify Distributed Denial of Service attacks in network traffic while preserving data privacy through distributed training.
 
 ### 🔧 Technology Stack
+
 - **Framework**: TensorFlow/Keras for deep learning
 - **Federated Learning**: Flower (flwr) framework
 - **Data Processing**: Pandas, NumPy, Scikit-learn
@@ -28,6 +31,7 @@ Develop a federated learning-based DDoS detection system using Convolutional Neu
 - **Environment**: Virtual environment with comprehensive ML libraries
 
 ### 📊 Dataset
+
 - **Source**: CICIDDOS2019 Dataset
 - **Original Size**: 23.9GB with 50M+ records
 - **Optimized Size**: 2.24GB with 50K records (90% reduction)
@@ -41,6 +45,7 @@ Develop a federated learning-based DDoS detection system using Convolutional Neu
 ### 📈 Original Dataset Statistics
 
 #### 2.1 Dataset Composition
+
 ```
 Original CICIDDOS2019 Dataset:
 ├── Total Records: 50,006,249
@@ -51,7 +56,9 @@ Original CICIDDOS2019 Dataset:
 ```
 
 #### 2.2 Attack Type Distribution
+
 The dataset contains the following attack types:
+
 - **BENIGN**: Normal network traffic
 - **DrDoS_DNS**: DNS-based DRDoS attacks
 - **DrDoS_LDAP**: LDAP-based DRDoS attacks
@@ -66,13 +73,16 @@ The dataset contains the following attack types:
 - **UDPLag**: UDP lag attacks
 
 #### 2.3 Critical Dataset Issue Discovered
+
 During initial analysis, we discovered a critical bias in the preprocessing pipeline:
 
 **Problem**: The original optimization script only included attack samples, completely excluding benign traffic.
+
 - Original optimized dataset: 100% attack samples (0% benign)
 - This led to unrealistic 100% accuracy in initial training
 
 **Solution**: Created a balanced dataset with proper representation:
+
 - Balanced dataset: 50% benign + 50% attack samples
 - Total samples: 50,000 (25,000 benign + 25,000 attack)
 
@@ -83,9 +93,10 @@ During initial analysis, we discovered a critical bias in the preprocessing pipe
 ### 🔄 Preprocessing Steps
 
 #### 3.1 Data Optimization Process
+
 ```python
 # Optimization Pipeline Summary
-Original Dataset (23.9GB) 
+Original Dataset (23.9GB)
     ↓ [Sample Selection]
 Sampled Dataset (2.24GB - 50K records)
     ↓ [Feature Engineering]
@@ -99,18 +110,21 @@ Training-Ready Dataset
 #### 3.2 Feature Engineering
 
 **Original Features (88)**: Network flow statistics including:
+
 - Packet counts and sizes
 - Flow duration and rates
 - Protocol-specific features
 - Statistical measures (mean, std, min, max)
 
 **Optimized Features (30)**: Selected based on:
+
 - Statistical significance
 - Correlation analysis
 - Feature importance scores
 - Computational efficiency
 
 **Key Optimized Features**:
+
 1. `Flow Duration`
 2. `Total Fwd Packets`
 3. `Total Backward Packets`
@@ -125,6 +139,7 @@ Training-Ready Dataset
 #### 3.3 Data Balancing Strategy
 
 **Before Balancing**:
+
 ```
 Class Distribution (Original Optimized):
 ├── BENIGN: 0 samples (0%)
@@ -133,6 +148,7 @@ Result: Unrealistic 100% accuracy
 ```
 
 **After Balancing**:
+
 ```
 Class Distribution (Balanced):
 ├── BENIGN: 25,000 samples (50%)
@@ -141,12 +157,14 @@ Result: Realistic 91.27% accuracy
 ```
 
 #### 3.4 Feature Normalization
+
 - **Method**: StandardScaler (z-score normalization)
 - **Formula**: z = (x - μ) / σ
 - **Purpose**: Ensure all features contribute equally to model training
 - **Result**: Features scaled to mean=0, std=1
 
 #### 3.5 Data Splitting for Federated Learning
+
 ```
 Federated Data Distribution:
 ├── Client 0: 12,500 samples (balanced)
@@ -163,28 +181,29 @@ Federated Data Distribution:
 ### 🧠 CNN Architecture Design
 
 #### 4.1 Model Structure
+
 ```python
 Model: "sequential"
 _________________________________________________________________
-Layer (type)                 Output Shape              Param #   
+Layer (type)                 Output Shape              Param #
 =================================================================
-conv1d (Conv1D)             (None, 28, 64)            256       
-batch_normalization         (None, 28, 64)            256       
-activation (Activation)      (None, 28, 64)            0         
-conv1d_1 (Conv1D)           (None, 26, 128)           24704     
-batch_normalization_1       (None, 26, 128)           512       
-activation_1 (Activation)   (None, 26, 128)           0         
-max_pooling1d (MaxPooling1D)(None, 13, 128)           0         
-conv1d_2 (Conv1D)           (None, 11, 256)           98560     
-batch_normalization_2       (None, 11, 256)           1024      
-activation_2 (Activation)   (None, 11, 256)           0         
-global_average_pooling1d    (None, 256)               0         
-dropout (Dropout)           (None, 256)               0         
-dense (Dense)               (None, 128)               32896     
-batch_normalization_3       (None, 128)               512       
-activation_3 (Activation)   (None, 128)               0         
-dropout_1 (Dropout)         (None, 128)               0         
-dense_1 (Dense)             (None, 1)                 129       
+conv1d (Conv1D)             (None, 28, 64)            256
+batch_normalization         (None, 28, 64)            256
+activation (Activation)      (None, 28, 64)            0
+conv1d_1 (Conv1D)           (None, 26, 128)           24704
+batch_normalization_1       (None, 26, 128)           512
+activation_1 (Activation)   (None, 26, 128)           0
+max_pooling1d (MaxPooling1D)(None, 13, 128)           0
+conv1d_2 (Conv1D)           (None, 11, 256)           98560
+batch_normalization_2       (None, 11, 256)           1024
+activation_2 (Activation)   (None, 11, 256)           0
+global_average_pooling1d    (None, 256)               0
+dropout (Dropout)           (None, 256)               0
+dense (Dense)               (None, 128)               32896
+batch_normalization_3       (None, 128)               512
+activation_3 (Activation)   (None, 128)               0
+dropout_1 (Dropout)         (None, 128)               0
+dense_1 (Dense)             (None, 1)                 129
 =================================================================
 Total params: 158,849
 Trainable params: 157,697
@@ -194,20 +213,24 @@ Non-trainable params: 1,152
 #### 4.2 Architecture Components
 
 **Convolutional Layers**:
+
 - **Conv1D Layer 1**: 64 filters, kernel size 3, ReLU activation
 - **Conv1D Layer 2**: 128 filters, kernel size 3, ReLU activation
 - **Conv1D Layer 3**: 256 filters, kernel size 3, ReLU activation
 
 **Regularization**:
+
 - **Batch Normalization**: After each conv layer and dense layer
 - **Dropout**: 0.5 dropout rate to prevent overfitting
 - **Global Average Pooling**: Reduces parameters and overfitting
 
 **Dense Layers**:
+
 - **Hidden Layer**: 128 neurons with ReLU activation
 - **Output Layer**: 1 neuron with sigmoid activation (binary classification)
 
 #### 4.3 Model Compilation
+
 ```python
 optimizer = Adam(learning_rate=0.001)
 loss = 'binary_crossentropy'
@@ -221,6 +244,7 @@ metrics = ['accuracy', 'precision', 'recall']
 ### 🚀 Training Configuration
 
 #### 5.1 Training Parameters
+
 ```yaml
 Training Configuration:
 ├── Epochs: 50
@@ -234,6 +258,7 @@ Training Configuration:
 ```
 
 #### 5.2 Training Data Distribution
+
 ```
 Training Set:
 ├── Total Samples: 40,000
@@ -249,6 +274,7 @@ Test Set:
 ```
 
 #### 5.3 Training Process Timeline
+
 ```
 Training Progress:
 ├── Initial Training: 100% accuracy (biased dataset)
@@ -259,7 +285,9 @@ Training Progress:
 ```
 
 #### 5.4 Training Curves Analysis
+
 The training process showed:
+
 - **Convergence**: Model converged after ~30 epochs
 - **No Overfitting**: Validation metrics closely followed training metrics
 - **Stability**: Consistent performance across epochs
@@ -272,6 +300,7 @@ The training process showed:
 ### 📊 Final Model Performance
 
 #### 6.1 Test Set Performance (Separate 10K Test Set)
+
 ```
 Optimized Test Set Results (10,000 samples):
 ├── Accuracy: 91.16%
@@ -283,6 +312,7 @@ Optimized Test Set Results (10,000 samples):
 ```
 
 #### 6.2 Full Dataset Analysis (50K Balanced Dataset)
+
 ```
 Complete Dataset Analysis (50,000 samples):
 ├── Accuracy: 88.70%
@@ -294,6 +324,7 @@ Complete Dataset Analysis (50,000 samples):
 ```
 
 #### 6.3 Detailed Classification Report (Test Set)
+
 ```
               precision    recall  f1-score   support
 
@@ -306,6 +337,7 @@ weighted avg       0.91      0.91      0.91     10000
 ```
 
 #### 6.4 Comprehensive Error Analysis (Full Dataset)
+
 ```
 Confusion Matrix Analysis (50,000 samples):
                 Predicted
@@ -325,6 +357,7 @@ Error Analysis:
 ```
 
 #### 6.5 Confidence Score Analysis
+
 ```
 Prediction Confidence Distribution:
 ├── Benign Traffic:
@@ -342,6 +375,7 @@ Prediction Confidence Distribution:
 #### 6.4 Performance Comparison
 
 **Before vs After Dataset Balancing**:
+
 ```
 Original Biased Dataset:
 ├── Accuracy: 100% (unrealistic)
@@ -355,6 +389,7 @@ Balanced Dataset:
 ```
 
 #### 6.5 Model Inference Performance
+
 ```
 Real-time Inference:
 ├── Processing Speed: ~1,000 samples/second
@@ -370,21 +405,25 @@ Real-time Inference:
 ### 📈 Generated Visualizations
 
 #### 7.1 Training Results Visualization
+
 **File**: `results/training_results_visualization.png`
 
 This comprehensive visualization includes:
 
 1. **Training & Validation Accuracy Curves**
+
    - Shows model learning progression over 39 epochs
    - Demonstrates convergence around epoch 30
    - No overfitting observed
 
 2. **Training & Validation Loss Curves**
+
    - Binary crossentropy loss decreasing steadily
    - Validation loss following training loss closely
    - Indicates good generalization
 
 3. **ROC Curve Analysis**
+
    - Area Under Curve (AUC): 0.9642
    - Excellent discrimination capability
    - Far superior to random classifier (AUC = 0.5)
@@ -395,26 +434,31 @@ This comprehensive visualization includes:
    - ROC AUC exceeding 96%
 
 #### 7.2 Advanced Model Analysis
+
 **File**: `results/advanced_model_analysis.png`
 
 Detailed analysis includes:
 
 1. **Confusion Matrix Heatmap**
+
    - Visual representation of classification results
    - Color-coded for easy interpretation
    - Shows distribution of correct/incorrect predictions
 
 2. **Precision-Recall Curve**
+
    - Demonstrates trade-off between precision and recall
    - PR AUC score indicating overall performance
    - Useful for imbalanced dataset analysis
 
 3. **Confidence Distribution**
+
    - Shows prediction confidence for benign vs attack samples
    - Helps understand model certainty
    - Identifies potential threshold optimization opportunities
 
 4. **Threshold Analysis**
+
    - Performance metrics across different decision thresholds
    - Helps optimize the classification threshold
    - Shows impact on precision, recall, and F1-score
@@ -427,6 +471,7 @@ Detailed analysis includes:
 #### 7.3 Dataset Analysis Visualizations
 
 **Dataset Composition**:
+
 ```
 Original Dataset Issues:
 ├── 100% Attack samples (biased)
@@ -446,6 +491,7 @@ Balanced Dataset Solution:
 ### 🌐 Federated Architecture
 
 #### 8.1 Federated Setup
+
 ```python
 Federated Learning Configuration:
 ├── Framework: Flower (flwr)
@@ -457,6 +503,7 @@ Federated Learning Configuration:
 ```
 
 #### 8.2 Client Data Distribution
+
 ```
 Client Data Allocation:
 ├── Client 0: 12,500 samples (balanced)
@@ -467,6 +514,7 @@ Client Data Allocation:
 ```
 
 #### 8.3 Federated vs Centralized Comparison
+
 ```
 Centralized Learning:
 ├── Accuracy: 91.16%
@@ -488,11 +536,12 @@ Federated Learning (Expected):
 ### 🔧 Technical Implementation
 
 #### 9.1 File Structure
+
 ```
 Fedrated_DDoS_Detection/
 ├── data/
 │   └── optimized/
-│       ├── balanced_dataset.csv          # Main balanced dataset
+│       ├── realistic_balanced_dataset.csv # Realistic combined dataset
 │       ├── client_0_train.csv            # Client 0 training data
 │       ├── client_0_test.csv             # Client 0 test data
 │       ├── client_1_train.csv            # Client 1 training data
@@ -502,7 +551,7 @@ Fedrated_DDoS_Detection/
 │       ├── client_3_train.csv            # Client 3 training data
 │       └── client_3_test.csv             # Client 3 test data
 ├── results/
-│   ├── balanced_centralized_model.h5     # Trained model
+│   ├── best_enhanced_model.keras         # Enhanced trained model
 │   ├── balanced_training_results.json    # Training metrics
 │   └── training_results_visualization.png # Training plots
 ├── src/
@@ -516,8 +565,8 @@ Fedrated_DDoS_Detection/
 │   └── federated/
 │       ├── flower_client.py              # Federated client
 │       └── flower_server.py              # Federated server
-├── train_balanced.py                     # Main training script
-├── create_balanced_dataset.py            # Dataset balancing
+├── train_enhanced.py                     # Enhanced training script (realistic-only)
+├── final_realistic_validation.py         # Final realistic validation & report
 ├── model_demo.py                         # Real-time inference demo
 ├── model_analysis.py                     # Advanced model analysis
 └── federated_training.py                 # Federated training script
@@ -526,21 +575,25 @@ Fedrated_DDoS_Detection/
 #### 9.2 Key Scripts and Functionality
 
 **Training Scripts**:
-- `train_balanced.py`: Main centralized training with visualization
+
+- `train_enhanced.py`: Enhanced realistic-only training with improvements
 - `federated_training.py`: Federated learning implementation
-- `create_balanced_dataset.py`: Dataset balancing and creation
+- `final_realistic_validation.py`: Validate and analyze on realistic test set
 
 **Analysis Scripts**:
+
 - `model_analysis.py`: Comprehensive model evaluation
 - `model_demo.py`: Real-time inference demonstration
 - `check_benign.py`: Dataset bias analysis
 
 **Core Modules**:
+
 - `src/models/cnn_model.py`: CNN architecture definition
 - `src/data/preprocessing.py`: Data preprocessing pipeline
 - `src/federated/flower_client.py`: Federated learning client
 
 #### 9.3 Dependencies and Requirements
+
 ```python
 # Core Dependencies
 tensorflow>=2.13.0
@@ -559,17 +612,21 @@ seaborn>=0.12.0
 ### 🎯 Key Achievements
 
 #### 10.1 Problem Resolution
+
 ✅ **Dataset Bias Correction**:
+
 - Identified and fixed 100% attack sample bias
 - Created balanced dataset with proper representation
 - Achieved realistic performance metrics
 
 ✅ **Model Performance**:
+
 - 91.16% accuracy on balanced test set
 - 96.42% ROC AUC showing excellent discrimination
 - Fast inference suitable for real-time deployment
 
 ✅ **Comprehensive Analysis**:
+
 - Detailed performance metrics and visualizations
 - Thorough error analysis and recommendations
 - Ready for federated learning implementation
@@ -577,16 +634,19 @@ seaborn>=0.12.0
 #### 10.2 Technical Insights
 
 **Model Architecture Effectiveness**:
+
 - 1D CNN architecture suitable for network flow data
 - Batch normalization and dropout prevent overfitting
 - Global average pooling reduces parameters effectively
 
 **Feature Engineering Success**:
+
 - Reduced features from 88 to 30 (65% reduction)
 - Maintained high performance with fewer features
 - Improved computational efficiency
 
 **Dataset Quality Impact**:
+
 - Balanced dataset crucial for realistic performance
 - 50/50 split provided optimal training conditions
 - Proper validation methodology prevented overfitting
@@ -594,6 +654,7 @@ seaborn>=0.12.0
 #### 10.3 Performance Benchmarks
 
 **Computational Efficiency**:
+
 ```
 Training Performance:
 ├── Training Time: 3:35 minutes (50 epochs)
@@ -609,6 +670,7 @@ Resource Requirements:
 ```
 
 **Accuracy Comparison**:
+
 ```
 Literature Benchmarks:
 ├── Traditional ML: 85-88% accuracy
@@ -624,9 +686,10 @@ Literature Benchmarks:
 ### 📁 Complete File Structure and Outputs
 
 #### 13.1 Generated Models and Results
+
 ```
 results/
-├── balanced_centralized_model.h5          # Trained CNN model (99K parameters)
+├── best_enhanced_model.keras               # Enhanced model (SavedModel .keras)
 ├── balanced_training_results.json         # Training metrics and performance
 ├── comprehensive_model_analysis.json      # Detailed analysis report
 ├── training_results_visualization.png     # Training curves and ROC plots
@@ -634,9 +697,10 @@ results/
 ```
 
 #### 13.2 Processed Datasets
+
 ```
 data/optimized/
-├── balanced_dataset.csv                   # Main balanced dataset (50K samples)
+├── realistic_balanced_dataset.csv          # Realistic combined dataset
 ├── client_0_train.csv                     # Federated client 0 training data
 ├── client_0_test.csv                      # Federated client 0 test data
 ├── client_1_train.csv                     # Federated client 1 training data
@@ -652,10 +716,11 @@ data/optimized/
 ```
 
 #### 13.3 Analysis Scripts and Tools
+
 ```
 Core Scripts:
-├── train_balanced.py                      # Main training script with visualization
-├── create_balanced_dataset.py             # Dataset balancing and creation
+├── train_enhanced.py                      # Enhanced training script
+├── final_realistic_validation.py          # Realistic validation and reporting
 ├── model_demo.py                          # Real-time inference demonstration
 ├── model_analysis.py                      # Advanced model analysis
 ├── federated_training.py                  # Federated learning implementation
@@ -679,12 +744,14 @@ src/
 #### 13.4 Visualization Files
 
 **Training Results Visualization** (`training_results_visualization.png`):
+
 - Training and validation accuracy curves over 39 epochs
 - Training and validation loss curves showing convergence
 - ROC curve with AUC = 0.9642 demonstrating excellent discrimination
 - Performance metrics bar chart (Accuracy, Precision, Recall, F1-Score)
 
 **Advanced Model Analysis** (`advanced_model_analysis.png`):
+
 - Confusion matrix heatmap with actual vs predicted classifications
 - ROC curve analysis with detailed AUC calculation
 - Precision-Recall curve for imbalanced dataset insights
@@ -695,56 +762,59 @@ src/
 #### 13.5 Key Metrics Files
 
 **Balanced Training Results** (`balanced_training_results.json`):
+
 ```json
 {
-    "training_time": "0:03:35.382672",
-    "test_accuracy": 0.9116,
-    "test_precision": 0.9414,
-    "test_recall": 0.8778,
-    "test_f1_score": 0.9085,
-    "test_loss": 0.2664,
-    "roc_auc": 0.9642,
-    "dataset_info": {
-        "total_samples": 50000,
-        "train_samples": 40000,
-        "test_samples": 10000,
-        "features": 30
-    }
+  "training_time": "0:03:35.382672",
+  "test_accuracy": 0.9116,
+  "test_precision": 0.9414,
+  "test_recall": 0.8778,
+  "test_f1_score": 0.9085,
+  "test_loss": 0.2664,
+  "roc_auc": 0.9642,
+  "dataset_info": {
+    "total_samples": 50000,
+    "train_samples": 40000,
+    "test_samples": 10000,
+    "features": 30
+  }
 }
 ```
 
 **Comprehensive Analysis** (`comprehensive_model_analysis.json`):
+
 ```json
 {
-    "analysis_timestamp": "2025-08-19T10:43:30",
-    "performance_metrics": {
-        "accuracy": 0.8870,
-        "precision": 0.8899,
-        "recall": 0.8834,
-        "f1_score": 0.8866,
-        "roc_auc": 0.9603
-    },
-    "error_analysis": {
-        "true_negatives": 22267,
-        "false_positives": 2733,
-        "false_negatives": 2916,
-        "true_positives": 22084,
-        "false_positive_rate": 0.1093,
-        "false_negative_rate": 0.1166
-    },
-    "model_summary": {
-        "total_parameters": 99009,
-        "trainable_parameters": 98049,
-        "input_shape": "(None, 30, 1)",
-        "output_shape": "(None, 1)",
-        "total_layers": 18
-    }
+  "analysis_timestamp": "2025-08-19T10:43:30",
+  "performance_metrics": {
+    "accuracy": 0.887,
+    "precision": 0.8899,
+    "recall": 0.8834,
+    "f1_score": 0.8866,
+    "roc_auc": 0.9603
+  },
+  "error_analysis": {
+    "true_negatives": 22267,
+    "false_positives": 2733,
+    "false_negatives": 2916,
+    "true_positives": 22084,
+    "false_positive_rate": 0.1093,
+    "false_negative_rate": 0.1166
+  },
+  "model_summary": {
+    "total_parameters": 99009,
+    "trainable_parameters": 98049,
+    "input_shape": "(None, 30, 1)",
+    "output_shape": "(None, 1)",
+    "total_layers": 18
+  }
 }
 ```
 
 #### 13.6 Usage Instructions
 
 **To Run the Trained Model**:
+
 ```bash
 # Load and use the trained model
 python model_demo.py
@@ -757,24 +827,27 @@ python federated_training.py
 ```
 
 **To Recreate the Dataset**:
+
 ```bash
 # Create balanced dataset from scratch
-python create_balanced_dataset.py
+REM legacy dataset creation removed; use the realistic datasets already in data/optimized/
 
 # Check dataset balance and statistics
 python check_benign.py
 ```
 
 **To Retrain the Model**:
+
 ```bash
 # Complete training with visualization
-python train_balanced.py
+python train_enhanced.py
 ```
 
 #### 13.7 File Size Summary
+
 ```
 Generated Files Size Analysis:
-├── Model File: ~400KB (balanced_centralized_model.h5)
+├── Model File: SavedModel (.keras) (best_enhanced_model.keras)
 ├── Datasets: ~150MB (all CSV files combined)
 ├── Visualizations: ~2MB (PNG files)
 ├── Analysis Reports: ~50KB (JSON files)
@@ -792,12 +865,15 @@ Size Reduction: 99.4% from original dataset
 ### 🚀 Next Steps
 
 #### 11.1 Immediate Enhancements
+
 1. **Federated Learning Deployment**
+
    - Complete federated training implementation
    - Test with real distributed clients
    - Measure communication overhead
 
 2. **Real-time Simulation**
+
    - Implement Kali Linux simulation environment
    - Docker containerization for scalability
    - Kubernetes orchestration for production
@@ -808,12 +884,15 @@ Size Reduction: 99.4% from original dataset
    - Model compression for edge deployment
 
 #### 11.2 Advanced Features
+
 1. **Multi-class Classification**
+
    - Extend to identify specific attack types
    - Hierarchical classification approach
    - Attack severity scoring
 
 2. **Adaptive Learning**
+
    - Online learning capabilities
    - Continuous model updates
    - Drift detection and adaptation
@@ -824,12 +903,15 @@ Size Reduction: 99.4% from original dataset
    - Decision explanation for security teams
 
 #### 11.3 Production Considerations
+
 1. **Scalability**
+
    - Horizontal scaling for high traffic
    - Load balancing for inference
    - Distributed training optimization
 
 2. **Security**
+
    - Model privacy protection
    - Secure aggregation protocols
    - Differential privacy implementation
@@ -857,18 +939,21 @@ This federated DDoS detection project has successfully achieved its primary obje
 ### 🎯 Key Contributions
 
 **Technical Contributions**:
+
 - Novel approach to network flow feature optimization
 - Effective 1D CNN architecture for cybersecurity applications
 - Comprehensive preprocessing pipeline for federated learning
 - Balanced dataset creation methodology
 
 **Practical Impact**:
+
 - Ready-to-deploy DDoS detection system
 - Scalable federated learning framework
 - Real-time inference capabilities
 - Production-ready codebase and documentation
 
 ### 📊 Final Performance Metrics
+
 ```
 Final Model Statistics (Test Set - 10K samples):
 ├── Test Accuracy: 91.16%
