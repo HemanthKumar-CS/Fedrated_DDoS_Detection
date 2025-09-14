@@ -1,14 +1,22 @@
 {
-  "train_sizes": {
-    "0": 6185,
-    "1": 6184,
-    "2": 6183,
-    "3": 6183
+  "created_at": "2025-09-14T08:40:38Z",
+  "input_csv": "data\\optimized\\realistic_train.csv",
+  "output_dir": "data\\optimized\\clean_partitions",
+  "num_clients": 4,
+  "test_size": 0.2,
+  "strategy": "non_iid_label",
+  "concentration": 0.7,
+  "random_state": 42,
+  "client_train_sizes": {
+    "0": 2630,
+    "1": 4160,
+    "2": 4111,
+    "3": 304
   },
-  "test_sizes": {
-    "0": 1547,
-    "1": 1546,
-    "2": 1546,
-    "3": 1545
+  "client_test_sizes": {
+    "0": 658,
+    "1": 1040,
+    "2": 1028,
+    "3": 77
   }
 }
