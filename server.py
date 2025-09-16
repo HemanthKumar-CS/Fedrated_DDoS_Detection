@@ -9,6 +9,7 @@ Notes:
 - Falls back to FedAvg if too few clients for Multi-Krum (n < 2f + 3).
 """
 from __future__ import annotations
+from src.models.cnn_model import create_ddos_cnn_model  # type: ignore
 import os
 import sys
 import argparse
@@ -24,33 +25,36 @@ from flwr.server.strategy import FedAvg
 
 # Ensure src import path
 sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
-from src.models.cnn_model import create_ddos_cnn_model  # type: ignore
 
-logging.basicConfig(level=logging.INFO, format='[SERVER] %(asctime)s %(levelname)s: %(message)s')
+logging.basicConfig(level=logging.INFO,
+                    format='[SERVER] %(asctime)s %(levelname)s: %(message)s')
 logger = logging.getLogger("federated_server")
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
-def get_initial_parameters(initial_model_path: Optional[str] = None) -> Parameters:
-    """Return initial global model parameters.
+
+def get_initial_parameters(initial_model_path: Optional[str] = None) -> Optional[Parameters]:
+    """Return initial global model parameters if a compatible model is provided.
 
     If a saved Keras model path is provided and exists, load its weights.
-    Otherwise build a fresh binary model.
+    If no path is given, return None so the server will use client-provided
+    initial parameters (avoids input feature mismatch across environments).
     """
     if initial_model_path and Path(initial_model_path).is_file():
         try:
             logger.info(f"Loading initial weights from {initial_model_path}")
-            loaded = tf.keras.models.load_model(initial_model_path, compile=False)
+            loaded = tf.keras.models.load_model(
+                initial_model_path, compile=False)
             weights = loaded.get_weights()
             return fl.common.ndarrays_to_parameters(weights)
         except Exception as e:
-            logger.error(f"Failed to load model at {initial_model_path}: {e}; falling back to fresh init")
-    # Fallback / default path
-    model_wrapper = create_ddos_cnn_model(num_classes=1)
-    weights = model_wrapper.get_model().get_weights()
-    return fl.common.ndarrays_to_parameters(weights)
+            logger.error(
+                f"Failed to load model at {initial_model_path}: {e}; proceeding without initial parameters")
+            return None
+    # No initial model provided: let clients provide initial weights
+    return None
 
 
 def flatten_weights(ndarrays: List[np.ndarray]) -> np.ndarray:
@@ -69,6 +73,8 @@ def reconstruct_weights(flat: np.ndarray, template: List[np.ndarray]) -> List[np
 # ---------------------------------------------------------------------------
 # Multi-Krum FedAvg Strategy
 # ---------------------------------------------------------------------------
+
+
 class MultiKrumFedAvg(FedAvg):
     """FedAvg variant performing Multi-Krum selection before averaging.
 
@@ -76,13 +82,16 @@ class MultiKrumFedAvg(FedAvg):
         f: Assumed max number of Byzantine (malicious) clients.
         m: Number of selected updates to average after Krum scores (if None, m = n - f - 2)
     """
+
     def __init__(self, f: int = 1, m: Optional[int] = None, history_path: str | None = None, **kwargs):
         super().__init__(**kwargs)
         self.f = f
         self.m = m
         # Track separate train/test accuracies per round
-        self.history: Dict[str, List[float]] = {"train_accuracy": [], "test_accuracy": []}
-        self.history_path = Path(history_path) if history_path else Path("results/federated_metrics_history.json")
+        self.history: Dict[str, List[float]] = {
+            "train_accuracy": [], "test_accuracy": []}
+        self.history_path = Path(history_path) if history_path else Path(
+            "results/federated_metrics_history.json")
         self.history_path.parent.mkdir(parents=True, exist_ok=True)
 
     # ------------------------------------------------------------------
@@ -124,7 +133,8 @@ class MultiKrumFedAvg(FedAvg):
 
         # Multi-Krum requirement: n >= 2f + 3. If not, fallback to FedAvg.
         if n < (2 * self.f + 3):
-            logger.info(f"[Round {server_round}] Too few clients for Multi-Krum (n={n} < 2f+3={2*self.f+3}); fallback to FedAvg")
+            logger.info(
+                f"[Round {server_round}] Too few clients for Multi-Krum (n={n} < 2f+3={2*self.f+3}); fallback to FedAvg")
             return super().aggregate_fit(server_round, results, failures)
 
         # Determine m (number of selected updates)
@@ -144,7 +154,8 @@ class MultiKrumFedAvg(FedAvg):
         retained = max(1, retained)
         scores: List[Tuple[float, int]] = []
         for i in range(n):
-            row = np.sort(dist_matrix[i, np.arange(n) != i])  # distances to others
+            # distances to others
+            row = np.sort(dist_matrix[i, np.arange(n) != i])
             score = np.sum(row[:retained])
             scores.append((score, i))
         scores.sort(key=lambda x: x[0])
@@ -159,12 +170,14 @@ class MultiKrumFedAvg(FedAvg):
         total_examples = sum(num_examples[idx] for idx in selected_indices)
         agg_flat = None
         for idx in selected_indices:
-            weight = num_examples[idx] / total_examples if total_examples > 0 else 1.0 / m
+            weight = num_examples[idx] / \
+                total_examples if total_examples > 0 else 1.0 / m
             vec = flat_updates[idx]
             agg_flat = vec * weight if agg_flat is None else agg_flat + vec * weight
 
         aggregated_weights = reconstruct_weights(agg_flat, template)
-        aggregated_parameters = fl.common.ndarrays_to_parameters(aggregated_weights)
+        aggregated_parameters = fl.common.ndarrays_to_parameters(
+            aggregated_weights)
 
         # Aggregate metrics (simple average)
         aggregated_metrics: Dict[str, Scalar] = {
@@ -175,14 +188,16 @@ class MultiKrumFedAvg(FedAvg):
         }
         if metrics_list:
             # Average training (fit) accuracy - rename to explicitly reflect it's train-side
-            train_accs = [m.get("accuracy") for m in metrics_list if "accuracy" in m]
+            train_accs = [m.get("accuracy")
+                          for m in metrics_list if "accuracy" in m]
             if train_accs:
                 avg_train_acc = float(np.mean(train_accs))
                 aggregated_metrics["avg_client_train_accuracy"] = avg_train_acc
                 self.history["train_accuracy"].append(avg_train_acc)
                 # Keep length consistency if test not yet appended this round
                 if len(self.history["test_accuracy"]) < len(self.history["train_accuracy"]):
-                    self.history["test_accuracy"].append(None)  # placeholder until evaluate phase
+                    # placeholder until evaluate phase
+                    self.history["test_accuracy"].append(None)
                 self._persist_history()
 
         return aggregated_parameters, aggregated_metrics
@@ -222,7 +237,8 @@ class MultiKrumFedAvg(FedAvg):
                 self.history["test_accuracy"].append(avg_test_acc)
             # Ensure both lists same length
             if len(self.history["train_accuracy"]) < len(self.history["test_accuracy"]):
-                self.history["train_accuracy"].append(None)  # unusual but guard
+                self.history["train_accuracy"].append(
+                    None)  # unusual but guard
             self._persist_history()
 
         if aggregated_loss is not None:
@@ -233,19 +249,31 @@ class MultiKrumFedAvg(FedAvg):
 # Main entry
 # ---------------------------------------------------------------------------
 
+
 def main():
-    parser = argparse.ArgumentParser(description="Federated Server (Flower) with Multi-Krum")
-    parser.add_argument('--address', type=str, default='0.0.0.0:8080', help='Server host:port')
-    parser.add_argument('--rounds', type=int, default=3, help='Number of FL rounds')
-    parser.add_argument('--f', type=int, default=0, help='Assumed max Byzantine clients (set 0 for 4 clients)')
-    parser.add_argument('--m', type=int, default=-1, help='Number of selected updates (<= n - f - 2). -1 = auto')
-    parser.add_argument('--min_fit', type=int, default=4, help='Min fit clients')
-    parser.add_argument('--min_eval', type=int, default=4, help='Min eval clients')
-    parser.add_argument('--min_available', type=int, default=4, help='Min available clients')
-    parser.add_argument('--initial_model', type=str, default='', help='Path to pre-trained centralized model (.h5/.keras) to initialize global weights')
+    parser = argparse.ArgumentParser(
+        description="Federated Server (Flower) with Multi-Krum")
+    parser.add_argument('--address', type=str,
+                        default='0.0.0.0:8080', help='Server host:port')
+    parser.add_argument('--rounds', type=int, default=3,
+                        help='Number of FL rounds')
+    parser.add_argument('--f', type=int, default=0,
+                        help='Assumed max Byzantine clients (set 0 for 4 clients)')
+    parser.add_argument('--m', type=int, default=-1,
+                        help='Number of selected updates (<= n - f - 2). -1 = auto')
+    parser.add_argument('--min_fit', type=int, default=4,
+                        help='Min fit clients')
+    parser.add_argument('--min_eval', type=int, default=4,
+                        help='Min eval clients')
+    parser.add_argument('--min_available', type=int,
+                        default=4, help='Min available clients')
+    parser.add_argument('--initial_model', type=str, default='',
+                        help='Path to pre-trained centralized model (.h5/.keras) to initialize global weights')
     args = parser.parse_args()
 
-    initial_parameters = get_initial_parameters(parser.parse_args().initial_model if args.initial_model else None)
+    # Only load initial parameters if a model path was explicitly provided.
+    initial_parameters = get_initial_parameters(
+        args.initial_model) if args.initial_model else None
 
     # Strategy
     strategy = MultiKrumFedAvg(
@@ -258,7 +286,8 @@ def main():
         history_path="results/federated_metrics_history.json",
     )
 
-    logger.info(f"Starting server on {args.address} rounds={args.rounds} f={args.f}")
+    logger.info(
+        f"Starting server on {args.address} rounds={args.rounds} f={args.f}")
     fl.server.start_server(
         server_address=args.address,
         config=fl.server.ServerConfig(num_rounds=args.rounds),
