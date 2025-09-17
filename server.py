@@ -26,6 +26,12 @@ from flwr.server.strategy import FedAvg
 # Ensure src import path
 sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
 
+# Import visualization
+try:
+    from src.visualization.training_visualizer import generate_training_visualizations
+except ImportError:
+    print("Warning: Visualization module not available")
+
 logging.basicConfig(level=logging.INFO,
                     format='[SERVER] %(asctime)s %(levelname)s: %(message)s')
 logger = logging.getLogger("federated_server")
@@ -94,13 +100,24 @@ class MultiKrumFedAvg(FedAvg):
             "results/federated_metrics_history.json")
         self.history_path.parent.mkdir(parents=True, exist_ok=True)
 
+        # Enhanced Multi-Krum parameters
+        self.aggregation_log: List[Dict[str, Any]] = []
+        self.client_performance_history: Dict[str, List[float]] = {}
+
     # ------------------------------------------------------------------
     # Helper to persist history after updates
     # ------------------------------------------------------------------
     def _persist_history(self) -> None:
         try:
+            # Enhanced history with aggregation logs
+            enhanced_history = {
+                "train_accuracy": self.history["train_accuracy"],
+                "test_accuracy": self.history["test_accuracy"],
+                "aggregation_log": self.aggregation_log,
+                "client_performance_history": self.client_performance_history
+            }
             with self.history_path.open("w", encoding="utf-8") as f:
-                json.dump(self.history, f, indent=2)
+                json.dump(enhanced_history, f, indent=2)
         except Exception as e:
             logger.error(f"Failed to persist history: {e}")
 
@@ -149,21 +166,48 @@ class MultiKrumFedAvg(FedAvg):
                 dist_matrix[i, j] = d
                 dist_matrix[j, i] = d
 
-        # Score each client (Krum score = sum of closest (n - f - 2) distances)
+        # Enhanced Multi-Krum scoring with client performance history
         retained = n - self.f - 2
         retained = max(1, retained)
         scores: List[Tuple[float, int]] = []
+
         for i in range(n):
             # distances to others
             row = np.sort(dist_matrix[i, np.arange(n) != i])
-            score = np.sum(row[:retained])
-            scores.append((score, i))
+            krum_score = np.sum(row[:retained])
+
+            # Optional: Weight by historical client performance
+            client_id = client_ids[i]
+            if client_id in self.client_performance_history:
+                avg_performance = np.mean(
+                    self.client_performance_history[client_id])
+                # Adjust score based on historical performance (lower score = better)
+                performance_weight = max(
+                    0.1, 1.0 - avg_performance) if avg_performance > 0 else 1.0
+                adjusted_score = krum_score * performance_weight
+            else:
+                adjusted_score = krum_score
+
+            scores.append((adjusted_score, i))
+
         scores.sort(key=lambda x: x[0])
 
         selected_indices = [idx for (_, idx) in scores[:m]]
 
+        # Log aggregation details
+        aggregation_info = {
+            "round": server_round,
+            "total_clients": n,
+            "selected_clients": selected_indices,
+            "krum_scores": [(client_ids[idx], score) for score, idx in scores],
+            "aggregation_method": "Multi-Krum" if n >= (2 * self.f + 3) else "FedAvg"
+        }
+        self.aggregation_log.append(aggregation_info)
+
         logger.info(
-            f"[Round {server_round}] Multi-Krum selected clients: {selected_indices} (from {list(range(n))}); scores={scores[:m]}"
+            f"[Round {server_round}] Enhanced Multi-Krum selected clients: {[client_ids[i] for i in selected_indices]} "
+            f"(from {client_ids}); top scores: {[(client_ids[idx], f'{score:.3f}')
+                                                 for score, idx in scores[:m]]}"
         )
 
         # Weighted average only over selected
@@ -194,6 +238,15 @@ class MultiKrumFedAvg(FedAvg):
                 avg_train_acc = float(np.mean(train_accs))
                 aggregated_metrics["avg_client_train_accuracy"] = avg_train_acc
                 self.history["train_accuracy"].append(avg_train_acc)
+
+                # Update client performance history
+                for i, (client_id, train_acc) in enumerate(zip(client_ids, train_accs)):
+                    if client_id not in self.client_performance_history:
+                        self.client_performance_history[client_id] = []
+                    if train_acc is not None:
+                        self.client_performance_history[client_id].append(
+                            train_acc)
+
                 # Keep length consistency if test not yet appended this round
                 if len(self.history["test_accuracy"]) < len(self.history["train_accuracy"]):
                     # placeholder until evaluate phase
@@ -288,11 +341,24 @@ def main():
 
     logger.info(
         f"Starting server on {args.address} rounds={args.rounds} f={args.f}")
+
+    # Start server
     fl.server.start_server(
         server_address=args.address,
         config=fl.server.ServerConfig(num_rounds=args.rounds),
         strategy=strategy,
     )
+
+    # Generate visualizations after training completion
+    logger.info("🎨 Generating training visualizations...")
+    try:
+        generate_training_visualizations(
+            federated_history_path="results/federated_metrics_history.json",
+            results_dir="results"
+        )
+        logger.info("✅ Visualization generation completed successfully!")
+    except Exception as e:
+        logger.error(f"❌ Error generating visualizations: {e}")
 
 
 if __name__ == '__main__':

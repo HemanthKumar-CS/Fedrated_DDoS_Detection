@@ -4,7 +4,7 @@ Subtitle: Implementation, Model Architecture, Methodology, Workflow, and Conclus
 
 ## 1) Executive Overview
 
-This project delivers a practical, privacy-preserving DDoS detection system that can train both centrally and in a federated setting. The core is a lightweight 1D Convolutional Neural Network (CNN) designed for tabular network-flow features. Federated learning (FL) is implemented with the Flower framework to keep raw data on distributed clients. The server coordinates multiple rounds of local training and aggregates model updates; the current server integrates a Multi-Krum-style robust selection on top of FedAvg to mitigate outlier client updates.
+This project delivers a practical, privacy-preserving DDoS detection system that can train both centrally and in a federated setting. The core is a lightweight 1D Convolutional Neural Network (CNN) designed for tabular network-flow features. Federated learning (FL) is implemented with the Flower framework to keep raw data on distributed clients. The server coordinates multiple rounds of local training and aggregates model updates with a robust FedAvg + Multi-Krum subset selection layer to mitigate anomalous or poisoned client updates.
 
 Key goals
 
@@ -15,12 +15,15 @@ Key goals
 
 Where to look in the repo
 
-- Model: `src/models/cnn_model.py`
-- Training pipeline & evaluation: `src/models/trainer.py`
-- Standalone FL client/server: `client.py`, `server.py`
-- Alternative FL client wrapper: `src/federated/flower_client.py`
-- Data utilities: `src/data/`
-- Evaluation artifacts: `results/`
+- Baseline model: `src/models/cnn_model.py`
+- Enhanced training & baseline training scripts: `train_enhanced.py`, `train_centralized.py`
+- Federated runtime (robust aggregation): `server.py`, `client.py`
+- Flower simulation driver: `federated_training.py`
+- Visualization module: `src/visualization/training_visualizer.py`
+- Advanced model analysis: `model_analysis.py`
+- Final validation & integrity: `final_realistic_validation.py`, `validate_test_set.py`
+- Data & helpers: `src/data/`
+- Artifacts: `results/`
 
 ## 2) Implementation (What is built and how it is organized)
 
@@ -39,7 +42,7 @@ Where to look in the repo
   - Saves model artifacts (Keras format) and plots to `results/` for reporting.
 - Federated layer (coordination across clients)
   - Clients perform local epochs on their own partitions and share only model weights/metrics.
-  - Server coordinates rounds and aggregates weights via FedAvg augmented with Multi-Krum selection.
+  - Server coordinates rounds and aggregates weights via FedAvg augmented with Multi-Krum subset selection (robust filtering of outlier updates before averaging).
   - Server persists round-wise metrics to `results/federated_metrics_history.json` for visualization.
 
 ### 2.2 Key components and responsibilities
@@ -130,10 +133,11 @@ Why this architecture for DDoS features
   - Update: Clients send model weights and metrics to the server.
   - Aggregation: The server applies FedAvg; if configured, a Multi-Krum subset selection filters outliers before averaging.
   - Repeat for R rounds.
-- Robust aggregation (Multi-Krum-style)
-  - Idea: Prefer updates that are mutually close in parameter space; treat distant updates as potential outliers or poisoned.
-  - Parameter f: maximum assumed Byzantine (malicious) clients. Multi-Krum requires n ≥ 2f + 3 to operate; otherwise it falls back to FedAvg.
-  - Selection m: number of “closest” updates to average (auto-derived if not provided).
+- Robust aggregation (FedAvg + Multi-Krum)
+  - Multi-Krum scores client updates by summed distances to nearest neighbors; filters statistical outliers.
+  - Preconditions: n ≥ 2f + 3 (n clients, f assumed malicious). Else fallback to plain FedAvg.
+  - Selected subset then averaged with standard (optionally weighted) FedAvg.
+  - Provides resilience against noisy or adversarial updates in small edge deployments.
 - Observability
   - The server distinguishes average client train accuracy (fit phase) and average client test accuracy (evaluate phase) per round.
   - History persists to `results/federated_metrics_history.json` for downstream visualization.
@@ -172,13 +176,19 @@ Federated (decentralized)
 
 Artifacts and figures
 
-- Figures and plots for inclusion in slides can be sourced from:
-  - `Figure_1.png` (project-specific overview image)
-  - `results/advanced_model_analysis.png`
-  - `results/enhanced_training_analysis.png`
-  - `results/final_realistic_validation_analysis.png`
-  - `results/training_results_visualization.png`
-- Time-series FL metrics: `results/federated_metrics_history.json`
+Primary visual assets (all auto-generated where applicable):
+
+- Overview: `Figure_1.png`
+- Centralized baseline curves: `training_results_visualization.png`
+- Enhanced training dashboard: `enhanced_training_analysis.png`
+- Advanced architecture & diagnostics: `advanced_model_analysis.png`
+- Final evaluation: `final_realistic_validation_analysis.png`
+- Federated history (JSON → plotable): `federated_metrics_history.json`
+
+Advanced reports:
+
+- `comprehensive_model_analysis.json` (deep metrics + recommendations)
+- `final_realistic_validation_<timestamp>.md/json` (reproducible validation snapshot)
 
 ## 6) Conclusion (What this delivers and why it matters)
 
@@ -197,6 +207,12 @@ Limitations and risks
 
 Future enhancements
 
+- Add additional robust aggregators (Trimmed Mean, Median) & adaptive norm clipping.
+- Track federated ROC-AUC, PR-AUC per round.
+- Client participation variance & anomaly visualizations.
+- Optional secure aggregation / differential privacy.
+- Deployment tooling (containerized inference service).
+
 - Add more robust aggregators (Trimmed Mean, Coordinate-wise Median) and adaptive norm clipping.
 - Introduce privacy layers such as secure aggregation and/or differential privacy.
 - Improve calibration (threshold tuning) and track ROC-AUC during federated rounds.
@@ -209,9 +225,19 @@ Future enhancements
 - Multi-Krum: A robust aggregation technique that selects updates based on minimal pairwise distances, reducing the influence of outliers.
 - Precision/Recall/F1: Standard classification metrics; recall is particularly important for ensuring attacks aren’t missed, while precision limits false alarms.
 
-Repository anchors (no code shown)
+Repository anchors (quick reference)
 
-- Centralized training: `src/models/trainer.py`
+- Baseline & enhanced training: `train_centralized.py`, `train_enhanced.py`
 - Model definition: `src/models/cnn_model.py`
-- Federated client/server: `client.py`, `server.py`, and `src/federated/flower_client.py`
-- Artifacts for slides: `results/` images and JSON history
+- Robust federated runtime: `server.py`, `client.py`
+- Simulation: `federated_training.py`
+- Visualization engine: `src/visualization/training_visualizer.py`
+- Advanced analysis: `model_analysis.py`
+- Validation & integrity: `final_realistic_validation.py`, `validate_test_set.py`
+- Artifacts: `results/` (plots, JSON metrics, models)
+
+---
+
+Addendum (Visualization & Reporting Pipeline)
+
+All training flows invoke a unified visualization layer generating standardized, publication-ready plots (loss/accuracy, recall, confusion matrix, ROC/PR, threshold analysis). Federated runs append structured per-round metrics enabling longitudinal comparison across experiments.

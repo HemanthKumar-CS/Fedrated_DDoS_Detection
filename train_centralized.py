@@ -24,6 +24,14 @@ import json
 import logging
 from src.models.trainer import ModelTrainer  # type: ignore
 
+# Import visualization
+try:
+    from src.visualization.training_visualizer import generate_training_visualizations
+    VISUALIZATION_AVAILABLE = True
+except ImportError:
+    print("Warning: Visualization module not available")
+    VISUALIZATION_AVAILABLE = False
+
 logging.basicConfig(level=logging.INFO,
                     format='[CENTRAL] %(asctime)s %(levelname)s: %(message)s')
 logger = logging.getLogger("centralized_baseline")
@@ -136,8 +144,28 @@ def main():
         json.dump(metrics_payload, f, indent=2)
     logger.info(f"Saved metrics to {args.metrics_out}")
 
+    # Generate comprehensive visualizations
+    if VISUALIZATION_AVAILABLE:
+        logger.info("🎨 Generating comprehensive training visualizations...")
+        try:
+            plots = generate_training_visualizations(
+                model=trainer.model.get_model(),
+                history=history,
+                X_test=trainer.model.prepare_data(X_test),
+                y_test=y_test,
+                results_dir="results"
+            )
+            logger.info(
+                f"✅ Generated {len(plots) if plots else 0} visualization plots")
+        except Exception as e:
+            logger.error(f"❌ Error generating visualizations: {e}")
+
     print(f"\n=== Centralized Baseline Results ===")
     print(f"Test Accuracy: {metrics_payload['test_accuracy']:.4f}")
+    if VISUALIZATION_AVAILABLE:
+        print(f"📊 Visualizations saved to: results/visualizations/")
+    print(f"💾 Model saved to: {args.model_out}")
+    print(f"📈 Metrics saved to: {args.metrics_out}")
     print(f"Test Loss: {metrics_payload['test_loss']:.4f}")
     print(f"Model saved: {args.model_out}")
     print(f"Metrics JSON: {args.metrics_out}")
