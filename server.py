@@ -26,10 +26,18 @@ from flwr.server.strategy import FedAvg
 # Ensure src import path
 sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
 
-# Import visualization
+# Optional visualization support
+VISUALIZATION_AVAILABLE = False
 try:
     from src.visualization.training_visualizer import generate_training_visualizations
-except ImportError:
+    VISUALIZATION_AVAILABLE = True
+except Exception:
+    # Keep VISUALIZATION_AVAILABLE as False; plotting will be skipped gracefully
+    try:
+        generate_training_visualizations  # type: ignore[name-defined]
+    except Exception:
+        # Ensure the symbol exists to avoid NameError if referenced accidentally
+        generate_training_visualizations = None  # type: ignore[assignment]
     print("Warning: Visualization module not available")
 
 logging.basicConfig(level=logging.INFO,
@@ -356,17 +364,17 @@ def main():
         try:
             plots = generate_training_visualizations(
                 federated_history_path="results/federated_metrics_history.json",
-                results_dir="results",
+                results_dir="results/visualizations",
                 model_name="Federated_DDoS_CNN"
             )
             logger.info(
                 "✅ Enhanced visualization generation completed successfully!")
             if plots:
+                file_paths = [p for p in plots.values() if isinstance(p, str)]
                 logger.info(
-                    f"📊 Generated {len(plots)} comprehensive analysis plots:")
-                for plot in plots:
-                    plot_name = Path(plot).name
-                    logger.info(f"   - {plot_name}")
+                    f"📊 Generated {len(file_paths)} comprehensive analysis plots (saved under results/visualizations):")
+                for p in file_paths:
+                    logger.info(f"   - {Path(p).name}")
                 logger.info("🔍 Advanced federated analysis includes:")
                 logger.info("   📈 Round-by-round progress with trend analysis")
                 logger.info("   📊 Convergence and generalization gap analysis")
