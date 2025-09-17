@@ -349,16 +349,36 @@ def main():
         strategy=strategy,
     )
 
-    # Generate visualizations after training completion
-    logger.info("🎨 Generating training visualizations...")
-    try:
-        generate_training_visualizations(
-            federated_history_path="results/federated_metrics_history.json",
-            results_dir="results"
-        )
-        logger.info("✅ Visualization generation completed successfully!")
-    except Exception as e:
-        logger.error(f"❌ Error generating visualizations: {e}")
+    # Generate enhanced visualizations after training completion
+    if VISUALIZATION_AVAILABLE:
+        logger.info(
+            "🎨 Generating enhanced federated learning visualizations...")
+        try:
+            plots = generate_training_visualizations(
+                federated_history_path="results/federated_metrics_history.json",
+                results_dir="results",
+                model_name="Federated_DDoS_CNN"
+            )
+            logger.info(
+                "✅ Enhanced visualization generation completed successfully!")
+            if plots:
+                logger.info(
+                    f"📊 Generated {len(plots)} comprehensive analysis plots:")
+                for plot in plots:
+                    plot_name = Path(plot).name
+                    logger.info(f"   - {plot_name}")
+                logger.info("🔍 Advanced federated analysis includes:")
+                logger.info("   📈 Round-by-round progress with trend analysis")
+                logger.info("   📊 Convergence and generalization gap analysis")
+                logger.info(
+                    "   🎯 Performance distribution and stability metrics")
+                logger.info("   📋 Comprehensive statistical summary")
+        except Exception as e:
+            logger.error(f"❌ Error generating enhanced visualizations: {e}")
+            import traceback
+            traceback.print_exc()
+    else:
+        logger.warning("⚠️ Enhanced visualization module not available")
 
 
 if __name__ == '__main__':

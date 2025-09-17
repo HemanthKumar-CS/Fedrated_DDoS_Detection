@@ -153,22 +153,38 @@ def main():
                 history=history,
                 X_test=trainer.model.prepare_data(X_test),
                 y_test=y_test,
-                results_dir="results"
+                results_dir="results",
+                model_name="Centralized_DDoS_CNN"
             )
             logger.info(
-                f"✅ Generated {len(plots) if plots else 0} visualization plots")
+                f"✅ Generated {len(plots) if plots else 0} advanced visualization plots")
+            if plots:
+                logger.info("📊 Enhanced visualizations include:")
+                for plot in plots:
+                    plot_name = Path(plot).name
+                    logger.info(f"   - {plot_name}")
         except Exception as e:
             logger.error(f"❌ Error generating visualizations: {e}")
+            import traceback
+            traceback.print_exc()
 
-    print(f"\n=== Centralized Baseline Results ===")
-    print(f"Test Accuracy: {metrics_payload['test_accuracy']:.4f}")
-    if VISUALIZATION_AVAILABLE:
-        print(f"📊 Visualizations saved to: results/visualizations/")
+    print(f"\n🎯 === CENTRALIZED BASELINE RESULTS ===")
+    print(
+        f"📊 Test Accuracy: {metrics_payload['test_accuracy']:.4f} ({metrics_payload['test_accuracy']*100:.2f}%)")
+    print(f"📉 Test Loss: {metrics_payload['test_loss']:.4f}")
+    print(f"🏋️ Training Samples: {metrics_payload['train_size']:,}")
+    print(f"🧪 Test Samples: {metrics_payload['test_size']:,}")
+    print(f"🔄 Epochs Completed: {metrics_payload['epochs']}")
     print(f"💾 Model saved to: {args.model_out}")
     print(f"📈 Metrics saved to: {args.metrics_out}")
-    print(f"Test Loss: {metrics_payload['test_loss']:.4f}")
-    print(f"Model saved: {args.model_out}")
-    print(f"Metrics JSON: {args.metrics_out}")
+
+    if VISUALIZATION_AVAILABLE and plots:
+        print(f"🎨 Enhanced visualizations saved to: results/visualizations/")
+        print(f"   📊 Generated {len(plots)} comprehensive analysis plots")
+        print(f"   🔍 Includes: confusion matrix, ROC/PR curves, threshold analysis")
+        print(f"   📈 Training history, performance metrics, and detailed reports")
+
+    print(f"✅ Centralized training completed successfully!")
 
 
 if __name__ == '__main__':
