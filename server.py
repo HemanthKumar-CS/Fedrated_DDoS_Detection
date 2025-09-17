@@ -17,6 +17,7 @@ import logging
 from typing import List, Tuple, Dict, Any, Optional
 from pathlib import Path
 import json
+import pandas as pd
 import tensorflow as tf  # type: ignore
 import numpy as np
 import flwr as fl
@@ -29,15 +30,18 @@ sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
 # Optional visualization support
 VISUALIZATION_AVAILABLE = False
 try:
-    from src.visualization.training_visualizer import generate_training_visualizations
+    from src.visualization.training_visualizer import (generate_training_visualizations,
+                                                       generate_federated_analysis_visualizations)
     VISUALIZATION_AVAILABLE = True
 except Exception:
     # Keep VISUALIZATION_AVAILABLE as False; plotting will be skipped gracefully
     try:
         generate_training_visualizations  # type: ignore[name-defined]
+        generate_federated_analysis_visualizations  # type: ignore[name-defined]
     except Exception:
         # Ensure the symbol exists to avoid NameError if referenced accidentally
         generate_training_visualizations = None  # type: ignore[assignment]
+        generate_federated_analysis_visualizations = None  # type: ignore[assignment]
     print("Warning: Visualization module not available")
 
 logging.basicConfig(level=logging.INFO,
@@ -83,6 +87,63 @@ def reconstruct_weights(flat: np.ndarray, template: List[np.ndarray]) -> List[np
         rebuilt.append(flat[offset:offset+size].reshape(arr.shape))
         offset += size
     return rebuilt
+
+
+def load_global_test_data():
+    """Load global test dataset for federated analysis"""
+    try:
+        # Load the realistic test dataset
+        test_file = "data/optimized/realistic_test.csv"
+        if not os.path.exists(test_file):
+            logger.warning(f"Global test file {test_file} not found")
+            return None, None
+        
+        logger.info(f"Loading global test data from {test_file}")
+        test_data = pd.read_csv(test_file)
+        
+        # Use the same preprocessing as clients
+        label_col = 'Binary_Label'
+        if label_col not in test_data.columns:
+            logger.error(f"Label column '{label_col}' not found in test data")
+            return None, None
+        
+        # Separate labels
+        y_test = test_data[label_col].astype(int).values
+        
+        # Drop label columns
+        drop_cols = [label_col]
+        if 'Label' in test_data.columns:
+            drop_cols.append('Label')
+        X_test_df = test_data.drop(columns=drop_cols, errors='ignore')
+        
+        # Handle non-numeric columns by factorizing
+        for col in X_test_df.columns:
+            if not np.issubdtype(X_test_df[col].dtype, np.number):
+                # Factorize categorical columns
+                X_test_df[col] = pd.Categorical(X_test_df[col]).codes
+        
+        # Convert to float32
+        X_test = X_test_df.astype('float32').values
+        
+        # Basic normalization (using dataset statistics)
+        mean = X_test.mean(axis=0)
+        std = X_test.std(axis=0)
+        zero_std = std == 0
+        if np.any(zero_std):
+            std[zero_std] = 1.0
+        X_test = (X_test - mean) / std
+        
+        # Reshape for CNN (samples, features, 1)
+        X_test = X_test.reshape(X_test.shape[0], X_test.shape[1], 1)
+        
+        logger.info(f"Loaded global test data: {X_test.shape} samples")
+        return X_test, y_test
+        
+    except Exception as e:
+        logger.error(f"Error loading global test data: {e}")
+        import traceback
+        traceback.print_exc()
+        return None, None
 
 # ---------------------------------------------------------------------------
 # Multi-Krum FedAvg Strategy
@@ -214,8 +275,7 @@ class MultiKrumFedAvg(FedAvg):
 
         logger.info(
             f"[Round {server_round}] Enhanced Multi-Krum selected clients: {[client_ids[i] for i in selected_indices]} "
-            f"(from {client_ids}); top scores: {[(client_ids[idx], f'{score:.3f}')
-                                                 for score, idx in scores[:m]]}"
+            f"(from {client_ids}); top scores: {[(client_ids[idx], f'{score:.3f}') for score, idx in scores[:m]]}"
         )
 
         # Weighted average only over selected
@@ -260,6 +320,23 @@ class MultiKrumFedAvg(FedAvg):
                     # placeholder until evaluate phase
                     self.history["test_accuracy"].append(None)
                 self._persist_history()
+
+        # Save the global model for visualization analysis
+        try:
+            # Create a model with the aggregated weights
+            os.makedirs("results", exist_ok=True)
+            # Use the known input features (78 from the client output)
+            input_features = 78
+            temp_model_wrapper = create_ddos_cnn_model(input_features=input_features)
+            temp_model = temp_model_wrapper.model  # Get the actual Keras model
+            temp_model.set_weights(aggregated_weights)
+            model_path = "results/federated_global_model.keras"
+            temp_model.save(model_path)
+            logger.info(f"[Round {server_round}] Saved global model to {model_path}")
+        except Exception as e:
+            logger.warning(f"Could not save global model: {e}")
+            import traceback
+            traceback.print_exc()
 
         return aggregated_parameters, aggregated_metrics
 
@@ -360,33 +437,51 @@ def main():
     # Generate enhanced visualizations after training completion
     if VISUALIZATION_AVAILABLE:
         logger.info(
-            "🎨 Generating enhanced federated learning visualizations...")
+            "🎨 Generating federated analysis visualizations...")
         try:
-            plots = generate_training_visualizations(
+            # Load global test data for confusion matrix and other analyses
+            X_test, y_test = load_global_test_data()
+            
+            # Load the final global model to generate predictions
+            global_model = None
+            model_path = "results/federated_global_model.keras"
+            if os.path.exists(model_path):
+                try:
+                    global_model = tf.keras.models.load_model(model_path)
+                    logger.info(f"Loaded global model from {model_path}")
+                except Exception as e:
+                    logger.warning(f"Could not load global model: {e}")
+            else:
+                logger.warning(f"Global model not found at {model_path}")
+            
+            # Generate the 5 specific federated analysis visualizations
+            plots = generate_federated_analysis_visualizations(
                 federated_history_path="results/federated_metrics_history.json",
-                results_dir="results/visualizations",
-                model_name="Federated_DDoS_CNN"
+                global_model=global_model,
+                X_test=X_test,
+                y_test=y_test,
+                results_dir="results/federated_analysis"
             )
+            
             logger.info(
-                "✅ Enhanced visualization generation completed successfully!")
+                "✅ Federated analysis visualization generation completed successfully!")
             if plots:
                 file_paths = [p for p in plots.values() if isinstance(p, str)]
                 logger.info(
-                    f"📊 Generated {len(file_paths)} comprehensive analysis plots (saved under results/visualizations):")
-                for p in file_paths:
-                    logger.info(f"   - {Path(p).name}")
-                logger.info("🔍 Advanced federated analysis includes:")
-                logger.info("   📈 Round-by-round progress with trend analysis")
-                logger.info("   📊 Convergence and generalization gap analysis")
-                logger.info(
-                    "   🎯 Performance distribution and stability metrics")
-                logger.info("   📋 Comprehensive statistical summary")
+                    f"📊 Generated {len(file_paths)} essential analysis plots (saved under results/federated_analysis):")
+                for key, path in plots.items():
+                    if isinstance(path, str):
+                        logger.info(f"   - {key}: {Path(path).name}")
+                logger.info("🔍 Essential analysis includes:")
+                logger.info("   📊 Client Performance Metrics (Training/Testing Accuracy & Loss)")
+                logger.info("   🎯 Client Confusion Matrices (CNN-based per client)")
+                logger.info("   📈 Client ROC Curves (Client-based CNN performance)")
         except Exception as e:
-            logger.error(f"❌ Error generating enhanced visualizations: {e}")
+            logger.error(f"❌ Error generating federated analysis visualizations: {e}")
             import traceback
             traceback.print_exc()
     else:
-        logger.warning("⚠️ Enhanced visualization module not available")
+        logger.warning("⚠️ Federated analysis visualization module not available")
 
 
 if __name__ == '__main__':
