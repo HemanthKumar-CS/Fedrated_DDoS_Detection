@@ -16,7 +16,7 @@ Usage:
 """
 
 import tensorflow as tf
-from src.visualization.training_visualizer import FederatedTrainingVisualizer
+from src.visualization.training_visualizer import generate_essential_visualizations
 import os
 import sys
 import numpy as np
@@ -145,59 +145,38 @@ def demo_enhanced_visualizations():
     history = create_demo_training_history()
     X_test, y_test = create_demo_test_data()
 
-    # Initialize enhanced visualizer
-    logger.info("🎨 Initializing Enhanced Visualization System...")
-    visualizer = FederatedTrainingVisualizer(results_dir="results")
-
-    # Check if federated history exists
-    fed_history_path = "results/federated_metrics_history.json"
-    if not Path(fed_history_path).exists():
-        logger.info("📊 Creating demo federated history...")
-        # Create demo federated history
-        demo_fed_history = {
-            "train_accuracy": [0.75, 0.82, 0.86, 0.88, 0.90, 0.91, 0.92, 0.92, 0.93, 0.93],
-            "test_accuracy": [0.72, 0.78, 0.81, 0.83, 0.85, 0.86, 0.86, 0.87, 0.87, 0.87]
-        }
-
-        import json
-        with open(fed_history_path, 'w') as f:
-            json.dump(demo_fed_history, f, indent=2)
-
-    # Generate all enhanced visualizations
-    logger.info("🚀 Generating comprehensive visualization suite...")
+    # Generate essential visualizations
+    logger.info("🚀 Generating essential visualizations...")
 
     try:
-        plots = visualizer.generate_all_plots(
+        plots = generate_essential_visualizations(
             model=model,
             history=history,
             X_test=X_test,
             y_test=y_test,
-            federated_history_path=fed_history_path,
-            model_name="Demo_Enhanced_DDoS_CNN"
+            federated_history=None,  # Could add federated history object here
+            results_dir="results"
         )
 
-        logger.info("✅ Enhanced visualization demo completed successfully!")
+        logger.info("✅ Essential visualization demo completed successfully!")
         logger.info("=" * 60)
-        logger.info(
-            f"📊 Generated {len(plots)} comprehensive visualization plots:")
+        logger.info(f"📊 Generated essential visualization plots:")
 
-        for plot in plots:
-            plot_name = Path(plot).name
-            logger.info(f"   📈 {plot_name}")
+        for key, path in plots.items():
+            if isinstance(path, str):
+                plot_name = Path(path).name
+                logger.info(f"   📈 {plot_name}")
 
         logger.info("")
-        logger.info("🔍 Enhanced Visualization Features Demonstrated:")
-        logger.info("   📊 Enhanced Training History Analysis")
-        logger.info("     - Loss/accuracy curves with trend analysis")
-        logger.info("     - Generalization gap analysis")
-        logger.info("     - Learning rate scheduling visualization")
-        logger.info("     - Precision/recall tracking")
-        logger.info("     - Training efficiency metrics")
-        logger.info("")
-        logger.info("   🎯 Comprehensive Model Performance Analysis")
-        logger.info("     - Detailed confusion matrix with percentages")
-        logger.info("     - ROC curve with optimal threshold marking")
-        logger.info("     - Precision-recall curve analysis")
+        logger.info("🔍 Essential Visualization Features Demonstrated:")
+        logger.info("   📊 Training and Testing Accuracy")
+        logger.info("   📊 Training and Testing Loss") 
+        logger.info("   📊 Classification Report")
+        logger.info("   📊 Confusion Matrix with Percentages")
+        logger.info("   📊 ROC Curve")
+        logger.info("   📊 Federated Learning Stats (if available)")
+        logger.info("   📊 Federated Learning Progress with Trend")
+        logger.info("   📊 Convergence Analysis")
         logger.info("     - Prediction score distribution")
         logger.info("     - Threshold analysis and optimization")
         logger.info("     - Class-wise performance comparison")
@@ -208,25 +187,9 @@ def demo_enhanced_visualizations():
         logger.info("     - Round-by-round progress with trends")
         logger.info("     - Convergence analysis")
         logger.info("     - Generalization gap tracking")
-        logger.info("     - Performance heatmaps")
-        logger.info("     - Statistical summaries")
-        logger.info("     - Learning stability analysis")
         logger.info("")
-        logger.info("   📋 Detailed Summary Dashboard")
-        logger.info("     - Comprehensive performance metrics")
-        logger.info("     - Security-focused analysis")
-        logger.info("     - Federated learning insights")
-        logger.info("     - Actionable recommendations")
-        logger.info("")
-        logger.info("   📝 Performance Reports")
-        logger.info("     - Detailed markdown reports")
-        logger.info("     - Executive summaries")
-        logger.info("     - Technical recommendations")
-
-        logger.info("")
-        logger.info(f"📁 All visualizations saved to: results/visualizations/")
-        logger.info(
-            "🎉 Demo completed! Check the generated plots for enhanced insights.")
+        logger.info(f" All visualizations saved to: results/")
+        logger.info("🎉 Demo completed! Check the generated plots for essential insights.")
 
         return plots
 
@@ -239,18 +202,21 @@ def demo_enhanced_visualizations():
 
 def main():
     """Main demo function."""
-    print("🎨 Enhanced DDoS Detection Visualization Demo")
+    print("🎨 Essential DDoS Detection Visualization Demo")
     print("=" * 60)
     print("")
-    print("This demo showcases the advanced visualization capabilities")
-    print("that have been added to the federated DDoS detection system.")
+    print("This demo showcases the essential visualization capabilities")
+    print("for the federated DDoS detection system.")
     print("")
     print("Features demonstrated:")
-    print("• Enhanced training history analysis")
-    print("• Comprehensive model performance metrics")
-    print("• Advanced federated learning insights")
-    print("• Detailed summary dashboards")
-    print("• Performance reports")
+    print("• Training and testing accuracy curves")
+    print("• Training and testing loss curves")
+    print("• Classification report visualization")
+    print("• Confusion matrix with percentages")
+    print("• ROC curve analysis")
+    print("• Federated learning statistics")
+    print("• Federated learning progress with trend")
+    print("• Convergence analysis")
     print("")
 
     input("Press Enter to start the demo...")
@@ -260,16 +226,19 @@ def main():
     if plots:
         print("")
         print("✅ Demo completed successfully!")
-        print(f"📊 Generated {len(plots)} visualization plots")
-        print("📁 Check results/visualizations/ for all generated files")
+        print(f"📊 Generated essential visualization plots")
+        print("📁 Check results/ for all generated files")
         print("")
-        print("🔍 Key improvements over basic visualizations:")
-        print("• Much more detailed confusion matrix analysis")
-        print("• Advanced threshold optimization")
-        print("• Security-focused metrics (attack detection, false alarms)")
-        print("• Comprehensive federated learning insights")
-        print("• Professional summary dashboards")
-        print("• Actionable recommendations")
+        print("🔍 Essential visualizations include:")
+        print("• 01_accuracy_curves.png - Training/Testing Accuracy")
+        print("• 02_loss_curves.png - Training/Testing Loss")
+        print("• 03_classification_report.png - Per-class Metrics")
+        print("• 04_confusion_matrix.png - Confusion Matrix with %")
+        print("• 05_roc_curve.png - ROC Curve")
+        print("• 06_federated_accuracy.png - Federated Accuracy")
+        print("• 07_federated_loss.png - Federated Loss")
+        print("• 08_federated_progress_trend.png - Progress with Trend")
+        print("• 09_convergence_analysis.png - Convergence Analysis")
     else:
         print("❌ Demo encountered errors. Check the logs above.")
 
