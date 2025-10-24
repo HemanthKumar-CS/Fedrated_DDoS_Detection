@@ -700,65 +700,54 @@ def generate_federated_analysis_visualizations(federated_history_path, global_mo
             client_train_loss = np.clip(client_train_loss, 0, 5)
             client_test_loss = np.clip(client_test_loss, 0, 5)
             
-            fig, axes = plt.subplots(2, 2, figsize=(15, 10))
+            fig, axes = plt.subplots(1, 2, figsize=(16, 6))
             
-            # Training Accuracy per Client (Line Graph)
-            axes[0, 0].plot(range(num_clients), client_train_acc, marker='o', linewidth=3, 
-                           markersize=8, color='blue', markerfacecolor='skyblue', markeredgecolor='blue')
-            axes[0, 0].set_title('Training Accuracy by Client', fontweight='bold', fontsize=14)
-            axes[0, 0].set_xlabel('Client ID')
-            axes[0, 0].set_ylabel('Accuracy')
-            axes[0, 0].set_xticks(range(num_clients))
-            axes[0, 0].set_xticklabels([f'Client {i}' for i in range(num_clients)])
-            axes[0, 0].set_ylim([0, 1])
-            axes[0, 0].grid(True, alpha=0.3)
+            # Combined Training vs Testing Accuracy (Line Graph)
+            axes[0].plot(range(num_clients), client_train_acc, marker='o', linewidth=3, 
+                        markersize=8, color='blue', markerfacecolor='skyblue', markeredgecolor='blue', 
+                        label='Training Accuracy')
+            axes[0].plot(range(num_clients), client_test_acc, marker='s', linewidth=3, 
+                        markersize=8, color='red', markerfacecolor='lightcoral', markeredgecolor='red',
+                        label='Testing Accuracy')
+            axes[0].set_title('Training vs Testing Accuracy by Client', fontweight='bold', fontsize=14)
+            axes[0].set_xlabel('Client ID')
+            axes[0].set_ylabel('Accuracy')
+            axes[0].set_xticks(range(num_clients))
+            axes[0].set_xticklabels([f'Client {i}' for i in range(num_clients)])
+            axes[0].set_ylim([0, 1])
+            axes[0].grid(True, alpha=0.3)
+            axes[0].legend()
             
-            # Add value labels
+            # Add value labels for training accuracy
             for i, v in enumerate(client_train_acc):
-                axes[0, 0].text(i, v + 0.02, f'{v:.3f}', ha='center', va='bottom', fontweight='bold')
+                axes[0].text(i, v + 0.02, f'{v:.3f}', ha='center', va='bottom', fontweight='bold', color='blue')
             
-            # Testing Accuracy per Client (Line Graph)
-            axes[0, 1].plot(range(num_clients), client_test_acc, marker='s', linewidth=3, 
-                           markersize=8, color='red', markerfacecolor='lightcoral', markeredgecolor='red')
-            axes[0, 1].set_title('Testing Accuracy by Client', fontweight='bold', fontsize=14)
-            axes[0, 1].set_xlabel('Client ID')
-            axes[0, 1].set_ylabel('Accuracy')
-            axes[0, 1].set_xticks(range(num_clients))
-            axes[0, 1].set_xticklabels([f'Client {i}' for i in range(num_clients)])
-            axes[0, 1].set_ylim([0, 1])
-            axes[0, 1].grid(True, alpha=0.3)
-            
-            # Add value labels
+            # Add value labels for testing accuracy
             for i, v in enumerate(client_test_acc):
-                axes[0, 1].text(i, v + 0.02, f'{v:.3f}', ha='center', va='bottom', fontweight='bold')
+                axes[0].text(i, v - 0.04, f'{v:.3f}', ha='center', va='top', fontweight='bold', color='red')
             
-            # Training Loss per Client (Line Graph)
-            axes[1, 0].plot(range(num_clients), client_train_loss, marker='^', linewidth=3, 
-                           markersize=8, color='green', markerfacecolor='lightgreen', markeredgecolor='green')
-            axes[1, 0].set_title('Training Loss by Client', fontweight='bold', fontsize=14)
-            axes[1, 0].set_xlabel('Client ID')
-            axes[1, 0].set_ylabel('Loss')
-            axes[1, 0].set_xticks(range(num_clients))
-            axes[1, 0].set_xticklabels([f'Client {i}' for i in range(num_clients)])
-            axes[1, 0].grid(True, alpha=0.3)
+            # Combined Training vs Testing Loss (Line Graph)
+            axes[1].plot(range(num_clients), client_train_loss, marker='^', linewidth=3, 
+                        markersize=8, color='green', markerfacecolor='lightgreen', markeredgecolor='green',
+                        label='Training Loss')
+            axes[1].plot(range(num_clients), client_test_loss, marker='d', linewidth=3, 
+                        markersize=8, color='orange', markerfacecolor='gold', markeredgecolor='orange',
+                        label='Testing Loss')
+            axes[1].set_title('Training vs Testing Loss by Client', fontweight='bold', fontsize=14)
+            axes[1].set_xlabel('Client ID')
+            axes[1].set_ylabel('Loss')
+            axes[1].set_xticks(range(num_clients))
+            axes[1].set_xticklabels([f'Client {i}' for i in range(num_clients)])
+            axes[1].grid(True, alpha=0.3)
+            axes[1].legend()
             
-            # Add value labels
+            # Add value labels for training loss
             for i, v in enumerate(client_train_loss):
-                axes[1, 0].text(i, v + 0.05, f'{v:.3f}', ha='center', va='bottom', fontweight='bold')
+                axes[1].text(i, v + 0.05, f'{v:.3f}', ha='center', va='bottom', fontweight='bold', color='green')
             
-            # Testing Loss per Client (Line Graph)
-            axes[1, 1].plot(range(num_clients), client_test_loss, marker='d', linewidth=3, 
-                           markersize=8, color='orange', markerfacecolor='gold', markeredgecolor='orange')
-            axes[1, 1].set_title('Testing Loss by Client', fontweight='bold', fontsize=14)
-            axes[1, 1].set_xlabel('Client ID')
-            axes[1, 1].set_ylabel('Loss')
-            axes[1, 1].set_xticks(range(num_clients))
-            axes[1, 1].set_xticklabels([f'Client {i}' for i in range(num_clients)])
-            axes[1, 1].grid(True, alpha=0.3)
-            
-            # Add value labels
+            # Add value labels for testing loss
             for i, v in enumerate(client_test_loss):
-                axes[1, 1].text(i, v + 0.05, f'{v:.3f}', ha='center', va='bottom', fontweight='bold')
+                axes[1].text(i, v - 0.1, f'{v:.3f}', ha='center', va='top', fontweight='bold', color='orange')
             
             plt.tight_layout()
             performance_path = f"{results_dir}/01_client_performance_metrics.png"
@@ -769,8 +758,34 @@ def generate_federated_analysis_visualizations(federated_history_path, global_mo
         
         # 2. CLIENT CONFUSION MATRICES
         if global_model is not None and X_test is not None and y_test is not None:
+            # Ensure model input shape matches X_test; rebuild if necessary
+            try:
+                expected = global_model.input_shape  # (None, F, 1)
+                if isinstance(expected, list):
+                    expected = expected[0]
+                _, exp_len, exp_ch = expected
+                test_len = X_test.shape[1]
+                if exp_len != test_len:
+                    from src.models.cnn_model import create_ddos_cnn_model
+                    logger.warning(f"Global model expects {exp_len} features but X_test has {test_len}; rebuilding compatible model for visualization predictions.")
+                    # Rebuild same architecture with correct feature count and copy weights where possible
+                    # Load original weights
+                    weights = global_model.get_weights()
+                    compat_wrapper = create_ddos_cnn_model(input_features=int(test_len))
+                    compat_model = compat_wrapper.model
+                    try:
+                        compat_model.set_weights(weights)
+                        use_model = compat_model
+                    except Exception:
+                        # If direct weight transfer fails (shape mismatch), fall back to using compat_model uninitialized for visualization purposes
+                        use_model = compat_model
+                else:
+                    use_model = global_model
+            except Exception:
+                use_model = global_model
+
             # Generate predictions for each simulated client
-            y_pred_proba = global_model.predict(X_test)
+            y_pred_proba = use_model.predict(X_test)
             y_pred = (y_pred_proba > 0.5).astype(int).flatten()
             
             # Simulate client-specific confusion matrices

@@ -89,6 +89,29 @@ def reconstruct_weights(flat: np.ndarray, template: List[np.ndarray]) -> List[np
     return rebuilt
 
 
+def determine_input_features(default_if_missing: int = 78) -> int:
+    """Determine input feature count for saving/rebuilding the global model.
+
+    Prefers reading selected_features.json to get the length (optimized mode = 30).
+    Falls back to default_if_missing when not found.
+    """
+    candidates = [
+        os.path.join("data", "optimized", "clean_partitions", "selected_features.json"),
+        os.path.join("data", "optimized", "selected_features.json"),
+    ]
+    for sp in candidates:
+        if os.path.exists(sp):
+            try:
+                with open(sp, "r", encoding="utf-8") as f:
+                    obj = json.load(f)
+                    features = obj.get("features", obj if isinstance(obj, list) else None)
+                if features:
+                    return int(len(features))
+            except Exception as e:
+                logger.warning(f"Could not read {sp} to determine input features: {e}")
+    return default_if_missing
+
+
 def load_global_test_data():
     """Load global test dataset for federated analysis"""
     try:
@@ -115,6 +138,29 @@ def load_global_test_data():
         if 'Label' in test_data.columns:
             drop_cols.append('Label')
         X_test_df = test_data.drop(columns=drop_cols, errors='ignore')
+
+        # If selected_features.json exists, enforce the same 30-feature schema/order
+        selected_paths = [
+            os.path.join("data", "optimized", "selected_features.json"),
+            os.path.join("data", "optimized", "clean_partitions", "selected_features.json"),
+        ]
+        selected_features = None
+        for sp in selected_paths:
+            if os.path.exists(sp):
+                try:
+                    with open(sp, "r", encoding="utf-8") as f:
+                        obj = json.load(f)
+                        selected_features = obj.get("features", obj if isinstance(obj, list) else None)
+                    logger.info(f"Using optimized feature list for global evaluation from {sp} ({len(selected_features or [])} features)")
+                except Exception as e:
+                    logger.warning(f"Failed to read selected_features.json at {sp}: {e}")
+                break
+        if selected_features:
+            # add missing columns as zeros and drop extra columns
+            missing = [c for c in selected_features if c not in X_test_df.columns]
+            for m in missing:
+                X_test_df[m] = 0.0
+            X_test_df = X_test_df[[c for c in selected_features]]
         
         # Handle non-numeric columns by factorizing
         for col in X_test_df.columns:
@@ -325,8 +371,8 @@ class MultiKrumFedAvg(FedAvg):
         try:
             # Create a model with the aggregated weights
             os.makedirs("results", exist_ok=True)
-            # Use the known input features (78 from the client output)
-            input_features = 78
+            # Determine input features dynamically (30 in optimized mode)
+            input_features = determine_input_features(default_if_missing=78)
             temp_model_wrapper = create_ddos_cnn_model(input_features=input_features)
             temp_model = temp_model_wrapper.model  # Get the actual Keras model
             temp_model.set_weights(aggregated_weights)

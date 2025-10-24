@@ -18,6 +18,7 @@ import pandas as pd
 import warnings
 import flwr as fl
 import tensorflow as tf
+import json
 
 # Local imports
 sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
@@ -41,6 +42,59 @@ def load_partition(data_dir: str, cid: int):
 
     train_df = pd.read_csv(train_path)
     test_df = pd.read_csv(test_path)
+
+    # If an optimized feature list exists, enforce it (e.g., 30 features)
+    # Search order: data_dir/selected_features.json -> parent dir -> data/optimized
+    selected_paths = [
+        os.path.join(data_dir, "selected_features.json"),
+        os.path.join(os.path.dirname(data_dir.rstrip(os.sep)), "selected_features.json"),
+        os.path.join("data", "optimized", "selected_features.json"),
+    ]
+    selected_features: List[str] | None = None
+    for sp in selected_paths:
+        if os.path.exists(sp):
+            try:
+                with open(sp, "r", encoding="utf-8") as f:
+                    obj = json.load(f)
+                    # accept either {"features": [...]} or a simple list
+                    selected_features = obj.get("features", obj if isinstance(obj, list) else None)
+                logger.info(
+                    f"Using optimized feature list from {sp} ({len(selected_features or [])} features)",
+                    extra={'client_id': cid}
+                )
+            except Exception as e:
+                logger.warning(f"Failed to read selected_features.json at {sp}: {e}", extra={'client_id': cid})
+            break
+
+    if selected_features:
+        # Ensure exact order and presence; add missing as zeros; drop extras
+        def enforce_features(df: pd.DataFrame) -> pd.DataFrame:
+            out = df.copy()
+            missing = [c for c in selected_features or [] if c not in out.columns]
+            for m in missing:
+                out[m] = 0.0
+            # Reorder and keep only selected
+            out = out[[c for c in selected_features or []]]
+            return out
+        # Separate labels first to avoid accidental drop
+        label_col = 'Binary_Label'
+        lbl_train = train_df[label_col] if label_col in train_df.columns else None
+        lbl_test = test_df[label_col] if label_col in test_df.columns else None
+        # Drop label columns before enforcing selected feature set
+        drop_cols_tmp = [col for col in ['Label', 'Binary_Label'] if col in train_df.columns]
+        X_train_df = train_df.drop(columns=drop_cols_tmp, errors='ignore')
+        drop_cols_tmp = [col for col in ['Label', 'Binary_Label'] if col in test_df.columns]
+        X_test_df = test_df.drop(columns=drop_cols_tmp, errors='ignore')
+        # Enforce schema
+        X_train_df = enforce_features(X_train_df)
+        X_test_df = enforce_features(X_test_df)
+        # Restore labels
+        if lbl_train is not None:
+            train_df = X_train_df.copy()
+            train_df['Binary_Label'] = lbl_train.values.astype(int)
+        if lbl_test is not None:
+            test_df = X_test_df.copy()
+            test_df['Binary_Label'] = lbl_test.values.astype(int)
 
     label_col = 'Binary_Label'
     if label_col not in train_df.columns:
@@ -170,12 +224,18 @@ def main():
     parser.add_argument('--cid', type=int, required=True, help='Client ID')
     # Use loopback for connecting (0.0.0.0 is only for binding on server side)
     parser.add_argument('--server', type=str, default='127.0.0.1:8080', help='Server address host:port (use localhost/127.0.0.1)')
-    parser.add_argument('--data_dir', type=str, default='data/optimized', help='Directory with client_#_train.csv')
+    parser.add_argument('--data_dir', type=str, default='data/optimized/clean_partitions', help='Directory with client_#_train.csv')
     parser.add_argument('--epochs', type=int, default=3)
     parser.add_argument('--batch', type=int, default=32)
     args = parser.parse_args()
 
     client = DDoSClient(args.cid, args.data_dir, epochs=args.epochs, batch_size=args.batch)
+    # Informative: feature count check
+    feat_count = client.X_train.shape[1]
+    if feat_count != 30:
+        logger.warning(f"Active feature count is {feat_count}, expected 30 in optimized mode.", extra={'client_id': args.cid})
+    else:
+        logger.info("Using optimized 30-feature schema.", extra={'client_id': args.cid})
     logger.info(f"Connecting to server {args.server}", extra={'client_id': args.cid})
     # New recommended Flower API (avoids deprecated start_numpy_client warnings)
     fl.client.start_client(server_address=args.server, client=client.to_client())
