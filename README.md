@@ -1,366 +1,358 @@
-# 🛡️ Decentralized Federated DDoS Detection System
+# Federated DDoS Detection
 
-A complete **decentralized** federated learning implementation for DDoS attack detection using 1D CNN and the CICDDoS2019 dataset.
+## 🚀 **OPTIMIZED 30-FEATURE FEDERATED LEARNING PIPELINE**
 
-## 📋 Project Overview
+Advanced DDoS detection system with **optimized 30-feature federated learning** using 1D-CNN and robust Multi-Krum aggregation. Features intelligent feature selection, automatic visualization generation, and comprehensive model analysis.
 
-This system implements:
+## 🎯 **Major Updates & Optimizations**
 
-- **1D CNN Model** for network traffic classification (29 features → 5 attack types)
-- **Decentralized Federated Learning** using Flower framework with 4 distributed nodes
-- **Non-IID Data Distribution** simulating real-world decentralized scenarios
-- **Comprehensive Evaluation** comparing traditional centralized vs decentralized federated approaches
+### ✅ **30-Feature Optimization Pipeline**
+- **Intelligent Feature Selection**: Automated top-30 feature selection using variance filtering, correlation pruning, and mutual information ranking
+- **Unified Schema Enforcement**: All clients use exactly the same 30 features in the same order
+- **Performance Boost**: Reduced from 78+ features to optimized 30 features for faster training and better generalization
+- **Auto-Detection**: System automatically detects and applies optimized feature schema when `selected_features.json` is present
 
-### 🎯 Supported Attack Types
+### ✅ **Enhanced Visualization System**
+- **Essential Federated Analysis**: 3 key visualizations focusing on client-specific performance
+  - Client Performance Metrics (Training vs Testing Accuracy & Loss as line graphs)
+  - Client Confusion Matrices (CNN-based per client)
+  - Client ROC Curves (Client-based CNN performance)
+- **Line Graph Format**: Training/testing metrics displayed as comparative line graphs instead of separate bar charts
+- **Robust Model Compatibility**: Automatic model rebuilding for visualization if input shapes mismatch
 
-- **BENIGN**: Normal network traffic
-- **DrDoS_DNS**: DNS-based Distributed Reflection DoS
-- **DrDoS_LDAP**: LDAP-based Distributed Reflection DoS
-- **DrDoS_MSSQL**: MSSQL-based Distributed Reflection DoS
-- **DrDoS_NetBIOS**: NetBIOS-based Distributed Reflection DoS
+### ✅ **Robust Federated Architecture**
+- **Multi-Krum Aggregation**: Byzantine-fault tolerant aggregation with client selection based on mutual distances
+- **Dynamic Feature Detection**: Server and clients automatically align to optimized feature schema
+- **Shape-Safe Operations**: Intelligent handling of model input/output shape mismatches
+- **Enhanced Logging**: Comprehensive feature count validation and optimization status logging
 
-## 🚀 Quick Start
+## Key Features
 
-### 1. Environment Setup
+- **Optimized 30-Feature Pipeline**: Intelligent feature selection and unified schema enforcement
+- **Robust Federated Learning**: Multi-Krum + FedAvg with Byzantine fault tolerance
+- **Advanced Visualization**: Essential client-focused analysis with line graph comparisons
+- **Shape-Robust Operations**: Automatic model reconstruction for compatibility
+- **Comprehensive Analysis**: Post-training evaluation and model recommendations
+- **Reproducible Results**: All artifacts saved with detailed metrics and visualizations
 
-```bash
-# Clone or navigate to project directory
-cd federated-ddos-detection
+## 🚀 Quickstart (Optimized 30-Feature Mode)
 
-# Create virtual environment
-python -m venv fl_env
+### Prerequisites
+1. **Activate Virtual Environment**
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
 
-# Activate environment (Windows)
-fl_env\Scripts\activate
-
-# Install dependencies
+2. **Install Dependencies**
+```powershell
 pip install -r requirements.txt
 ```
 
-### 2. Data Preparation
+3. **Verify Optimized Data** (already provided)
+- Data location: `data/optimized/clean_partitions/`
+- Feature schema: `data/optimized/clean_partitions/selected_features.json` (30 features)
+- Client data: `client_0..3_{train,test}.csv` (30 features + Binary_Label + Label)
 
-The optimized dataset is already prepared in `data/optimized/` with:
+### 🎯 **Optimized Federated Learning (RECOMMENDED)**
 
-### 2. Data Preparation
+The system now defaults to **30-feature optimized mode** for maximum performance.
 
-Clean, deduplicated, globally split client partitions are already provided under:
-`data/optimized/clean_partitions/`
-
-Each client has two files: `client_<cid>_train.csv` and `client_<cid>_test.csv` (cid ∈ {0,1,2,3}). These were produced during earlier cleanup (duplicate removal and leakage mitigation). No regeneration scripts are retained in the trimmed repository; treat the partitions as authoritative for experiments.
-
-Use them directly for centralized or federated runs (examples below).
-
-### 3. Run the System
-### Federated Setup (Current Implementation)
-
-- **Framework**: Flower (flwr)
-- **Strategy**: FedAvg + Multi-Krum variant (robust subset selection) in standalone `server.py`
-- **Aggregation Metrics**: Separately records train vs test accuracy per round (`results/federated_metrics_history.json`)
-- **Clients**: `client.py` standalone process (NumPyClient) pointing to clean partitions
-- **Data Integrity**: New pipeline eliminates train/test leakage and duplicate rows
+**Start Server:**
+```powershell
+python server.py --rounds 10 --address 127.0.0.1:8080
 ```
 
-This provides an interactive menu with options for:
-
-- Testing individual components
-**Standalone Robust FL (current):**
-
-Terminal 1 (server, e.g. 5 rounds):
-
-```bash
-python server.py --rounds 5 --address 127.0.0.1:8080
+**Start Clients** (in separate terminals):
+```powershell
+python client.py --cid 0 --epochs 5
+python client.py --cid 1 --epochs 5  
+python client.py --cid 2 --epochs 5
+python client.py --cid 3 --epochs 5
 ```
 
-Terminals 2–5 (clients pointing to clean partitions):
+**Expected Output:**
+- Client logs: `"Using optimized 30-feature schema."`
+- Server logs: `"Using optimized feature list for global evaluation from ... (30 features)"`
+- Model input shape: `(None, 30, 1)`
+- Generated visualizations:
+  - `results/federated_analysis/01_client_performance_metrics.png`
+  - `results/federated_analysis/02_client_confusion_matrices.png`
+  - `results/federated_analysis/03_client_roc_curves.png`
 
-```bash
-python client.py --cid 0 --data_dir data/optimized/clean_partitions
-python client.py --cid 1 --data_dir data/optimized/clean_partitions
-python client.py --cid 2 --data_dir data/optimized/clean_partitions
-python client.py --cid 3 --data_dir data/optimized/clean_partitions
+### 🔧 **Feature Optimization Management**
+
+**Regenerate 30-Feature Schema:**
+```powershell
+python scripts/prepare_optimized_federated_dataset.py --input-dir data/optimized/clean_partitions --output-dir data/optimized/clean_partitions --clients 4 --k 30 --label-col Binary_Label
 ```
 
-Check persisted metrics:
-
-```bash
-type results/federated_metrics_history.json
-```
-- Running traditional centralized baseline (for comparison)
-- Quick decentralized federated demo
-- Full system demonstration
-
-#### Option B: Direct Commands
-
-**Test CNN Model:**
-
-```bash
-python src/models/trainer.py --test
+**Verify Feature Count:**
+```python
+import pandas as pd
+df = pd.read_csv("data/optimized/clean_partitions/client_0_train.csv")
+print(f"Total columns: {len(df.columns)}")  # Should be 32 (30 features + Binary_Label + Label)
+print(f"Feature columns: {len(df.columns) - 2}")  # Should be 30
 ```
 
-**Run Centralized Binary Baseline (current maintained baseline):**
+### 📊 **Legacy Options (Non-Optimized)**
 
-```bash
+**Centralized Training:**
+```powershell
 python train_centralized.py --data_dir data/optimized/clean_partitions --epochs 25
 ```
 
-## 📁 Project Structure
-
-```
-federated-ddos-detection/
-├── 📊 data/
-│   ├── optimized/              # Decentralized node datasets
-│   │   ├── client_0_train.csv  # Node 0 training data
-│   │   ├── client_0_test.csv   # Node 0 test data
-│   │   └── ...                 # Nodes 1-3 data
-│   └── raw/                    # Original dataset archive
-├── 🧠 src/
-│   ├── models/
-│   │   ├── cnn_model.py        # 1D CNN model implementation
-│   │   └── trainer.py          # Model training pipeline
-│   ├── federated/
-│   │   ├── flower_client.py    # Decentralized learning node
-│   │   └── flower_server.py    # Coordination server (for aggregation only)
-│   ├── data/                   # Data processing modules
-│   └── evaluation/             # Evaluation utilities
-├── 📝 (scripts removed)         # Legacy helper scripts pruned for minimal core
-├── 📓 notebooks/
-│   └── data_analysis.ipynb     # Jupyter analysis notebook
-├── server.py                   # Standalone FL server (Multi-Krum FedAvg)
-├── client.py                   # Standalone FL client
-├── train_centralized.py        # Centralized baseline training
-└── 📋 requirements.txt         # Dependencies
+**Enhanced Training:**
+```powershell
+python train_enhanced.py
 ```
 
-## 🔧 Technical Details
-
-### Model Architecture
-
-- **Input**: 29 numerical features (network traffic statistics)
-- **Architecture**: 1D CNN with 3 convolutional layers + dense layers
-- **Output**: 5-class softmax classification
-- **Optimization**: Adam optimizer with adaptive learning rate
-
-### Decentralized Federated Setup
-
-- **Framework**: Flower (flwr)
-- **Strategy**: FedAvg + Multi-Krum subset selection (robustness) in `server.py`
-- **Nodes**: 4 clients (can extend)
-- **Privacy**: Only model parameters exchanged
-
-### Data Distribution
-
-Each decentralized node has specialized data to simulate real-world scenarios:
-
-- **Node 0**: Balanced across all attack types
-- **Node 1**: Specialized in DNS-based attacks
-- **Node 2**: Specialized in LDAP/MSSQL attacks
-- **Node 3**: Specialized in NetBIOS attacks + benign
-
-## 📊 Performance Metrics
-
-The system tracks:
-
-- **Accuracy**: Overall classification accuracy across decentralized nodes
-- **Per-class Accuracy**: Individual attack type detection rates
-- **Confusion Matrix**: Detailed classification analysis
-- **Federated Rounds**: Training convergence over decentralized rounds
-- **Communication Efficiency**: Model parameter exchange between nodes
-- **Privacy Preservation**: No raw data exposure during training
-
-## 🧪 Testing
-
-### Tests
-Ad-hoc testing scripts were removed. Validate using:
-```bash
-python train_centralized.py --data_dir data/optimized/clean_partitions --epochs 1
-python server.py --rounds 1 --address 127.0.0.1:8080 &
-python client.py --cid 0 --data_dir data/optimized/clean_partitions
+**Federated Simulation:**
+```powershell
+python federated_training.py
 ```
 
-## 📈 Results
+## 📊 **Automatic Visualization & Analysis**
 
-Results are saved in `results/` directory:
+### **Essential Federated Visualizations** (Auto-Generated)
+The system generates **3 essential client-focused visualizations** after each federated training session:
 
-- **Training History**: Loss and accuracy over epochs/rounds for decentralized training
-- **Evaluation Metrics**: Comprehensive performance analysis across nodes
-- **Comparison**: Traditional centralized vs decentralized federated performance
-- **Visualization**: Training curves and confusion matrices
-- **Privacy Analysis**: Data locality and communication efficiency metrics
+1. **Client Performance Metrics** (`01_client_performance_metrics.png`)
+   - **Training vs Testing Accuracy**: Comparative line graphs showing performance across all clients
+   - **Training vs Testing Loss**: Comparative line graphs showing loss trends across all clients
+   - **Format**: Side-by-side line graphs with value labels and legends
 
-## 🛠️ Customization
+2. **Client Confusion Matrices** (`02_client_confusion_matrices.png`)
+   - **Per-Client CNN Performance**: 2x2 grid showing confusion matrix for each of 4 clients
+   - **Heatmap Format**: Color-coded matrices with count annotations
+   - **Binary Classification**: Benign vs Attack classification results
 
-### Modify Model Architecture
+3. **Client ROC Curves** (`03_client_roc_curves.png`)
+   - **ROC Analysis**: ROC curves for each client's CNN performance
+   - **AUC Scores**: Area Under Curve values for performance comparison
+   - **Multi-Client Comparison**: All 4 client ROC curves on single plot
 
-Edit `src/models/cnn_model.py`:
+### **Visualization Features**
+- **Line Graph Format**: Training vs testing metrics displayed as comparative line graphs (not separate bar charts)
+- **Auto-Saved**: All plots automatically saved to `results/federated_analysis/`
+- **High Resolution**: 300 DPI PNG format for publication quality
+- **Comprehensive Logging**: Detailed generation status and file paths logged
 
+### **Legacy Visualizations** (Enhanced Training)
+- Learning curves (loss, accuracy, recall)
+- ROC & Precision-Recall curves with AUC annotations
+- Threshold analysis and optimization curves
+
+## 🏗️ **Architecture & Technical Details**
+
+### **30-Feature Optimization Pipeline**
+```
+Raw Dataset (78+ features) 
+    ↓
+Variance Filtering (remove zero-variance features)
+    ↓
+Correlation Pruning (remove highly correlated features >0.95)
+    ↓
+Mutual Information Ranking (rank by relevance to Binary_Label)
+    ↓
+Top-30 Feature Selection
+    ↓
+Schema Enforcement (exact column order, zero-fill missing, drop extras)
+    ↓
+Client Training (30 features + Binary_Label)
+```
+
+### **Robust Federated Aggregation**
+```
+Client Updates → Multi-Krum Distance Calculation → Client Selection → FedAvg → Global Model
+```
+
+- **Multi-Krum Selection**: Selects subset of mutually closest client updates
+- **Byzantine Tolerance**: Filters out potential malicious/outlier updates
+- **Fallback**: Automatic fallback to FedAvg when insufficient clients
+- **Enhanced Logging**: Detailed aggregation method and client selection logging
+
+### **Shape-Robust Model Operations**
+- **Auto-Detection**: Automatic detection of input feature mismatches
+- **Model Rebuilding**: Intelligent reconstruction of compatible models for visualization
+- **Weight Transfer**: Safe weight copying between models with compatible architectures
+- **Error Handling**: Graceful handling of shape incompatibilities
+
+## 📁 **Repository Structure & Scripts**
+
+| Script/Module                                    | Purpose                                                          | Status      |
+|------------------------------------------------|------------------------------------------------------------------|-------------|
+| **🎯 OPTIMIZED PIPELINE**                      |                                                                  |             |
+| `client.py`                                    | **Optimized federated client** (auto-detects 30-feature schema) | ✅ Updated  |
+| `server.py`                                    | **Robust federated server** (Multi-Krum + shape-safe model saving) | ✅ Updated  |
+| `scripts/prepare_optimized_federated_dataset.py` | **30-feature optimization script** (generates selected_features.json) | ✅ New      |
+| `src/visualization/training_visualizer.py`     | **Enhanced visualization system** (3 essential plots, line graphs) | ✅ Updated  |
+| **CORE TRAINING MODULES**                      |                                                                  |             |
+| `train_centralized.py`                        | Baseline centralized training                                    | ✅ Stable   |
+| `train_enhanced.py`                            | Enhanced architecture with focal loss & threshold optimization  | ✅ Stable   |
+| `federated_training.py`                       | Flower simulation driver (single process)                       | ✅ Stable   |
+| **ANALYSIS & VALIDATION**                      |                                                                  |             |
+| `model_analysis.py`                           | Deep post-training analysis & recommendations                    | ✅ Stable   |
+| `final_realistic_validation.py`               | Final evaluation & comprehensive reporting                       | ✅ Stable   |
+| `validate_test_set.py`                        | Data integrity & distribution validation                         | ✅ Stable   |
+| `prepare_federated_partitions.py`             | Legacy client partition generator                                | ✅ Legacy   |
+
+## 📦 **Data Structure (Optimized)**
+
+```
+data/optimized/clean_partitions/
+├── selected_features.json              # 30-feature schema definition
+├── client_0_train.csv                  # Client 0 training data (30 features + labels)
+├── client_0_test.csv                   # Client 0 test data (30 features + labels)
+├── client_1_train.csv                  # Client 1 training data
+├── client_1_test.csv                   # Client 1 test data
+├── client_2_train.csv                  # Client 2 training data
+├── client_2_test.csv                   # Client 2 test data
+├── client_3_train.csv                  # Client 3 training data
+├── client_3_test.csv                   # Client 3 test data
+├── partition_summary.json              # Partition statistics
+└── clean_build_report.json             # Build process report
+
+data/optimized/
+├── realistic_test.csv                  # Global test dataset (for server evaluation)
+├── realistic_train.csv                 # Global training dataset reference
+└── OPTIMIZATION_SUMMARY.txt            # Optimization process summary
+```
+
+## 🎯 **Artifacts (results/)**
+
+### **Optimized Federated Artifacts**
+- **Models**: `federated_global_model.keras` (30-feature compatible)
+- **Metrics**: `federated_metrics_history.json` (enhanced with aggregation logs)
+- **Visualizations**: 
+  - `federated_analysis/01_client_performance_metrics.png` (line graph comparisons)
+  - `federated_analysis/02_client_confusion_matrices.png` (client-specific matrices)
+  - `federated_analysis/03_client_roc_curves.png` (client ROC comparison)
+
+### **Legacy Training Artifacts**
+- **Models**: `best_enhanced_model.keras`, `centralized_model.keras`
+- **Training JSON**: `enhanced_training_results_<timestamp>.json`, `centralized_training_results.json`
+- **Analysis**: `comprehensive_model_analysis.json`, `advanced_model_analysis.png`
+- **Validation**: `final_realistic_validation_<timestamp>.md/json`
+
+## 🛡️ **Robust Aggregation (Multi-Krum + FedAvg)**
+
+### **Enhanced Byzantine Fault Tolerance**
+The system implements **Enhanced Multi-Krum** aggregation for robust federated learning:
+
+**Algorithm:**
+1. **Distance Calculation**: Compute pairwise squared distances between all client weight updates
+2. **Krum Scoring**: For each client, sum distances to k-nearest neighbors (k = n - f - 2)
+3. **Client Selection**: Select m clients with lowest Krum scores (m = n - f - 2)
+4. **Historical Weighting**: Adjust scores based on client performance history
+5. **FedAvg**: Perform weighted averaging over selected client updates
+
+**Parameters:**
+- `f`: Maximum number of Byzantine (malicious) clients to tolerate
+- `m`: Number of selected updates for averaging
+- **Auto-Fallback**: Falls back to standard FedAvg when client count insufficient (n < 2f + 3)
+
+**Enhanced Features:**
+- **Client Performance History**: Tracks historical accuracy for scoring adjustment
+- **Detailed Logging**: Comprehensive aggregation method and client selection logs
+- **Aggregation Analytics**: Stores round-wise aggregation decisions in metrics history
+
+## 🔧 **Advanced Configuration**
+
+### **Feature Optimization Settings**
 ```python
-def build(self):
-    # Modify CNN layers here
-    self.model.add(Conv1D(filters=64, kernel_size=3, activation='relu'))
-    # Add your custom layers
+# scripts/prepare_optimized_federated_dataset.py parameters
+--k 30                    # Number of features to select
+--input-dir path          # Source directory with client CSVs  
+--output-dir path         # Output directory (can be same as input)
+--clients 4               # Number of clients
+--label-col Binary_Label  # Target column name
 ```
 
-### Adjust Federated Parameters
-
-Tune via CLI flags when starting the server:
-```bash
-python server.py --rounds 10 --f 0 --m -1 --min_fit 4 --min_eval 4 --min_available 4
+### **Server Configuration**
+```python
+# server.py parameters
+--rounds 10               # Number of federated rounds
+--address 127.0.0.1:8080  # Server binding address
+--f 1                     # Byzantine fault tolerance parameter
+--log                     # Enable detailed logging
 ```
-Deeper changes: edit strategy initialization in `server.py`.
 
-### Data Distribution
+### **Client Configuration**
+```python
+# client.py parameters  
+--cid 0                   # Client ID (0-3)
+--epochs 5                # Local training epochs per round
+--batch 32                # Local batch size
+--data_dir path           # Data directory (defaults to optimized clean partitions)
+```
 
-Clean partitions already embedded; no generation script retained. To redesign distribution, recreate a preprocessing script or revert to earlier commit history.
+## 🚨 **Troubleshooting**
 
-## 🐛 Troubleshooting
+### **Common Issues & Solutions**
 
-### Common Issues
+**❌ Error: "expected shape=(None, 78, 1), found shape=(32, 30)"**
+- **Cause**: Model saved with old 78-feature schema but data uses 30 features
+- **Solution**: Re-run federated training to generate new 30-feature compatible model
 
-1. Port in use → change `--address` (both server & clients).
-2. Missing partition file → verify path `data/optimized/clean_partitions` and file name pattern.
-3. All accuracies = 1.0 → confirm using clean partitions (no leakage) & not legacy files.
-4. Connection refused → start server first; confirm host/port.
+**❌ Warning: "Active feature count is X, expected 30 in optimized mode"**
+- **Cause**: `selected_features.json` missing or data not optimized
+- **Solution**: Run optimization script to generate 30-feature schema
 
-## 📚 Documentation
+**❌ Error: "Missing client_*_train.csv"**  
+- **Cause**: Data directory path incorrect
+- **Solution**: Verify `--data_dir data/optimized/clean_partitions` path
 
-- **Context Document**: `context.md` - Technical background
-- **Development Plan**: `DEVELOPMENT_PLAN.md` - Project roadmap
-- **Phase 3 Roadmap**: `PHASE3_ROADMAP.md` - Current implementation
-- **Data Methodology**: `DATA_CLEANUP_METHODOLOGY_REPORT.md`
-- **Workspace Organization**: `WORKSPACE_ORGANIZATION_REPORT.md`
+**❌ Flower server connection issues**
+- **Cause**: Network binding or client connection problems
+- **Solution**: Use `127.0.0.1:8080` for local testing, ensure server starts before clients
 
-## 🤝 Contributing
+### **Validation Commands**
+```powershell
+# Check feature count
+python -c "import pandas as pd; df=pd.read_csv('data/optimized/clean_partitions/client_0_train.csv'); print(f'Features: {len(df.columns)-2}')"
 
-1. Follow the modular architecture
-2. Add comprehensive documentation
-3. Include tests for new features
-4. Update README for new capabilities
+# Verify selected_features.json
+python -c "import json; f=open('data/optimized/clean_partitions/selected_features.json'); print(f'Selected: {len(json.load(f)[\"features\"])} features')"
 
-## 📄 License
+# Test model compatibility
+python -c "import tensorflow as tf; m=tf.keras.models.load_model('results/federated_global_model.keras'); print(f'Model input: {m.input_shape}')"
+```
 
-This project is developed for educational and research purposes.
+## 📚 **Documentation & References**
 
-## 🙏 Acknowledgments
+- **Master Documentation**: `docs/Master_Documentation.md` (comprehensive technical details)
+- **Presentation**: `docs/Professional_Presentation_Document.md` (executive summary)
+- **Research Context**: Federated learning for DDoS detection with Byzantine fault tolerance
+- **Framework**: Flower federated learning framework with custom aggregation strategies
 
-- **CICDDoS2019 Dataset**: University of New Brunswick
-- **Flower Framework**: Adap GmbH
-- **TensorFlow/Keras**: Google
-- **Research Community**: Federated learning and cybersecurity researchers
+## 🆕 **Recent Changelog**
+
+### **Version 2.0 - Optimized 30-Feature Pipeline**
+- ✅ **30-Feature Optimization**: Intelligent feature selection and unified schema
+- ✅ **Enhanced Visualizations**: 3 essential client-focused plots with line graph comparisons  
+- ✅ **Shape-Robust Operations**: Automatic model reconstruction for compatibility
+- ✅ **Multi-Krum Enhancement**: Byzantine fault tolerance with historical client performance
+- ✅ **Auto-Detection**: Automatic optimized mode detection and application
+- ✅ **Comprehensive Logging**: Feature count validation and optimization status tracking
+
+### **Previous Versions**
+- **v1.x**: Basic federated learning with FedAvg and visualization pipeline
+- **v0.x**: Centralized baseline and enhanced training implementations
 
 ---
 
-**🚀 Ready to detect DDoS attacks with federated learning!** Run `python launcher.py` to get started.
+## 🎯 **Quick Verification Checklist**
 
-## 🔄 Iterative Debugging & Change Log (Summary)
+After running optimized federated learning, verify:
 
-This section documents the major iterations performed to reach the current stable pipeline.
+- [ ] Client logs show: `"Using optimized 30-feature schema."`
+- [ ] Server logs show: `"Using optimized feature list...30 features"`  
+- [ ] Model input shape: `(None, 30, 1)`
+- [ ] Generated files in `results/federated_analysis/`:
+  - [ ] `01_client_performance_metrics.png` (line graph comparisons)
+  - [ ] `02_client_confusion_matrices.png` (2x2 client matrices)
+  - [ ] `03_client_roc_curves.png` (multi-client ROC curves)
+- [ ] No shape compatibility errors in visualization generation
+- [ ] `federated_metrics_history.json` contains aggregation logs
 
-1. Dependency Conflict Resolution
-    - Issue: `docker-compose` (PyPI) pinned `PyYAML<6` conflicting with security need for `pyyaml>=6`.
-    - Fix: Removed `docker-compose` from `requirements.txt`; rely on Docker CLI plugin. Pinned `numpy<2.0` for TF compatibility.
-
-2. Federated Prototype & Multi-Krum Integration
-    - Added standalone `server.py` with `MultiKrumFedAvg` strategy (subset selection for robustness) and `client.py` (Flower `NumPyClient`).
-    - Initial rounds fell back to FedAvg (insufficient clients for f=1); adjusted default `f=0`.
-
-3. Model Output Shape Mismatch
-    - Issue: Server initialized 5-class model vs clients using binary label → weight shape mismatch.
-    - Fix: Unified to binary classification (`num_classes=1`, sigmoid + BCE) in `cnn_model.py`, server forces binary init.
-
-4. Evaluation Metrics Misinterpretation
-    - Issue: Reported 1.0 "accuracy" was training accuracy only (test evaluation failing silently earlier).
-    - Fix: Refactored server strategy to separately aggregate `avg_client_train_accuracy` and `avg_client_test_accuracy` and persist to `results/federated_metrics_history.json`.
-
-5. Dataset Leakage & Perfect Predictors
-    - Symptom: Persistent 1.0 test accuracy across clients.
-    - Diagnosis: `scripts/diagnose_splits.py` showed high train/test row overlap (Jaccard up to 11%) and many perfect label-mapping features.
-    - Cause: Client-level splitting before global dedup + duplicated rows across partitions.
-
-6. Clean Partition Rebuild
-    - Implemented `scripts/rebuild_clean_partitions.py`:
-      * Deduplicated (50,000 → 30,919 unique rows; 19,081 duplicates removed).
-      * Global stratified train/test split before client partition.
-      * Stratified per-client partitioning with near-zero overlap (Jaccard ≤0.00156).
-    - Re-ran diagnostics: No perfect predictors; moderate feature-label correlations (≤0.465).
-
-7. Baselines after Cleanup
-    - Logistic baseline (`scripts/logistic_baseline.py`): ~0.75 accuracy, ROC-AUC ~0.89 → dataset non-trivial.
-    - Centralized CNN baseline (`train_centralized.py`): ~0.90 test accuracy (5 epochs example) on clean split.
-
-8. Federated Initialization from Centralized Model
-    - Added `--initial_model` to `server.py` to start FL from centralized trained weights for fair comparative convergence.
-
-9. History Persistence & Reporting
-    - Server now writes train/test accuracy time-series to `results/federated_metrics_history.json`.
-
-10. Scripts Added
-     - `scripts/diagnose_splits.py`: Overlap, correlations, perfect predictors.
-     - `scripts/rebuild_clean_partitions.py`: Clean, deduplicate, stratify, repartition.
-     - `train_centralized.py`: Aggregated centralized binary baseline.
-
-## 🧪 Centralized Baseline (Clean Partitions)
-
-```bash
-python train_centralized.py --data_dir data/optimized/clean_partitions --epochs 25 --batch 64 --lr 0.001
-```
-Outputs → model + metrics saved under `results/`.
-
-## 🔁 Federated Training Initialized from Centralized Weights
-
-Optional warm start for federated training using centralized baseline weights:
-
-```bash
-python server.py --rounds 10 --address 127.0.0.1:8080 \
-  --initial_model results/balanced_centralized_model.h5
-
-python client.py --cid 0 --data_dir data/optimized/clean_partitions
-python client.py --cid 1 --data_dir data/optimized/clean_partitions
-python client.py --cid 2 --data_dir data/optimized/clean_partitions
-python client.py --cid 3 --data_dir data/optimized/clean_partitions
-```
-
-Monitor history:
-
-```bash
-type results/federated_metrics_history.json
-```
-
-## 🔍 Diagnostics & Data Integrity
-
-Legacy diagnostic scripts (rebuild & overlap checks) were removed after producing stable clean partitions. If regeneration is needed, recreate tooling or restore from version control history.
-
-## 📌 Future Enhancements (Planned)
-
-- Add Trimmed Mean / Coordinate Median aggregators.
-- Norm clipping + cosine anomaly scoring before Multi-Krum selection.
-- Global ROC-AUC tracking in federated rounds.
-- Model export in Keras SavedModel format (`.keras`) + versioned artifacts.
-- Docker/Kubernetes orchestration & traffic capture (Wireshark/tshark) integration.
-
----
-
-## Quick Start
-
-Coming soon...
-
-## Development Status
-
-- [x] Project structure setup
-- [x] Environment configuration
-- [ ] Dataset preparation
-- [ ] CNN model implementation
-- [ ] Federated learning setup
-- [ ] Security mechanisms
-- [ ] Evaluation pipeline
-
-## Contributors
-
-- Hemanth Kumar CS
-
-## Repository
-
-GitHub: https://github.com/HemanthKumar-CS/Fedrated_DDoS_Detection.git
-
-## License
-
-MIT License
+**For detailed methodology, architecture rationale, and research context, see `docs/Master_Documentation.md`**
