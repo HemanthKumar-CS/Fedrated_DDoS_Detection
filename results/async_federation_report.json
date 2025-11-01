@@ -1,0 +1,206 @@
+{
+  "timestamp": "2025-11-02T02:48:07.683182",
+  "test_type": "Asynchronous Federated Learning",
+  "communication_rounds": 5,
+  "clients": 4,
+  "staleness_weighting": true,
+  "aggregation_rounds": 5,
+  "client_performance": {
+    "client_0": {
+      "updates_sent": 5,
+      "avg_staleness": 0.0,
+      "max_staleness": 0,
+      "avg_delay_seconds": 0.42996740341186523,
+      "max_delay_seconds": 0.5295028686523438
+    },
+    "client_1": {
+      "updates_sent": 5,
+      "avg_staleness": 0.0,
+      "max_staleness": 0,
+      "avg_delay_seconds": 1.794667863845825,
+      "max_delay_seconds": 2.6732168197631836
+    },
+    "client_2": {
+      "updates_sent": 5,
+      "avg_staleness": 0.0,
+      "max_staleness": 0,
+      "avg_delay_seconds": 1.959470272064209,
+      "max_delay_seconds": 2.930854082107544
+    },
+    "client_3": {
+      "updates_sent": 5,
+      "avg_staleness": 0.0,
+      "max_staleness": 0,
+      "avg_delay_seconds": 1.1322624683380127,
+      "max_delay_seconds": 1.6841771602630615
+    }
+  },
+  "aggregation_stats": [
+    {
+      "global_round": 0,
+      "clients_aggregated": 4,
+      "avg_staleness": 0.0,
+      "avg_delay_seconds": 1.2399418354034424,
+      "staleness_weighting_used": true,
+      "aggregation_details": [
+        {
+          "client_id": 0,
+          "staleness": 0,
+          "weight": 1.0,
+          "delay_seconds": 0.5073328018188477
+        },
+        {
+          "client_id": 1,
+          "staleness": 0,
+          "weight": 1.0,
+          "delay_seconds": 0.7367415428161621
+        },
+        {
+          "client_id": 2,
+          "staleness": 0,
+          "weight": 1.0,
+          "delay_seconds": 2.930854082107544
+        },
+        {
+          "client_id": 3,
+          "staleness": 0,
+          "weight": 1.0,
+          "delay_seconds": 0.7848389148712158
+        }
+      ]
+    },
+    {
+      "global_round": 1,
+      "clients_aggregated": 4,
+      "avg_staleness": 0.0,
+      "avg_delay_seconds": 1.1395783424377441,
+      "staleness_weighting_used": true,
+      "aggregation_details": [
+        {
+          "client_id": 0,
+          "staleness": 0,
+          "weight": 1.0,
+          "delay_seconds": 0.3930833339691162
+        },
+        {
+          "client_id": 1,
+          "staleness": 0,
+          "weight": 1.0,
+          "delay_seconds": 0.7367415428161621
+        },
+        {
+          "client_id": 2,
+          "staleness": 0,
+          "weight": 1.0,
+          "delay_seconds": 2.6635687351226807
+        },
+        {
+          "client_id": 3,
+          "staleness": 0,
+          "weight": 1.0,
+          "delay_seconds": 0.7649197578430176
+        }
+      ]
+    },
+    {
+      "global_round": 2,
+      "clients_aggregated": 4,
+      "avg_staleness": 0.0,
+      "avg_delay_seconds": 0.4981434941291809,
+      "staleness_weighting_used": true,
+      "aggregation_details": [
+        {
+          "client_id": 0,
+          "staleness": 0,
+          "weight": 1.0,
+          "delay_seconds": 0.3909127712249756
+        },
+        {
+          "client_id": 1,
+          "staleness": 0,
+          "weight": 1.0,
+          "delay_seconds": 0.7367415428161621
+        },
+        {
+          "client_id": 2,
+          "staleness": 0,
+          "weight": 1.0,
+          "delay_seconds": 0.09999990463256836
+        },
+        {
+          "client_id": 3,
+          "staleness": 0,
+          "weight": 1.0,
+          "delay_seconds": 0.7649197578430176
+        }
+      ]
+    },
+    {
+      "global_round": 3,
+      "clients_aggregated": 4,
+      "avg_staleness": 0.0,
+      "avg_delay_seconds": 0.48266661167144775,
+      "staleness_weighting_used": true,
+      "aggregation_details": [
+        {
+          "client_id": 0,
+          "staleness": 0,
+          "weight": 1.0,
+          "delay_seconds": 0.32900524139404297
+        },
+        {
+          "client_id": 1,
+          "staleness": 0,
+          "weight": 1.0,
+          "delay_seconds": 0.7367415428161621
+        },
+        {
+          "client_id": 2,
+          "staleness": 0,
+          "weight": 1.0,
+          "delay_seconds": 0.09999990463256836
+        },
+        {
+          "client_id": 3,
+          "staleness": 0,
+          "weight": 1.0,
+          "delay_seconds": 0.7649197578430176
+        }
+      ]
+    },
+    {
+      "global_round": 4,
+      "clients_aggregated": 4,
+      "avg_staleness": 0.0,
+      "avg_delay_seconds": 0.48266661167144775,
+      "staleness_weighting_used": true,
+      "aggregation_details": [
+        {
+          "client_id": 0,
+          "staleness": 0,
+          "weight": 1.0,
+          "delay_seconds": 0.32900524139404297
+        },
+        {
+          "client_id": 1,
+          "staleness": 0,
+          "weight": 1.0,
+          "delay_seconds": 0.7367415428161621
+        },
+        {
+          "client_id": 2,
+          "staleness": 0,
+          "weight": 1.0,
+          "delay_seconds": 0.09999990463256836
+        },
+        {
+          "client_id": 3,
+          "staleness": 0,
+          "weight": 1.0,
+          "delay_seconds": 0.7649197578430176
+        }
+      ]
+    }
+  ],
+  "deployment_recommendation": "READY FOR PRODUCTION"
+}

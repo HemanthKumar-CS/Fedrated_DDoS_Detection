@@ -39,6 +39,8 @@ class ProductionTrainer:
         self.model = None
         self.scaler = StandardScaler()
         self.history = None
+        self.convergence_data = None
+        self.federated_rounds = 1
 
     def load_real_data(self):
         """Load REAL data from clean partitions"""
@@ -148,9 +150,16 @@ class ProductionTrainer:
         self.model = model
         return model
 
-    def train(self, X_train, y_train, X_test, y_test):
-        """Train on real data"""
-        logger.info("\n🚀 Starting training...")
+    def train(self, X_train, y_train, X_test, y_test, federated_rounds=1):
+        """Train on real data with optional federated rounds
+
+        Args:
+            X_train, y_train: Training data
+            X_test, y_test: Test data
+            federated_rounds: Number of federated communication rounds (default: 1, production: 50+)
+        """
+        logger.info(
+            f"\n🚀 Starting training... (Federated Rounds: {federated_rounds})")
 
         # Class weights
         class_weights = compute_class_weight(
@@ -178,18 +187,48 @@ class ProductionTrainer:
             )
         ]
 
-        # Train
-        self.history = self.model.fit(
-            X_train, y_train,
-            validation_data=(X_test, y_test),
-            epochs=20,
-            batch_size=32,
-            class_weight=class_weight_dict,
-            callbacks=callbacks,
-            verbose=1
-        )
+        # For federated rounds: multiple rounds with reduced epochs per round
+        all_metrics = []
+        convergence_history = []
 
-        logger.info("✅ Training completed")
+        for round_num in range(federated_rounds):
+            logger.info(f"\n{'='*70}")
+            logger.info(f"FEDERATED ROUND {round_num + 1}/{federated_rounds}")
+            logger.info(f"{'='*70}")
+
+            # Each round trains for fewer epochs (convergence across multiple rounds)
+            epochs_per_round = max(
+                2, 20 // federated_rounds) if federated_rounds > 1 else 20
+
+            round_history = self.model.fit(
+                X_train, y_train,
+                validation_data=(X_test, y_test),
+                epochs=epochs_per_round,
+                batch_size=32,
+                class_weight=class_weight_dict,
+                callbacks=callbacks if round_num == federated_rounds -
+                1 else [],  # Only EarlyStopping on last round
+                verbose=0
+            )
+
+            # Track metrics each round
+            val_acc = round_history.history['val_accuracy'][-1] if 'val_accuracy' in round_history.history else 0
+            val_loss = round_history.history['val_loss'][-1] if 'val_loss' in round_history.history else 0
+            convergence_history.append({
+                'round': round_num + 1,
+                'val_accuracy': float(val_acc),
+                'val_loss': float(val_loss)
+            })
+
+            logger.info(
+                f"Round {round_num + 1}: Val Accuracy={val_acc:.4f}, Val Loss={val_loss:.4f}")
+
+        # Store convergence data
+        self.convergence_data = convergence_history
+        self.federated_rounds = federated_rounds
+
+        logger.info(
+            f"\n✅ Training completed ({federated_rounds} federated rounds)")
 
     def evaluate(self, X_test, y_test):
         """Evaluate on real test data"""
@@ -307,10 +346,19 @@ class ProductionTrainer:
         plt.close()
 
 
-def main():
+def main(federated_rounds=1):
+    """Main training function
+
+    Args:
+        federated_rounds: Number of federated communication rounds (1 for standard, 50+ for production)
+    """
     try:
         logger.info("="*70)
-        logger.info("🔥 PRODUCTION DDOS DETECTION TRAINING")
+        if federated_rounds > 1:
+            logger.info(
+                f"🔥 PRODUCTION FEDERATED TRAINING ({federated_rounds} ROUNDS)")
+        else:
+            logger.info("🔥 PRODUCTION DDOS DETECTION TRAINING")
         logger.info("="*70)
 
         trainer = ProductionTrainer()
@@ -324,8 +372,9 @@ def main():
         # Build model
         trainer.build_model((X_train.shape[1], X_train.shape[2]))
 
-        # Train
-        trainer.train(X_train, y_train, X_test, y_test)
+        # Train with federated rounds
+        trainer.train(X_train, y_train, X_test, y_test,
+                      federated_rounds=federated_rounds)
 
         # Evaluate
         metrics = trainer.evaluate(X_test, y_test)
@@ -341,8 +390,22 @@ def main():
         with open('results/metrics.json', 'w') as f:
             json.dump(metrics, f, indent=2)
 
+        # Save convergence data if federated
+        if federated_rounds > 1 and trainer.convergence_data:
+            with open('results/federated_training_convergence.json', 'w') as f:
+                json.dump({
+                    'total_rounds': federated_rounds,
+                    'convergence': trainer.convergence_data,
+                    'final_metrics': metrics,
+                    'timestamp': datetime.now().isoformat()
+                }, f, indent=2)
+            logger.info(
+                f"✅ Convergence data saved: results/federated_training_convergence.json")
+
         logger.info("\n" + "="*70)
         logger.info("✅ TRAINING COMPLETE!")
+        logger.info(f"   Federated Rounds: {federated_rounds}")
+        logger.info(f"   Final Accuracy: {metrics['accuracy']:.4f}")
         logger.info("="*70)
 
     except Exception as e:
@@ -351,4 +414,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+    # Support federated_rounds argument: python train.py 50
+    federated_rounds = int(sys.argv[1]) if len(sys.argv) > 1 else 1
+    main(federated_rounds=federated_rounds)

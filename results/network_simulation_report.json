@@ -1,0 +1,342 @@
+{
+  "timestamp": "2025-11-02T02:28:00.263273",
+  "synchronous_simulation": {
+    "num_rounds": 10,
+    "model_size_mb": 2.08,
+    "total_training_time_s": 38.03740518526675,
+    "total_training_time_hours": 0.01056594588479632,
+    "avg_round_time_s": 3.8037405185266753,
+    "min_round_time_s": 3.786595262900763,
+    "max_round_time_s": 3.814000602074162,
+    "round_time_stddev": 0.007736003510039299,
+    "round_results": [
+      {
+        "round_type": "full_sync",
+        "model_size_mb": 2.08,
+        "max_upload_time_s": 1.8345969371472908,
+        "max_download_time_s": 1.8632691912129926,
+        "aggregation_time_s": 0.1,
+        "total_round_time_s": 3.7978661283602833,
+        "avg_upload_time_s": 0.7853139190463415,
+        "avg_download_time_s": 0.7941481703652031,
+        "upload_time_variance": 0.5425242538701845,
+        "download_time_variance": 0.5671709656824923,
+        "upload_times": [
+          0.17837156804596915,
+          0.3904106594109759,
+          0.7378765115811301,
+          1.8345969371472908
+        ],
+        "download_times": [
+          0.17443897140414333,
+          0.3777808969539117,
+          0.7611036218897647,
+          1.8632691912129926
+        ]
+      },
+      {
+        "round_type": "full_sync",
+        "model_size_mb": 2.08,
+        "max_upload_time_s": 1.861440243972606,
+        "max_download_time_s": 1.8394504706558195,
+        "aggregation_time_s": 0.1,
+        "total_round_time_s": 3.8008907146284256,
+        "avg_upload_time_s": 0.7949050417416009,
+        "avg_download_time_s": 0.7950444330031486,
+        "upload_time_variance": 0.5645950075444987,
+        "download_time_variance": 0.5457826663366707,
+        "upload_times": [
+          0.17638501082509633,
+          0.3793747948577605,
+          0.7624201173109406,
+          1.861440243972606
+        ],
+        "download_times": [
+          0.17865208935443325,
+          0.3873540230841694,
+          0.7747211489181723,
+          1.8394504706558195
+        ]
+      },
+      {
+        "round_type": "full_sync",
+        "model_size_mb": 2.08,
+        "max_upload_time_s": 1.8509472465385095,
+        "max_download_time_s": 1.8630533555356523,
+        "aggregation_time_s": 0.1,
+        "total_round_time_s": 3.814000602074162,
+        "avg_upload_time_s": 0.7965106811182882,
+        "avg_download_time_s": 0.8037871292981736,
+        "upload_time_variance": 0.5574265422708707,
+        "download_time_variance": 0.5624609283617846,
+        "upload_times": [
+          0.17540205771056358,
+          0.37887322730698414,
+          0.7808201929170956,
+          1.8509472465385095
+        ],
+        "download_times": [
+          0.17927098380039794,
+          0.3853976433044114,
+          0.7874265345522331,
+          1.8630533555356523
+        ]
+      },
+      {
+        "round_type": "full_sync",
+        "model_size_mb": 2.08,
+        "max_upload_time_s": 1.8369045001935511,
+        "max_download_time_s": 1.873685458413664,
+        "aggregation_time_s": 0.1,
+        "total_round_time_s": 3.810589958607215,
+        "avg_upload_time_s": 0.7875684755595165,
+        "avg_download_time_s": 0.8035188899771067,
+        "upload_time_variance": 0.5485408470786555,
+        "download_time_variance": 0.5695241825955851,
+        "upload_times": [
+          0.17450272918726567,
+          0.37772918751820733,
+          0.761137485339042,
+          1.8369045001935511
+        ],
+        "download_times": [
+          0.17597847338355932,
+          0.3930628337716374,
+          0.7713487943395663,
+          1.873685458413664
+        ]
+      },
+      {
+        "round_type": "full_sync",
+        "model_size_mb": 2.08,
+        "max_upload_time_s": 1.8391376080947162,
+        "max_download_time_s": 1.8474576548060468,
+        "aggregation_time_s": 0.1,
+        "total_round_time_s": 3.786595262900763,
+        "avg_upload_time_s": 0.7943791161885003,
+        "avg_download_time_s": 0.7911298785335434,
+        "upload_time_variance": 0.5457777935985452,
+        "download_time_variance": 0.5534314271175085,
+        "upload_times": [
+          0.17939785622831786,
+          0.385509973185482,
+          0.7734710272454852,
+          1.8391376080947162
+        ],
+        "download_times": [
+          0.1742476846237469,
+          0.38787771731063486,
+          0.7549364573937449,
+          1.8474576548060468
+        ]
+      },
+      {
+        "round_type": "full_sync",
+        "model_size_mb": 2.08,
+        "max_upload_time_s": 1.8480485980320862,
+        "max_download_time_s": 1.85941673145177,
+        "aggregation_time_s": 0.1,
+        "total_round_time_s": 3.8074653294838563,
+        "avg_upload_time_s": 0.7972968352809878,
+        "avg_download_time_s": 0.7984206386961086,
+        "upload_time_variance": 0.5541653060414939,
+        "download_time_variance": 0.564043731839187,
+        "upload_times": [
+          0.17362148516678874,
+          0.3859600221114395,
+          0.7815572358136368,
+          1.8480485980320862
+        ],
+        "download_times": [
+          0.17259997383092207,
+          0.38073525412144094,
+          0.7809305953803012,
+          1.85941673145177
+        ]
+      },
+      {
+        "round_type": "full_sync",
+        "model_size_mb": 2.08,
+        "max_upload_time_s": 1.8529360906920707,
+        "max_download_time_s": 1.8545979906571224,
+        "aggregation_time_s": 0.1,
+        "total_round_time_s": 3.807534081349193,
+        "avg_upload_time_s": 0.8012544507244006,
+        "avg_download_time_s": 0.7991825681802914,
+        "upload_time_variance": 0.5548287578204708,
+        "download_time_variance": 0.5598967897478972,
+        "upload_times": [
+          0.17989970368834382,
+          0.38636661596062694,
+          0.7858153925565612,
+          1.8529360906920707
+        ],
+        "download_times": [
+          0.17547154773344845,
+          0.37889349078426476,
+          0.7877672435463302,
+          1.8545979906571224
+        ]
+      },
+      {
+        "round_type": "full_sync",
+        "model_size_mb": 2.08,
+        "max_upload_time_s": 1.8327642786025093,
+        "max_download_time_s": 1.8732611067342169,
+        "aggregation_time_s": 0.1,
+        "total_round_time_s": 3.806025385336726,
+        "avg_upload_time_s": 0.7912106217168007,
+        "avg_download_time_s": 0.8000737268388909,
+        "upload_time_variance": 0.5437021304675076,
+        "download_time_variance": 0.5722674079331326,
+        "upload_times": [
+          0.17949688651147572,
+          0.3766691461837023,
+          0.7759121755695154,
+          1.8327642786025093
+        ],
+        "download_times": [
+          0.1722294259190463,
+          0.388038283399534,
+          0.7667660913027665,
+          1.8732611067342169
+        ]
+      },
+      {
+        "round_type": "full_sync",
+        "model_size_mb": 2.08,
+        "max_upload_time_s": 1.8456484681074465,
+        "max_download_time_s": 1.8547590080976573,
+        "aggregation_time_s": 0.1,
+        "total_round_time_s": 3.8004074762051037,
+        "avg_upload_time_s": 0.8006786828416151,
+        "avg_download_time_s": 0.7972572686267955,
+        "upload_time_variance": 0.5516611119478905,
+        "download_time_variance": 0.5572869998933494,
+        "upload_times": [
+          0.1784240784861001,
+          0.3813828455468069,
+          0.7972593392261069,
+          1.8456484681074465
+        ],
+        "download_times": [
+          0.18228409210949115,
+          0.37921481464923357,
+          0.7727711596507998,
+          1.8547590080976573
+        ]
+      },
+      {
+        "round_type": "full_sync",
+        "model_size_mb": 2.08,
+        "max_upload_time_s": 1.8306102371458794,
+        "max_download_time_s": 1.875420009175143,
+        "aggregation_time_s": 0.1,
+        "total_round_time_s": 3.8060302463210225,
+        "avg_upload_time_s": 0.7925180233987917,
+        "avg_download_time_s": 0.7952859190532993,
+        "upload_time_variance": 0.5400531207858137,
+        "download_time_variance": 0.5729521981596017,
+        "upload_times": [
+          0.17488771701955325,
+          0.3916793377320131,
+          0.7728948016977211,
+          1.8306102371458794
+        ],
+        "download_times": [
+          0.18125378394812094,
+          0.37988094150869184,
+          0.7445889415812414,
+          1.875420009175143
+        ]
+      }
+    ]
+  },
+  "bottleneck_analysis": {
+    "model_size_mb": 2.08,
+    "analysis": [
+      {
+        "client_id": 0,
+        "location": "Local_Network",
+        "bandwidth_mbps": 100.0,
+        "latency_ms": 10.0,
+        "upload_time_s": 0.1664,
+        "bottleneck_score": 2.0,
+        "is_critical_bottleneck": false,
+        "optimization_needed": false
+      },
+      {
+        "client_id": 1,
+        "location": "Regional_Data_Center",
+        "bandwidth_mbps": 50.0,
+        "latency_ms": 50.0,
+        "upload_time_s": 0.3328,
+        "bottleneck_score": 7.0,
+        "is_critical_bottleneck": false,
+        "optimization_needed": false
+      },
+      {
+        "client_id": 2,
+        "location": "Geographic_Remote",
+        "bandwidth_mbps": 25.0,
+        "latency_ms": 100.0,
+        "upload_time_s": 0.6656,
+        "bottleneck_score": 14.0,
+        "is_critical_bottleneck": false,
+        "optimization_needed": false
+      },
+      {
+        "client_id": 3,
+        "location": "IoT_Edge_Device",
+        "bandwidth_mbps": 10.0,
+        "latency_ms": 150.0,
+        "upload_time_s": 1.6640000000000001,
+        "bottleneck_score": 25.0,
+        "is_critical_bottleneck": true,
+        "optimization_needed": false
+      }
+    ],
+    "critical_bottlenecks": 1
+  },
+  "asynchronous_simulation": {
+    "simulation_type": "asynchronous",
+    "num_rounds": 10,
+    "client_stats": [
+      {
+        "client_id": 0,
+        "location": "Local_Network",
+        "avg_update_time_s": 0.17665136135153503,
+        "min_update_time_s": 0.17378242015510126,
+        "max_update_time_s": 0.1795955465778972,
+        "std_dev": 0.0018999268948803126
+      },
+      {
+        "client_id": 1,
+        "location": "Regional_Data_Center",
+        "avg_update_time_s": 0.3862157636105212,
+        "min_update_time_s": 0.37843752017312005,
+        "max_update_time_s": 0.39294146372048316,
+        "std_dev": 0.005003080072186875
+      },
+      {
+        "client_id": 2,
+        "location": "Geographic_Remote",
+        "avg_update_time_s": 0.7714161423205133,
+        "min_update_time_s": 0.7569778323397687,
+        "max_update_time_s": 0.7850746265674802,
+        "std_dev": 0.010186654181570654
+      },
+      {
+        "client_id": 3,
+        "location": "IoT_Edge_Device",
+        "avg_update_time_s": 1.8531433310848655,
+        "min_update_time_s": 1.8381899338201577,
+        "max_update_time_s": 1.8640688179587677,
+        "std_dev": 0.008111479748918777
+      }
+    ],
+    "fastest_client_avg": 0.17665136135153503,
+    "slowest_client_avg": 1.8531433310848655,
+    "sync_overhead": 1.6764919697333305
+  }
+}

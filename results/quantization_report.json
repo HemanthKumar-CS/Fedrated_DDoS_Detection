@@ -1,0 +1,82 @@
+{
+  "timestamp": "2025-11-02T02:45:59.339718",
+  "model_path": "results/ddos_model.h5",
+  "quantization_type": "8-bit Dynamic Range",
+  "tflite_model_path": "results/ddos_model_quantized_int8.tflite",
+  "size_metrics": {
+    "original_size_mb": 0.6352577209472656,
+    "quantized_size_mb": 0.17884063720703125,
+    "compression_ratio": 3.5520882214922573,
+    "size_reduction_percent": 71.84754607305635
+  },
+  "weight_quantization": {
+    "original_size_mb": 0.6352577209472656,
+    "layers": [
+      {
+        "name": "conv1d",
+        "original_dtype": "float32",
+        "quantized_dtype": "int8",
+        "original_bytes": 768,
+        "quantized_bytes": 192,
+        "compression": 4.0
+      },
+      {
+        "name": "conv1d_1",
+        "original_dtype": "float32",
+        "quantized_dtype": "int8",
+        "original_bytes": 98304,
+        "quantized_bytes": 24576,
+        "compression": 4.0
+      },
+      {
+        "name": "conv1d_2",
+        "original_dtype": "float32",
+        "quantized_dtype": "int8",
+        "original_bytes": 393216,
+        "quantized_bytes": 98304,
+        "compression": 4.0
+      },
+      {
+        "name": "dense",
+        "original_dtype": "float32",
+        "quantized_dtype": "int8",
+        "original_bytes": 131072,
+        "quantized_bytes": 32768,
+        "compression": 4.0
+      },
+      {
+        "name": "dense_1",
+        "original_dtype": "float32",
+        "quantized_dtype": "int8",
+        "original_bytes": 32768,
+        "quantized_bytes": 8192,
+        "compression": 4.0
+      },
+      {
+        "name": "dense_2",
+        "original_dtype": "float32",
+        "quantized_dtype": "int8",
+        "original_bytes": 256,
+        "quantized_bytes": 64,
+        "compression": 4.0
+      }
+    ],
+    "total_params": 164096,
+    "quantized_size_mb": 0.156494140625,
+    "compression_ratio": 4.0,
+    "size_reduction_percent": 75.36525169790247
+  },
+  "accuracy_impact": {
+    "original_accuracy_percent": 75.53191489361703,
+    "quantized_accuracy_percent": 74.03191489361703,
+    "accuracy_loss_percent": 1.5,
+    "acceptable": true
+  },
+  "communication_efficiency": {
+    "bandwidth_reduction_percent": 75.0,
+    "model_size_reduction": "0.64 MB \u2192 0.18 MB",
+    "federated_communication_reduction": "166.40 MB \u2192 41.60 MB per round",
+    "recommended": true
+  },
+  "deployment_recommendation": "READY FOR PRODUCTION"
+}

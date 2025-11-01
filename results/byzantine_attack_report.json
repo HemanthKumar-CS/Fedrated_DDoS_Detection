@@ -1,0 +1,119 @@
+{
+  "timestamp": "2025-11-02T02:26:55.207366",
+  "gradient_poisoning": {
+    "attack_type": "gradient_poisoning",
+    "timestamp": "2025-11-02T02:26:55.196196",
+    "num_poisoned": 1,
+    "num_clients": 4,
+    "scenarios": [
+      {
+        "attack_magnitude": 0.5,
+        "num_poisoned": 1,
+        "num_clients": 4,
+        "honest_consensus_norm": 4.701939364951717,
+        "fed_avg_divergence": 9.987559594988534,
+        "multi_krum_divergence": 6.540219117480367,
+        "multi_krum_selected_count": 1,
+        "poisoned_clients_detected": true,
+        "robustness_improvement": 3.447340477508167,
+        "robustness_score": 0.34516344506253815
+      },
+      {
+        "attack_magnitude": 1.0,
+        "num_poisoned": 1,
+        "num_clients": 4,
+        "honest_consensus_norm": 4.656692344625994,
+        "fed_avg_divergence": 19.742416028941008,
+        "multi_krum_divergence": 78.96966411576403,
+        "multi_krum_selected_count": 1,
+        "poisoned_clients_detected": true,
+        "robustness_improvement": -59.227248086823025,
+        "robustness_score": 0.0
+      },
+      {
+        "attack_magnitude": 2.0,
+        "num_poisoned": 1,
+        "num_clients": 4,
+        "honest_consensus_norm": 4.702720248062942,
+        "fed_avg_divergence": 40.25385435031368,
+        "multi_krum_divergence": 6.597838575826683,
+        "multi_krum_selected_count": 1,
+        "poisoned_clients_detected": true,
+        "robustness_improvement": 33.656015774486995,
+        "robustness_score": 0.836094240357908
+      },
+      {
+        "attack_magnitude": 5.0,
+        "num_poisoned": 1,
+        "num_clients": 4,
+        "honest_consensus_norm": 4.629954355738553,
+        "fed_avg_divergence": 100.22391544327206,
+        "multi_krum_divergence": 6.590367056778993,
+        "multi_krum_selected_count": 1,
+        "poisoned_clients_detected": true,
+        "robustness_improvement": 93.63354838649308,
+        "robustness_score": 0.9342435682379358
+      },
+      {
+        "attack_magnitude": 10.0,
+        "num_poisoned": 1,
+        "num_clients": 4,
+        "honest_consensus_norm": 4.677499681652802,
+        "fed_avg_divergence": 202.3934468284869,
+        "multi_krum_divergence": 6.530188660652296,
+        "multi_krum_selected_count": 1,
+        "poisoned_clients_detected": true,
+        "robustness_improvement": 195.8632581678346,
+        "robustness_score": 0.9677351773835696
+      }
+    ]
+  },
+  "label_flipping": {
+    "attack_type": "label_flipping",
+    "timestamp": "2025-11-02T02:26:55.205279",
+    "scenarios": [
+      {
+        "attack_magnitude": 5.0,
+        "num_poisoned": 1,
+        "num_clients": 4,
+        "honest_consensus_norm": 4.619201915446214,
+        "fed_avg_divergence": 100.20817288155837,
+        "multi_krum_divergence": 6.521275524918505,
+        "multi_krum_selected_count": 1,
+        "poisoned_clients_detected": true,
+        "robustness_improvement": 93.68689735663986,
+        "robustness_score": 0.9349227180040509
+      },
+      {
+        "attack_magnitude": 5.0,
+        "num_poisoned": 2,
+        "num_clients": 4,
+        "honest_consensus_norm": 5.613273781931471,
+        "fed_avg_divergence": 141.43043782539797,
+        "multi_krum_divergence": 5.6519701772825925,
+        "multi_krum_selected_count": 1,
+        "poisoned_clients_detected": true,
+        "robustness_improvement": 135.7784676481154,
+        "robustness_score": 0.9600371018842762
+      },
+      {
+        "attack_magnitude": 5.0,
+        "num_poisoned": 3,
+        "num_clients": 4,
+        "honest_consensus_norm": 8.012993794553505,
+        "fed_avg_divergence": 173.60039916617967,
+        "multi_krum_divergence": 399.8513637012132,
+        "multi_krum_selected_count": 1,
+        "poisoned_clients_detected": true,
+        "robustness_improvement": -226.25096453503352,
+        "robustness_score": 0.0
+      }
+    ]
+  },
+  "summary": {
+    "average_robustness_score": 0.6166472862083904,
+    "average_improvement": 53.47458294389996,
+    "threat_assessment": "MEDIUM - System has reasonable Byzantine defense",
+    "multi_krum_effective": "False"
+  }
+}

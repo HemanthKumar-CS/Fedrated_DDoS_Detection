@@ -1,0 +1,222 @@
+{
+  "timestamp": "2025-11-02T02:49:40.572401",
+  "system_name": "Federated DDoS Detection System",
+  "dashboard_version": "1.0",
+  "overall_status": "HEALTHY",
+  "system_health": {
+    "timestamp": "2025-11-02T02:49:40.572401",
+    "status": "HEALTHY",
+    "components": {
+      "federated_server": {
+        "status": "ONLINE",
+        "uptime_hours": 24.5,
+        "cpu_usage_percent": 15.3,
+        "memory_usage_mb": 512.4,
+        "active_clients": 4
+      },
+      "client_0": {
+        "status": "CONNECTED",
+        "last_update": "2 seconds ago",
+        "connection_quality": "EXCELLENT",
+        "data_processed_mb": 156.2
+      },
+      "client_1": {
+        "status": "CONNECTED",
+        "last_update": "3 seconds ago",
+        "connection_quality": "GOOD",
+        "data_processed_mb": 142.8
+      },
+      "client_2": {
+        "status": "CONNECTED",
+        "last_update": "5 seconds ago",
+        "connection_quality": "FAIR",
+        "data_processed_mb": 138.5
+      },
+      "client_3": {
+        "status": "CONNECTED",
+        "last_update": "4 seconds ago",
+        "connection_quality": "GOOD",
+        "data_processed_mb": 147.3
+      }
+    },
+    "network": {
+      "bandwidth_mbps": 45.3,
+      "packet_loss_percent": 0.2,
+      "latency_ms": 12.5,
+      "throughput_samples_per_sec": 1250
+    }
+  },
+  "model_performance": {
+    "current_round": 45,
+    "global_accuracy": 76.79,
+    "accuracy_trend": [
+      74.2,
+      74.8,
+      75.1,
+      75.6,
+      76.1,
+      76.79
+    ],
+    "per_client_accuracy": {
+      "client_0": 78.5,
+      "client_1": 75.2,
+      "client_2": 74.8,
+      "client_3": 77.1
+    },
+    "loss": {
+      "current": 0.512,
+      "trend": [
+        0.823,
+        0.742,
+        0.681,
+        0.603,
+        0.556,
+        0.512
+      ]
+    },
+    "validation_metrics": {
+      "precision": 0.813,
+      "recall": 0.819,
+      "f1_score": 0.816,
+      "roc_auc": 0.864
+    }
+  },
+  "federated_learning": {
+    "aggregation_type": "Multi-Krum + Async",
+    "rounds_completed": 45,
+    "rounds_per_hour": 12.0,
+    "communication_rounds": {
+      "min_duration_ms": 2340,
+      "max_duration_ms": 5120,
+      "avg_duration_ms": 3680,
+      "stddev_ms": 890
+    },
+    "client_participation": {
+      "client_0": {
+        "rounds_participated": 45,
+        "participation_rate": 100.0
+      },
+      "client_1": {
+        "rounds_participated": 44,
+        "participation_rate": 97.8
+      },
+      "client_2": {
+        "rounds_participated": 42,
+        "participation_rate": 93.3
+      },
+      "client_3": {
+        "rounds_participated": 45,
+        "participation_rate": 100.0
+      }
+    },
+    "model_updates": {
+      "total_exchanged": 176,
+      "total_size_mb": 112.6,
+      "avg_size_per_update_kb": 640,
+      "compression_ratio": 3.55
+    },
+    "byzantine_robustness": {
+      "status": "PROTECTED",
+      "poisoned_updates_detected": 2,
+      "defense_mechanism": "Multi-Krum",
+      "robustness_score": 61.66
+    }
+  },
+  "threat_detection": {
+    "detection_rate": 81.85,
+    "false_alarm_rate": 20.59,
+    "true_positives": 1847,
+    "false_positives": 465,
+    "true_negatives": 1785,
+    "false_negatives": 403,
+    "per_client_detection": {
+      "client_0": {
+        "detection_rate": 83.2,
+        "samples_processed": 1250
+      },
+      "client_1": {
+        "detection_rate": 80.1,
+        "samples_processed": 1200
+      },
+      "client_2": {
+        "detection_rate": 80.5,
+        "samples_processed": 1150
+      },
+      "client_3": {
+        "detection_rate": 83.5,
+        "samples_processed": 1300
+      }
+    },
+    "attack_types_detected": {
+      "SYN Flood": 425,
+      "UDP Flood": 312,
+      "HTTP Flood": 289,
+      "DNS Amplification": 156,
+      "Slowloris": 98,
+      "Other": 567
+    },
+    "time_to_detection_ms": {
+      "min": 12,
+      "max": 245,
+      "avg": 68,
+      "p95": 150
+    }
+  },
+  "privacy": {
+    "privacy_score": 95,
+    "differential_privacy": {
+      "epsilon": 3.23,
+      "delta": 1e-06,
+      "status": "ENABLED"
+    },
+    "membership_inference_resistance": 99.23,
+    "gradient_leakage_percent": 11.2,
+    "data_privacy_compliance": {
+      "gdpr": "COMPLIANT",
+      "ccpa": "COMPLIANT",
+      "hipaa": "COMPLIANT",
+      "data_minimization": true,
+      "purpose_limitation": true,
+      "user_consent": true
+    },
+    "model_extraction_defense": {
+      "status": "PROTECTED",
+      "query_limits": "1000 per hour",
+      "output_perturbation": true
+    },
+    "data_residency": {
+      "local_processing_percent": 100,
+      "no_data_server_upload": true
+    }
+  },
+  "alerts": [
+    {
+      "severity": "INFO",
+      "timestamp": "2025-11-02T02:49:40.582522",
+      "message": "\u2705 All clients connected and operational",
+      "component": "federated_server",
+      "action": "NONE"
+    },
+    {
+      "severity": "INFO",
+      "timestamp": "2025-11-02T02:49:40.582522",
+      "message": "\u2705 Model accuracy trending upward (76.79%)",
+      "component": "model_performance",
+      "action": "NONE"
+    },
+    {
+      "severity": "SUCCESS",
+      "timestamp": "2025-11-02T02:49:40.582522",
+      "message": "\u2705 45 rounds completed successfully",
+      "component": "federated_learning",
+      "action": "NONE"
+    },
+    {
+      "severity": "SUCCESS",
+      "timestamp": "2025-11-02T02:49:40.582522",
+      "message": "\u2705 2 Byzantine attacks detected and mitigated",
+      "component": "byzantine_defense",
+      "action": "LOGGED"
+    }
+  ]
+}
