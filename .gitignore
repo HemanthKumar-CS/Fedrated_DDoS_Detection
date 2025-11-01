@@ -55,11 +55,11 @@ data/processed/
 *.pkl
 *.joblib
 models/saved/
-
+results/
 # Logs
 logs/
 *.log
-
+.kiro/
 # OS generated files
 .DS_Store
 .DS_Store?
