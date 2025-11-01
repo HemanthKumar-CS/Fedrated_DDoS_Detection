@@ -1,0 +1,38 @@
+{
+  "client_0": {
+    "accuracy": 0.7553191489361702,
+    "precision": 0.8348082595870207,
+    "recall": 0.729381443298969,
+    "f1": 0.7785419532324622,
+    "roc_auc": 0.8362256586483391,
+    "attacks_detected": 339,
+    "benign_detected": 319
+  },
+  "client_1": {
+    "accuracy": 0.7461538461538462,
+    "precision": 0.003787878787878788,
+    "recall": 0.5,
+    "f1": 0.007518796992481203,
+    "roc_auc": 0.6189788053949904,
+    "attacks_detected": 264,
+    "benign_detected": 776
+  },
+  "client_2": {
+    "accuracy": 0.7665369649805448,
+    "precision": 0.9759358288770054,
+    "recall": 0.7668067226890757,
+    "f1": 0.8588235294117647,
+    "roc_auc": 0.8413865546218487,
+    "attacks_detected": 748,
+    "benign_detected": 280
+  },
+  "client_3": {
+    "accuracy": 0.8051948051948052,
+    "precision": 0.9387755102040817,
+    "recall": 0.7931034482758621,
+    "f1": 0.8598130841121495,
+    "roc_auc": 0.9255898366606171,
+    "attacks_detected": 49,
+    "benign_detected": 28
+  }
+}

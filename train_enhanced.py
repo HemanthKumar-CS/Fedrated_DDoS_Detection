@@ -302,7 +302,7 @@ class EnhancedTrainer:
         self.history = self.model.fit(
             X_train, y_train,
             validation_data=(X_val, y_val),
-            epochs=100,  # More epochs with early stopping
+            epochs=20,  # More epochs with early stopping
             batch_size=32,  # Smaller batch size for better gradients
             class_weight=class_weights,
             callbacks=callbacks,
