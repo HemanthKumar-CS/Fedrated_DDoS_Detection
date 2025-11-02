@@ -113,35 +113,40 @@ class ProductionTrainer:
         logger.info("🏗️ Building CNN model...")
 
         model = tf.keras.Sequential([
-            # Conv Block 1
+            # Conv Block 1 - with L2 regularization
             tf.keras.layers.Conv1D(
-                64, 3, activation='relu', padding='same', input_shape=input_shape),
+                64, 3, activation='relu', padding='same', input_shape=input_shape,
+                kernel_regularizer=tf.keras.regularizers.L2(0.001)),
             tf.keras.layers.BatchNormalization(),
-            tf.keras.layers.Dropout(0.3),
+            tf.keras.layers.Dropout(0.35),
             tf.keras.layers.MaxPooling1D(2),
 
-            # Conv Block 2
-            tf.keras.layers.Conv1D(128, 3, activation='relu', padding='same'),
+            # Conv Block 2 - with L2 regularization
+            tf.keras.layers.Conv1D(128, 3, activation='relu', padding='same',
+                                   kernel_regularizer=tf.keras.regularizers.L2(0.001)),
             tf.keras.layers.BatchNormalization(),
-            tf.keras.layers.Dropout(0.3),
+            tf.keras.layers.Dropout(0.35),
             tf.keras.layers.MaxPooling1D(2),
 
-            # Conv Block 3
-            tf.keras.layers.Conv1D(256, 3, activation='relu', padding='same'),
+            # Conv Block 3 - with L2 regularization
+            tf.keras.layers.Conv1D(256, 3, activation='relu', padding='same',
+                                   kernel_regularizer=tf.keras.regularizers.L2(0.001)),
             tf.keras.layers.BatchNormalization(),
-            tf.keras.layers.Dropout(0.3),
+            tf.keras.layers.Dropout(0.35),
             tf.keras.layers.GlobalAveragePooling1D(),
 
-            # Dense layers
-            tf.keras.layers.Dense(128, activation='relu'),
+            # Dense layers - with L2 regularization
+            tf.keras.layers.Dense(128, activation='relu',
+                                  kernel_regularizer=tf.keras.regularizers.L2(0.001)),
+            tf.keras.layers.Dropout(0.45),
+            tf.keras.layers.Dense(64, activation='relu',
+                                  kernel_regularizer=tf.keras.regularizers.L2(0.001)),
             tf.keras.layers.Dropout(0.4),
-            tf.keras.layers.Dense(64, activation='relu'),
-            tf.keras.layers.Dropout(0.3),
             tf.keras.layers.Dense(1, activation='sigmoid')
         ])
 
         model.compile(
-            optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
+            optimizer=tf.keras.optimizers.Adam(learning_rate=0.0005),
             loss='binary_crossentropy',
             metrics=['accuracy', tf.keras.metrics.Precision(), tf.keras.metrics.Recall(),
                      tf.keras.metrics.AUC()]
@@ -172,20 +177,22 @@ class ProductionTrainer:
         class_weight_dict = {i: w for i, w in enumerate(class_weights)}
         logger.info(f"Class weights: {class_weight_dict}")
 
-        # Callbacks
+        # Callbacks - more aggressive early stopping and learning rate reduction
         callbacks = [
             tf.keras.callbacks.EarlyStopping(
                 monitor='val_loss',
-                patience=15,
+                patience=8,  # Reduced from 15 for earlier stopping
                 restore_best_weights=True,
-                verbose=1
+                verbose=1,
+                min_delta=0.001  # Stop if improvement < 0.001
             ),
             tf.keras.callbacks.ReduceLROnPlateau(
                 monitor='val_loss',
                 factor=0.5,
-                patience=7,
-                min_lr=1e-6,
-                verbose=1
+                patience=4,  # Reduced from 7 for quicker learning rate reduction
+                min_lr=1e-7,
+                verbose=1,
+                min_delta=0.001
             )
         ]
 
@@ -207,7 +214,7 @@ class ProductionTrainer:
                 X_train, y_train,
                 validation_data=(X_test, y_test),
                 epochs=epochs_per_round,
-                batch_size=32,
+                batch_size=64,  # Increased from 32 for more stable gradients
                 class_weight=class_weight_dict,
                 callbacks=callbacks if round_num == federated_rounds -
                 1 else [],  # Only EarlyStopping on last round
@@ -295,54 +302,62 @@ class ProductionTrainer:
         fig.suptitle('DDoS Detection Model Performance',
                      fontsize=16, fontweight='bold')
 
-        # Plot 1: Training Accuracy (Train + Validation)
+        # Plot 1: Training Accuracy (Train + Validation) - with custom axis
         if self.history and hasattr(self.history, 'history'):
             train_acc = self.history.history.get('accuracy', [])
             val_acc = self.history.history.get('val_accuracy', [])
             if train_acc and val_acc:
-                epochs_range = range(1, len(train_acc) + 1)
-                axes[0, 0].plot(epochs_range, train_acc, 'b-', marker='o',
-                                label='Train Accuracy', linewidth=2, markersize=6, markevery=5)
-                axes[0, 0].plot(epochs_range, val_acc, 'r-', marker='s',
-                                label='Validation Accuracy', linewidth=2, markersize=6, markevery=5)
+                # X-axis: 0 to num_epochs + 2, with 1 epoch interval
+                num_epochs = len(train_acc)
+                epochs_range = list(range(0, num_epochs + 2))
+                data_epochs = list(range(1, num_epochs + 1))
+
+                axes[0, 0].plot(data_epochs, train_acc, 'b-', marker='o',
+                                label='Train Accuracy', linewidth=2, markersize=6)
+                axes[0, 0].plot(data_epochs, val_acc, 'r-', marker='s',
+                                label='Validation Accuracy', linewidth=2, markersize=6)
                 axes[0, 0].set_title(
                     'Training vs Validation Accuracy', fontweight='bold')
                 axes[0, 0].set_xlabel('Epoch')
                 axes[0, 0].set_ylabel('Accuracy')
 
-                # Set x-axis to show every 5 epochs
-                max_epochs = len(train_acc)
-                if max_epochs > 1:
-                    epoch_ticks = list(range(1, max_epochs + 1, 5))
-                    if epoch_ticks[-1] != max_epochs:
-                        epoch_ticks.append(max_epochs)
-                    axes[0, 0].set_xticks(epoch_ticks)
+                # Set X-axis: 0 to num_epochs + 2 with 1 epoch interval
+                axes[0, 0].set_xlim(0, num_epochs + 2)
+                axes[0, 0].set_xticks(epochs_range)
+
+                # Set Y-axis: 0.0 to 1.0 with 0.1 intervals
+                axes[0, 0].set_ylim(0.0, 1.0)
+                axes[0, 0].set_yticks([i/10.0 for i in range(0, 11)])
 
                 axes[0, 0].legend()
                 axes[0, 0].grid(True, alpha=0.3)
 
-        # Plot 2: Training Loss (Train + Validation)
+        # Plot 2: Training Loss (Train + Validation) - with custom axis
         if self.history and hasattr(self.history, 'history'):
             train_loss = self.history.history.get('loss', [])
             val_loss = self.history.history.get('val_loss', [])
             if train_loss and val_loss:
-                epochs_range = range(1, len(train_loss) + 1)
-                axes[0, 1].plot(epochs_range, train_loss, 'b-', marker='o',
-                                label='Train Loss', linewidth=2, markersize=6, markevery=5)
-                axes[0, 1].plot(epochs_range, val_loss, 'r-', marker='s',
-                                label='Validation Loss', linewidth=2, markersize=6, markevery=5)
+                # X-axis: 0 to num_epochs + 2, with 1 epoch interval
+                num_epochs = len(train_loss)
+                epochs_range = list(range(0, num_epochs + 2))
+                data_epochs = list(range(1, num_epochs + 1))
+
+                axes[0, 1].plot(data_epochs, train_loss, 'b-', marker='o',
+                                label='Train Loss', linewidth=2, markersize=6)
+                axes[0, 1].plot(data_epochs, val_loss, 'r-', marker='s',
+                                label='Validation Loss', linewidth=2, markersize=6)
                 axes[0, 1].set_title(
                     'Training vs Validation Loss', fontweight='bold')
                 axes[0, 1].set_xlabel('Epoch')
                 axes[0, 1].set_ylabel('Loss')
 
-                # Set x-axis to show every 5 epochs
-                max_epochs = len(train_loss)
-                if max_epochs > 1:
-                    epoch_ticks = list(range(1, max_epochs + 1, 5))
-                    if epoch_ticks[-1] != max_epochs:
-                        epoch_ticks.append(max_epochs)
-                    axes[0, 1].set_xticks(epoch_ticks)
+                # Set X-axis: 0 to num_epochs + 2 with 1 epoch interval
+                axes[0, 1].set_xlim(0, num_epochs + 2)
+                axes[0, 1].set_xticks(epochs_range)
+
+                # Set Y-axis: 0.0 to 1.0 with 0.1 intervals
+                axes[0, 1].set_ylim(0.0, 1.0)
+                axes[0, 1].set_yticks([i/10.0 for i in range(0, 11)])
 
                 axes[0, 1].legend()
                 axes[0, 1].grid(True, alpha=0.3)
@@ -389,27 +404,34 @@ class ProductionTrainer:
         axes[1, 1].text(0.05, 0.5, metrics_text,
                         fontsize=10, family='monospace', verticalalignment='center')
 
-        # Plot 6: Federated Convergence (if applicable)
+        # Plot 6: Federated Convergence (if applicable) - Rectangle shape with unified Y-axis
         if self.convergence_data and len(self.convergence_data) > 0:
             rounds = [d['round'] for d in self.convergence_data]
             accuracies = [d['val_accuracy'] for d in self.convergence_data]
             losses = [d['val_loss'] for d in self.convergence_data]
 
             ax6_acc = axes[1, 2]
-            ax6_loss = ax6_acc.twinx()
 
             line1 = ax6_acc.plot(rounds, accuracies, 'b-', marker='o',
-                                 label='Validation Accuracy', linewidth=2, markersize=6)
-            line2 = ax6_loss.plot(rounds, losses, 'r-', marker='s',
-                                  label='Validation Loss', linewidth=2, markersize=6)
+                                 label='Accuracy', linewidth=2, markersize=6)
+            line2 = ax6_acc.plot(rounds, losses, 'r-', marker='s',
+                                 label='Loss', linewidth=2, markersize=6)
 
-            ax6_acc.set_title(
-                'Federated Training Convergence', fontweight='bold')
+            ax6_acc.set_title('Federated Convergence', fontweight='bold')
             ax6_acc.set_xlabel('Round')
-            ax6_acc.set_ylabel('Accuracy', color='b')
-            ax6_loss.set_ylabel('Loss', color='r')
-            ax6_acc.tick_params(axis='y', labelcolor='b')
-            ax6_loss.tick_params(axis='y', labelcolor='r')
+            ax6_acc.set_ylabel('Accuracy/Loss')
+
+            # Set X-axis: 2 round intervals
+            max_round = rounds[-1] if rounds else 50
+            round_ticks = list(range(0, max_round + 2, 2))
+            if round_ticks[-1] < max_round:
+                round_ticks.append(max_round)
+            ax6_acc.set_xticks(round_ticks)
+
+            # Set Y-axis: Universal 0.0 to 1.0 with 0.1 intervals
+            ax6_acc.set_ylim(0.0, 1.0)
+            ax6_acc.set_yticks([i/10.0 for i in range(0, 11)])
+
             ax6_acc.grid(True, alpha=0.3)
 
             # Combine legends
