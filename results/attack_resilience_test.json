@@ -1,0 +1,2447 @@
+{
+  "timestamp": "2025-11-02T20:18:05.549922",
+  "command_args": {
+    "threads": 5,
+    "packets": 50,
+    "duration": 15,
+    "benign": 20,
+    "target": "api",
+    "targets": null,
+    "pattern": "http-flood",
+    "intensity": null,
+    "skip_benign": false,
+    "sequential": false,
+    "list_targets": false,
+    "list_patterns": false
+  },
+  "targets_attacked": [
+    "api"
+  ],
+  "attack_pattern": "http-flood",
+  "all_results": [
+    {
+      "target": "api",
+      "attack_packets": [
+        {
+          "thread_id": 0,
+          "request": 0,
+          "success": true,
+          "latency": 338.214635848999,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:39.572708"
+        },
+        {
+          "thread_id": 0,
+          "request": 1,
+          "success": true,
+          "latency": 308.4709644317627,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:39.932601"
+        },
+        {
+          "thread_id": 0,
+          "request": 2,
+          "success": true,
+          "latency": 408.1916809082031,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:40.391860"
+        },
+        {
+          "thread_id": 0,
+          "request": 3,
+          "success": true,
+          "latency": 375.32877922058105,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:40.872188"
+        },
+        {
+          "thread_id": 0,
+          "request": 4,
+          "success": true,
+          "latency": 281.25882148742676,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:41.205679"
+        },
+        {
+          "thread_id": 0,
+          "request": 5,
+          "success": true,
+          "latency": 361.31906509399414,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:41.617310"
+        },
+        {
+          "thread_id": 0,
+          "request": 6,
+          "success": true,
+          "latency": 339.7212028503418,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:42.007936"
+        },
+        {
+          "thread_id": 0,
+          "request": 7,
+          "success": true,
+          "latency": 275.26021003723145,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:42.333798"
+        },
+        {
+          "thread_id": 0,
+          "request": 8,
+          "success": true,
+          "latency": 267.4274444580078,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:42.653053"
+        },
+        {
+          "thread_id": 0,
+          "request": 9,
+          "success": true,
+          "latency": 425.8112907409668,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:43.131068"
+        },
+        {
+          "thread_id": 0,
+          "request": 10,
+          "success": true,
+          "latency": 390.4378414154053,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:43.573310"
+        },
+        {
+          "thread_id": 0,
+          "request": 11,
+          "success": true,
+          "latency": 338.3445739746094,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:43.961774"
+        },
+        {
+          "thread_id": 0,
+          "request": 12,
+          "success": true,
+          "latency": 409.29651260375977,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:44.421968"
+        },
+        {
+          "thread_id": 0,
+          "request": 13,
+          "success": true,
+          "latency": 454.30636405944824,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:44.927766"
+        },
+        {
+          "thread_id": 0,
+          "request": 14,
+          "success": true,
+          "latency": 461.4400863647461,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:45.439760"
+        },
+        {
+          "thread_id": 0,
+          "request": 15,
+          "success": true,
+          "latency": 479.2296886444092,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:45.970870"
+        },
+        {
+          "thread_id": 0,
+          "request": 16,
+          "success": true,
+          "latency": 425.57811737060547,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:46.447325"
+        },
+        {
+          "thread_id": 0,
+          "request": 17,
+          "success": true,
+          "latency": 253.14760208129883,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:46.751068"
+        },
+        {
+          "thread_id": 0,
+          "request": 18,
+          "success": true,
+          "latency": 426.6989231109619,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:47.229705"
+        },
+        {
+          "thread_id": 0,
+          "request": 19,
+          "success": true,
+          "latency": 501.76143646240234,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:47.781871"
+        },
+        {
+          "thread_id": 0,
+          "request": 20,
+          "success": true,
+          "latency": 376.2025833129883,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:48.209543"
+        },
+        {
+          "thread_id": 0,
+          "request": 21,
+          "success": true,
+          "latency": 287.01090812683105,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:48.548127"
+        },
+        {
+          "thread_id": 0,
+          "request": 22,
+          "success": true,
+          "latency": 392.8637504577637,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:48.992469"
+        },
+        {
+          "thread_id": 0,
+          "request": 23,
+          "success": true,
+          "latency": 369.6606159210205,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:49.414257"
+        },
+        {
+          "thread_id": 0,
+          "request": 24,
+          "success": true,
+          "latency": 739.2771244049072,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:50.203732"
+        },
+        {
+          "thread_id": 0,
+          "request": 25,
+          "success": true,
+          "latency": 743.253231048584,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:50.999500"
+        },
+        {
+          "thread_id": 0,
+          "request": 26,
+          "success": true,
+          "latency": 509.8392963409424,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:51.560308"
+        },
+        {
+          "thread_id": 0,
+          "request": 27,
+          "success": true,
+          "latency": 415.64130783081055,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:52.027763"
+        },
+        {
+          "thread_id": 0,
+          "request": 28,
+          "success": true,
+          "latency": 422.9769706726074,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:52.501481"
+        },
+        {
+          "thread_id": 0,
+          "request": 29,
+          "success": true,
+          "latency": 644.5503234863281,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:53.197590"
+        },
+        {
+          "thread_id": 0,
+          "request": 30,
+          "success": true,
+          "latency": 588.7961387634277,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:53.837635"
+        },
+        {
+          "thread_id": 0,
+          "request": 31,
+          "success": true,
+          "latency": 407.23109245300293,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:54.295674"
+        },
+        {
+          "thread_id": 0,
+          "request": 32,
+          "success": true,
+          "latency": 488.314151763916,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:54.836054"
+        },
+        {
+          "thread_id": 0,
+          "request": 33,
+          "success": true,
+          "latency": 364.9470806121826,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:55.252310"
+        },
+        {
+          "thread_id": 0,
+          "request": 34,
+          "success": true,
+          "latency": 385.06627082824707,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:55.688202"
+        },
+        {
+          "thread_id": 0,
+          "request": 35,
+          "success": true,
+          "latency": 371.72412872314453,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:56.112235"
+        },
+        {
+          "thread_id": 0,
+          "request": 36,
+          "success": true,
+          "latency": 350.3711223602295,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:56.514124"
+        },
+        {
+          "thread_id": 0,
+          "request": 37,
+          "success": true,
+          "latency": 357.44428634643555,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:56.922002"
+        },
+        {
+          "thread_id": 0,
+          "request": 38,
+          "success": true,
+          "latency": 318.3121681213379,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:57.291513"
+        },
+        {
+          "thread_id": 0,
+          "request": 39,
+          "success": true,
+          "latency": 417.10567474365234,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:57.759600"
+        },
+        {
+          "thread_id": 0,
+          "request": 40,
+          "success": true,
+          "latency": 350.91280937194824,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:58.160853"
+        },
+        {
+          "thread_id": 0,
+          "request": 41,
+          "success": true,
+          "latency": 340.3475284576416,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:58.553966"
+        },
+        {
+          "thread_id": 0,
+          "request": 42,
+          "success": true,
+          "latency": 335.5083465576172,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:58.939798"
+        },
+        {
+          "thread_id": 0,
+          "request": 43,
+          "success": true,
+          "latency": 324.7506618499756,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:59.316266"
+        },
+        {
+          "thread_id": 0,
+          "request": 44,
+          "success": true,
+          "latency": 310.9619617462158,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:59.677997"
+        },
+        {
+          "thread_id": 0,
+          "request": 45,
+          "success": true,
+          "latency": 395.7500457763672,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:18:00.125276"
+        },
+        {
+          "thread_id": 0,
+          "request": 46,
+          "success": true,
+          "latency": 360.7769012451172,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:18:00.536765"
+        },
+        {
+          "thread_id": 0,
+          "request": 47,
+          "success": true,
+          "latency": 302.3531436920166,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:18:00.889472"
+        },
+        {
+          "thread_id": 0,
+          "request": 48,
+          "success": true,
+          "latency": 321.3205337524414,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:18:01.261631"
+        },
+        {
+          "thread_id": 0,
+          "request": 49,
+          "success": true,
+          "latency": 347.62120246887207,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:18:01.659445"
+        },
+        {
+          "thread_id": 1,
+          "request": 0,
+          "success": true,
+          "latency": 356.83298110961914,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:39.592343"
+        },
+        {
+          "thread_id": 1,
+          "request": 1,
+          "success": true,
+          "latency": 322.73364067077637,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:39.966097"
+        },
+        {
+          "thread_id": 1,
+          "request": 2,
+          "success": true,
+          "latency": 503.79419326782227,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:40.522053"
+        },
+        {
+          "thread_id": 1,
+          "request": 3,
+          "success": true,
+          "latency": 383.4671974182129,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:40.956136"
+        },
+        {
+          "thread_id": 1,
+          "request": 4,
+          "success": true,
+          "latency": 350.34942626953125,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:41.357806"
+        },
+        {
+          "thread_id": 1,
+          "request": 5,
+          "success": true,
+          "latency": 379.5177936553955,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:41.788034"
+        },
+        {
+          "thread_id": 1,
+          "request": 6,
+          "success": true,
+          "latency": 353.47628593444824,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:42.193183"
+        },
+        {
+          "thread_id": 1,
+          "request": 7,
+          "success": true,
+          "latency": 367.7647113800049,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:42.611356"
+        },
+        {
+          "thread_id": 1,
+          "request": 8,
+          "success": true,
+          "latency": 464.6477699279785,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:43.126998"
+        },
+        {
+          "thread_id": 1,
+          "request": 9,
+          "success": true,
+          "latency": 385.1609230041504,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:43.562873"
+        },
+        {
+          "thread_id": 1,
+          "request": 10,
+          "success": true,
+          "latency": 355.1626205444336,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:43.968828"
+        },
+        {
+          "thread_id": 1,
+          "request": 11,
+          "success": true,
+          "latency": 397.65214920043945,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:44.417384"
+        },
+        {
+          "thread_id": 1,
+          "request": 12,
+          "success": true,
+          "latency": 459.4459533691406,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:44.928278"
+        },
+        {
+          "thread_id": 1,
+          "request": 13,
+          "success": true,
+          "latency": 473.33693504333496,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:45.453232"
+        },
+        {
+          "thread_id": 1,
+          "request": 14,
+          "success": true,
+          "latency": 510.35380363464355,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:46.018727"
+        },
+        {
+          "thread_id": 1,
+          "request": 15,
+          "success": true,
+          "latency": 438.3540153503418,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:46.511234"
+        },
+        {
+          "thread_id": 1,
+          "request": 16,
+          "success": true,
+          "latency": 413.0361080169678,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:46.974528"
+        },
+        {
+          "thread_id": 1,
+          "request": 17,
+          "success": true,
+          "latency": 345.6554412841797,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:47.371906"
+        },
+        {
+          "thread_id": 1,
+          "request": 18,
+          "success": true,
+          "latency": 498.0301856994629,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:47.920112"
+        },
+        {
+          "thread_id": 1,
+          "request": 19,
+          "success": true,
+          "latency": 352.506160736084,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:48.323606"
+        },
+        {
+          "thread_id": 1,
+          "request": 20,
+          "success": true,
+          "latency": 390.270471572876,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:48.764850"
+        },
+        {
+          "thread_id": 1,
+          "request": 21,
+          "success": true,
+          "latency": 417.9196357727051,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:49.234213"
+        },
+        {
+          "thread_id": 1,
+          "request": 22,
+          "success": true,
+          "latency": 603.4858226776123,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:49.888468"
+        },
+        {
+          "thread_id": 1,
+          "request": 23,
+          "success": true,
+          "latency": 642.0867443084717,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:50.585358"
+        },
+        {
+          "thread_id": 1,
+          "request": 24,
+          "success": true,
+          "latency": 585.7622623443604,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:51.223135"
+        },
+        {
+          "thread_id": 1,
+          "request": 25,
+          "success": true,
+          "latency": 503.45516204833984,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:51.778518"
+        },
+        {
+          "thread_id": 1,
+          "request": 26,
+          "success": true,
+          "latency": 459.03635025024414,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:52.287981"
+        },
+        {
+          "thread_id": 1,
+          "request": 27,
+          "success": true,
+          "latency": 389.16540145874023,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:52.728996"
+        },
+        {
+          "thread_id": 1,
+          "request": 28,
+          "success": true,
+          "latency": 634.1824531555176,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:53.418309"
+        },
+        {
+          "thread_id": 1,
+          "request": 29,
+          "success": true,
+          "latency": 526.5524387359619,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:53.995755"
+        },
+        {
+          "thread_id": 1,
+          "request": 30,
+          "success": true,
+          "latency": 409.498929977417,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:54.458034"
+        },
+        {
+          "thread_id": 1,
+          "request": 31,
+          "success": true,
+          "latency": 402.557373046875,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:54.911950"
+        },
+        {
+          "thread_id": 1,
+          "request": 32,
+          "success": true,
+          "latency": 456.1941623687744,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:55.419546"
+        },
+        {
+          "thread_id": 1,
+          "request": 33,
+          "success": true,
+          "latency": 356.8263053894043,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:55.829693"
+        },
+        {
+          "thread_id": 1,
+          "request": 34,
+          "success": true,
+          "latency": 377.03728675842285,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:56.258171"
+        },
+        {
+          "thread_id": 1,
+          "request": 35,
+          "success": true,
+          "latency": 397.03965187072754,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:56.706009"
+        },
+        {
+          "thread_id": 1,
+          "request": 36,
+          "success": true,
+          "latency": 300.0452518463135,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:57.056695"
+        },
+        {
+          "thread_id": 1,
+          "request": 37,
+          "success": true,
+          "latency": 382.488489151001,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:57.489924"
+        },
+        {
+          "thread_id": 1,
+          "request": 38,
+          "success": true,
+          "latency": 346.8759059906006,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:57.887313"
+        },
+        {
+          "thread_id": 1,
+          "request": 39,
+          "success": true,
+          "latency": 401.7641544342041,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:58.339889"
+        },
+        {
+          "thread_id": 1,
+          "request": 40,
+          "success": true,
+          "latency": 322.6141929626465,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:58.713252"
+        },
+        {
+          "thread_id": 1,
+          "request": 41,
+          "success": true,
+          "latency": 334.3958854675293,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:59.098511"
+        },
+        {
+          "thread_id": 1,
+          "request": 42,
+          "success": true,
+          "latency": 314.52012062072754,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:59.463774"
+        },
+        {
+          "thread_id": 1,
+          "request": 43,
+          "success": true,
+          "latency": 404.32262420654297,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:59.918420"
+        },
+        {
+          "thread_id": 1,
+          "request": 44,
+          "success": true,
+          "latency": 349.25055503845215,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:18:00.318301"
+        },
+        {
+          "thread_id": 1,
+          "request": 45,
+          "success": true,
+          "latency": 360.6290817260742,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:18:00.731064"
+        },
+        {
+          "thread_id": 1,
+          "request": 46,
+          "success": true,
+          "latency": 340.03567695617676,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:18:01.121767"
+        },
+        {
+          "thread_id": 1,
+          "request": 47,
+          "success": true,
+          "latency": 360.9893321990967,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:18:01.534294"
+        },
+        {
+          "thread_id": 1,
+          "request": 48,
+          "success": true,
+          "latency": 317.1210289001465,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:18:01.902363"
+        },
+        {
+          "thread_id": 1,
+          "request": 49,
+          "success": true,
+          "latency": 284.7878932952881,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:18:02.238056"
+        },
+        {
+          "thread_id": 3,
+          "request": 0,
+          "success": true,
+          "latency": 330.67774772644043,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:39.571690"
+        },
+        {
+          "thread_id": 3,
+          "request": 1,
+          "success": true,
+          "latency": 342.49305725097656,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:39.966097"
+        },
+        {
+          "thread_id": 3,
+          "request": 2,
+          "success": true,
+          "latency": 480.1943302154541,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:40.496859"
+        },
+        {
+          "thread_id": 3,
+          "request": 3,
+          "success": true,
+          "latency": 369.78793144226074,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:40.926768"
+        },
+        {
+          "thread_id": 3,
+          "request": 4,
+          "success": true,
+          "latency": 325.51097869873047,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:41.303251"
+        },
+        {
+          "thread_id": 3,
+          "request": 5,
+          "success": true,
+          "latency": 309.83853340148926,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:41.664090"
+        },
+        {
+          "thread_id": 3,
+          "request": 6,
+          "success": true,
+          "latency": 368.6532974243164,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:42.083338"
+        },
+        {
+          "thread_id": 3,
+          "request": 7,
+          "success": true,
+          "latency": 343.4889316558838,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:42.477495"
+        },
+        {
+          "thread_id": 3,
+          "request": 8,
+          "success": true,
+          "latency": 353.8336753845215,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:42.882598"
+        },
+        {
+          "thread_id": 3,
+          "request": 9,
+          "success": true,
+          "latency": 381.26087188720703,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:43.314786"
+        },
+        {
+          "thread_id": 3,
+          "request": 10,
+          "success": true,
+          "latency": 346.6956615447998,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:43.713458"
+        },
+        {
+          "thread_id": 3,
+          "request": 11,
+          "success": true,
+          "latency": 321.42138481140137,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:44.087151"
+        },
+        {
+          "thread_id": 3,
+          "request": 12,
+          "success": true,
+          "latency": 451.9002437591553,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:44.589549"
+        },
+        {
+          "thread_id": 3,
+          "request": 13,
+          "success": true,
+          "latency": 404.14905548095703,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:45.045505"
+        },
+        {
+          "thread_id": 3,
+          "request": 14,
+          "success": true,
+          "latency": 467.2069549560547,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:45.563950"
+        },
+        {
+          "thread_id": 3,
+          "request": 15,
+          "success": true,
+          "latency": 553.5728931427002,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:46.168088"
+        },
+        {
+          "thread_id": 3,
+          "request": 16,
+          "success": true,
+          "latency": 579.0865421295166,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:46.798467"
+        },
+        {
+          "thread_id": 3,
+          "request": 17,
+          "success": true,
+          "latency": 427.22320556640625,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:47.278549"
+        },
+        {
+          "thread_id": 3,
+          "request": 18,
+          "success": true,
+          "latency": 518.6343193054199,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:47.848785"
+        },
+        {
+          "thread_id": 3,
+          "request": 19,
+          "success": true,
+          "latency": 371.8581199645996,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:48.271188"
+        },
+        {
+          "thread_id": 3,
+          "request": 20,
+          "success": true,
+          "latency": 371.1252212524414,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:48.693720"
+        },
+        {
+          "thread_id": 3,
+          "request": 21,
+          "success": true,
+          "latency": 477.7040481567383,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:49.222830"
+        },
+        {
+          "thread_id": 3,
+          "request": 22,
+          "success": true,
+          "latency": 411.5269184112549,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:49.685298"
+        },
+        {
+          "thread_id": 3,
+          "request": 23,
+          "success": true,
+          "latency": 840.5392169952393,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:50.576736"
+        },
+        {
+          "thread_id": 3,
+          "request": 24,
+          "success": true,
+          "latency": 611.0579967498779,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:51.239628"
+        },
+        {
+          "thread_id": 3,
+          "request": 25,
+          "success": true,
+          "latency": 474.2307662963867,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:51.764700"
+        },
+        {
+          "thread_id": 3,
+          "request": 26,
+          "success": true,
+          "latency": 462.8927707672119,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:52.280337"
+        },
+        {
+          "thread_id": 3,
+          "request": 27,
+          "success": true,
+          "latency": 459.90872383117676,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:52.791199"
+        },
+        {
+          "thread_id": 3,
+          "request": 28,
+          "success": true,
+          "latency": 654.8817157745361,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:53.498131"
+        },
+        {
+          "thread_id": 3,
+          "request": 29,
+          "success": true,
+          "latency": 487.8056049346924,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:54.036916"
+        },
+        {
+          "thread_id": 3,
+          "request": 30,
+          "success": true,
+          "latency": 379.04834747314453,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:54.468706"
+        },
+        {
+          "thread_id": 3,
+          "request": 31,
+          "success": true,
+          "latency": 424.43394660949707,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:54.943460"
+        },
+        {
+          "thread_id": 3,
+          "request": 32,
+          "success": true,
+          "latency": 467.73219108581543,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:55.462159"
+        },
+        {
+          "thread_id": 3,
+          "request": 33,
+          "success": true,
+          "latency": 410.81976890563965,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:55.924462"
+        },
+        {
+          "thread_id": 3,
+          "request": 34,
+          "success": true,
+          "latency": 346.02856636047363,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:56.321035"
+        },
+        {
+          "thread_id": 3,
+          "request": 35,
+          "success": true,
+          "latency": 354.5706272125244,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:56.726240"
+        },
+        {
+          "thread_id": 3,
+          "request": 36,
+          "success": true,
+          "latency": 325.6335258483887,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:57.103676"
+        },
+        {
+          "thread_id": 3,
+          "request": 37,
+          "success": true,
+          "latency": 399.4884490966797,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:57.554527"
+        },
+        {
+          "thread_id": 3,
+          "request": 38,
+          "success": true,
+          "latency": 368.7901496887207,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:57.974657"
+        },
+        {
+          "thread_id": 3,
+          "request": 39,
+          "success": true,
+          "latency": 349.73621368408203,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:58.374881"
+        },
+        {
+          "thread_id": 3,
+          "request": 40,
+          "success": true,
+          "latency": 299.0546226501465,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:58.724875"
+        },
+        {
+          "thread_id": 3,
+          "request": 41,
+          "success": true,
+          "latency": 377.0923614501953,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:59.152832"
+        },
+        {
+          "thread_id": 3,
+          "request": 42,
+          "success": true,
+          "latency": 357.893705368042,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:59.561949"
+        },
+        {
+          "thread_id": 3,
+          "request": 43,
+          "success": true,
+          "latency": 399.3096351623535,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:18:00.013658"
+        },
+        {
+          "thread_id": 3,
+          "request": 44,
+          "success": true,
+          "latency": 376.7819404602051,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:18:00.441021"
+        },
+        {
+          "thread_id": 3,
+          "request": 45,
+          "success": true,
+          "latency": 347.66626358032227,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:18:00.839103"
+        },
+        {
+          "thread_id": 3,
+          "request": 46,
+          "success": true,
+          "latency": 404.59465980529785,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:18:01.294595"
+        },
+        {
+          "thread_id": 3,
+          "request": 47,
+          "success": true,
+          "latency": 326.79033279418945,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:18:01.672215"
+        },
+        {
+          "thread_id": 3,
+          "request": 48,
+          "success": true,
+          "latency": 307.47056007385254,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:18:02.031892"
+        },
+        {
+          "thread_id": 3,
+          "request": 49,
+          "success": true,
+          "latency": 253.51428985595703,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:18:02.337401"
+        },
+        {
+          "thread_id": 2,
+          "request": 0,
+          "success": true,
+          "latency": 344.35439109802246,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:39.581823"
+        },
+        {
+          "thread_id": 2,
+          "request": 1,
+          "success": true,
+          "latency": 349.43413734436035,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:39.983668"
+        },
+        {
+          "thread_id": 2,
+          "request": 2,
+          "success": true,
+          "latency": 623.9650249481201,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:40.657891"
+        },
+        {
+          "thread_id": 2,
+          "request": 3,
+          "success": true,
+          "latency": 362.95485496520996,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:41.072753"
+        },
+        {
+          "thread_id": 2,
+          "request": 4,
+          "success": true,
+          "latency": 304.8865795135498,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:41.428296"
+        },
+        {
+          "thread_id": 2,
+          "request": 5,
+          "success": true,
+          "latency": 310.55593490600586,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:41.789553"
+        },
+        {
+          "thread_id": 2,
+          "request": 6,
+          "success": true,
+          "latency": 375.02098083496094,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:42.215269"
+        },
+        {
+          "thread_id": 2,
+          "request": 7,
+          "success": true,
+          "latency": 351.7770767211914,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:42.618426"
+        },
+        {
+          "thread_id": 2,
+          "request": 8,
+          "success": true,
+          "latency": 435.3358745574951,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:43.105838"
+        },
+        {
+          "thread_id": 2,
+          "request": 9,
+          "success": true,
+          "latency": 357.3603630065918,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:43.513642"
+        },
+        {
+          "thread_id": 2,
+          "request": 10,
+          "success": true,
+          "latency": 274.5215892791748,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:43.838907"
+        },
+        {
+          "thread_id": 2,
+          "request": 11,
+          "success": true,
+          "latency": 270.9197998046875,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:44.160778"
+        },
+        {
+          "thread_id": 2,
+          "request": 12,
+          "success": true,
+          "latency": 517.4283981323242,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:44.729224"
+        },
+        {
+          "thread_id": 2,
+          "request": 13,
+          "success": true,
+          "latency": 318.96281242370605,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:45.098769"
+        },
+        {
+          "thread_id": 2,
+          "request": 14,
+          "success": true,
+          "latency": 432.44099617004395,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:45.583215"
+        },
+        {
+          "thread_id": 2,
+          "request": 15,
+          "success": true,
+          "latency": 474.2887020111084,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:46.108132"
+        },
+        {
+          "thread_id": 2,
+          "request": 16,
+          "success": true,
+          "latency": 598.0522632598877,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:46.757388"
+        },
+        {
+          "thread_id": 2,
+          "request": 17,
+          "success": true,
+          "latency": 484.0812683105469,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:47.292711"
+        },
+        {
+          "thread_id": 2,
+          "request": 18,
+          "success": true,
+          "latency": 491.44506454467773,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:47.834362"
+        },
+        {
+          "thread_id": 2,
+          "request": 19,
+          "success": true,
+          "latency": 421.2040901184082,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:48.305937"
+        },
+        {
+          "thread_id": 2,
+          "request": 20,
+          "success": true,
+          "latency": 458.01568031311035,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:48.815279"
+        },
+        {
+          "thread_id": 2,
+          "request": 21,
+          "success": true,
+          "latency": 525.0587463378906,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:49.390951"
+        },
+        {
+          "thread_id": 2,
+          "request": 22,
+          "success": true,
+          "latency": 747.5838661193848,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:50.192901"
+        },
+        {
+          "thread_id": 2,
+          "request": 23,
+          "success": true,
+          "latency": 758.0595016479492,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:51.002609"
+        },
+        {
+          "thread_id": 2,
+          "request": 24,
+          "success": true,
+          "latency": 526.597261428833,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:51.580120"
+        },
+        {
+          "thread_id": 2,
+          "request": 25,
+          "success": true,
+          "latency": 434.556245803833,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:52.066345"
+        },
+        {
+          "thread_id": 2,
+          "request": 26,
+          "success": true,
+          "latency": 411.5111827850342,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:52.527938"
+        },
+        {
+          "thread_id": 2,
+          "request": 27,
+          "success": true,
+          "latency": 526.3841152191162,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:53.105951"
+        },
+        {
+          "thread_id": 2,
+          "request": 28,
+          "success": true,
+          "latency": 612.1125221252441,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:53.768889"
+        },
+        {
+          "thread_id": 2,
+          "request": 29,
+          "success": true,
+          "latency": 463.47641944885254,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:54.284160"
+        },
+        {
+          "thread_id": 2,
+          "request": 30,
+          "success": true,
+          "latency": 457.2603702545166,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:54.791657"
+        },
+        {
+          "thread_id": 2,
+          "request": 31,
+          "success": true,
+          "latency": 332.8535556793213,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:55.175764"
+        },
+        {
+          "thread_id": 2,
+          "request": 32,
+          "success": true,
+          "latency": 401.75461769104004,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:55.628109"
+        },
+        {
+          "thread_id": 2,
+          "request": 33,
+          "success": true,
+          "latency": 388.98754119873047,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:56.068513"
+        },
+        {
+          "thread_id": 2,
+          "request": 34,
+          "success": true,
+          "latency": 348.712682723999,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:56.467707"
+        },
+        {
+          "thread_id": 2,
+          "request": 35,
+          "success": true,
+          "latency": 338.41729164123535,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:56.857326"
+        },
+        {
+          "thread_id": 2,
+          "request": 36,
+          "success": true,
+          "latency": 348.05846214294434,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:57.257044"
+        },
+        {
+          "thread_id": 2,
+          "request": 37,
+          "success": true,
+          "latency": 435.2285861968994,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:57.743564"
+        },
+        {
+          "thread_id": 2,
+          "request": 38,
+          "success": true,
+          "latency": 388.3509635925293,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:58.182457"
+        },
+        {
+          "thread_id": 2,
+          "request": 39,
+          "success": true,
+          "latency": 363.0228042602539,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:58.596481"
+        },
+        {
+          "thread_id": 2,
+          "request": 40,
+          "success": true,
+          "latency": 387.12143898010254,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:59.034841"
+        },
+        {
+          "thread_id": 2,
+          "request": 41,
+          "success": true,
+          "latency": 351.43184661865234,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:59.437057"
+        },
+        {
+          "thread_id": 2,
+          "request": 42,
+          "success": true,
+          "latency": 384.3827247619629,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:59.872816"
+        },
+        {
+          "thread_id": 2,
+          "request": 43,
+          "success": true,
+          "latency": 376.39641761779785,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:18:00.300440"
+        },
+        {
+          "thread_id": 2,
+          "request": 44,
+          "success": true,
+          "latency": 349.6694564819336,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:18:00.700955"
+        },
+        {
+          "thread_id": 2,
+          "request": 45,
+          "success": true,
+          "latency": 325.3209590911865,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:18:01.078273"
+        },
+        {
+          "thread_id": 2,
+          "request": 46,
+          "success": true,
+          "latency": 311.7046356201172,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:18:01.440294"
+        },
+        {
+          "thread_id": 2,
+          "request": 47,
+          "success": true,
+          "latency": 282.4523448944092,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:18:01.773271"
+        },
+        {
+          "thread_id": 2,
+          "request": 48,
+          "success": true,
+          "latency": 272.1998691558838,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:18:02.097011"
+        },
+        {
+          "thread_id": 2,
+          "request": 49,
+          "success": true,
+          "latency": 233.3362102508545,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:18:02.380957"
+        },
+        {
+          "thread_id": 4,
+          "request": 0,
+          "success": true,
+          "latency": 356.84657096862793,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:39.597859"
+        },
+        {
+          "thread_id": 4,
+          "request": 1,
+          "success": true,
+          "latency": 344.8612689971924,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:39.993278"
+        },
+        {
+          "thread_id": 4,
+          "request": 2,
+          "success": true,
+          "latency": 477.3976802825928,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:40.522563"
+        },
+        {
+          "thread_id": 4,
+          "request": 3,
+          "success": true,
+          "latency": 399.87969398498535,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:40.973096"
+        },
+        {
+          "thread_id": 4,
+          "request": 4,
+          "success": true,
+          "latency": 310.79673767089844,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:41.335265"
+        },
+        {
+          "thread_id": 4,
+          "request": 5,
+          "success": true,
+          "latency": 320.10459899902344,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:41.705966"
+        },
+        {
+          "thread_id": 4,
+          "request": 6,
+          "success": true,
+          "latency": 361.16981506347656,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:42.117984"
+        },
+        {
+          "thread_id": 4,
+          "request": 7,
+          "success": true,
+          "latency": 326.27272605895996,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:42.495359"
+        },
+        {
+          "thread_id": 4,
+          "request": 8,
+          "success": true,
+          "latency": 306.71048164367676,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:42.853388"
+        },
+        {
+          "thread_id": 4,
+          "request": 9,
+          "success": true,
+          "latency": 371.1681365966797,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:43.275229"
+        },
+        {
+          "thread_id": 4,
+          "request": 10,
+          "success": true,
+          "latency": 398.70429039001465,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:43.725095"
+        },
+        {
+          "thread_id": 4,
+          "request": 11,
+          "success": true,
+          "latency": 330.7061195373535,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:44.106716"
+        },
+        {
+          "thread_id": 4,
+          "request": 12,
+          "success": true,
+          "latency": 424.3011474609375,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:44.581963"
+        },
+        {
+          "thread_id": 4,
+          "request": 13,
+          "success": true,
+          "latency": 405.40099143981934,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:45.037930"
+        },
+        {
+          "thread_id": 4,
+          "request": 14,
+          "success": true,
+          "latency": 546.8814373016357,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:45.636859"
+        },
+        {
+          "thread_id": 4,
+          "request": 15,
+          "success": true,
+          "latency": 487.5788688659668,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:46.174719"
+        },
+        {
+          "thread_id": 4,
+          "request": 16,
+          "success": true,
+          "latency": 550.1821041107178,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:46.775285"
+        },
+        {
+          "thread_id": 4,
+          "request": 17,
+          "success": true,
+          "latency": 458.263635635376,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:47.284678"
+        },
+        {
+          "thread_id": 4,
+          "request": 18,
+          "success": true,
+          "latency": 537.0855331420898,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:47.872832"
+        },
+        {
+          "thread_id": 4,
+          "request": 19,
+          "success": true,
+          "latency": 372.5166320800781,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:48.296794"
+        },
+        {
+          "thread_id": 4,
+          "request": 20,
+          "success": true,
+          "latency": 464.69974517822266,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:48.812175"
+        },
+        {
+          "thread_id": 4,
+          "request": 21,
+          "success": true,
+          "latency": 513.1971836090088,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:49.376068"
+        },
+        {
+          "thread_id": 4,
+          "request": 22,
+          "success": true,
+          "latency": 803.4229278564453,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:50.231390"
+        },
+        {
+          "thread_id": 4,
+          "request": 23,
+          "success": true,
+          "latency": 697.7405548095703,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:50.979686"
+        },
+        {
+          "thread_id": 4,
+          "request": 24,
+          "success": true,
+          "latency": 498.201847076416,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:51.528384"
+        },
+        {
+          "thread_id": 4,
+          "request": 25,
+          "success": true,
+          "latency": 428.71761322021484,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:52.008838"
+        },
+        {
+          "thread_id": 4,
+          "request": 26,
+          "success": true,
+          "latency": 428.1175136566162,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:52.487841"
+        },
+        {
+          "thread_id": 4,
+          "request": 27,
+          "success": true,
+          "latency": 518.9015865325928,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:53.057980"
+        },
+        {
+          "thread_id": 4,
+          "request": 28,
+          "success": true,
+          "latency": 677.1998405456543,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:53.787881"
+        },
+        {
+          "thread_id": 4,
+          "request": 29,
+          "success": true,
+          "latency": 435.7433319091797,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:54.274401"
+        },
+        {
+          "thread_id": 4,
+          "request": 30,
+          "success": true,
+          "latency": 447.5729465484619,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:54.773335"
+        },
+        {
+          "thread_id": 4,
+          "request": 31,
+          "success": true,
+          "latency": 397.4013328552246,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:55.223239"
+        },
+        {
+          "thread_id": 4,
+          "request": 32,
+          "success": true,
+          "latency": 391.5572166442871,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:55.665273"
+        },
+        {
+          "thread_id": 4,
+          "request": 33,
+          "success": true,
+          "latency": 386.72351837158203,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:56.104002"
+        },
+        {
+          "thread_id": 4,
+          "request": 34,
+          "success": true,
+          "latency": 368.91889572143555,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:56.523501"
+        },
+        {
+          "thread_id": 4,
+          "request": 35,
+          "success": true,
+          "latency": 337.5840187072754,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:56.913278"
+        },
+        {
+          "thread_id": 4,
+          "request": 36,
+          "success": true,
+          "latency": 344.4633483886719,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:57.308335"
+        },
+        {
+          "thread_id": 4,
+          "request": 37,
+          "success": true,
+          "latency": 415.3099060058594,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:57.774599"
+        },
+        {
+          "thread_id": 4,
+          "request": 38,
+          "success": true,
+          "latency": 355.72028160095215,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:58.180866"
+        },
+        {
+          "thread_id": 4,
+          "request": 39,
+          "success": true,
+          "latency": 356.3523292541504,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:58.587786"
+        },
+        {
+          "thread_id": 4,
+          "request": 40,
+          "success": true,
+          "latency": 368.6950206756592,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:59.008815"
+        },
+        {
+          "thread_id": 4,
+          "request": 41,
+          "success": true,
+          "latency": 370.6529140472412,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:59.430951"
+        },
+        {
+          "thread_id": 4,
+          "request": 42,
+          "success": true,
+          "latency": 402.6162624359131,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:59.885035"
+        },
+        {
+          "thread_id": 4,
+          "request": 43,
+          "success": true,
+          "latency": 380.86652755737305,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:18:00.316292"
+        },
+        {
+          "thread_id": 4,
+          "request": 44,
+          "success": true,
+          "latency": 350.083589553833,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:18:00.717220"
+        },
+        {
+          "thread_id": 4,
+          "request": 45,
+          "success": true,
+          "latency": 357.67626762390137,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:18:01.125594"
+        },
+        {
+          "thread_id": 4,
+          "request": 46,
+          "success": true,
+          "latency": 361.99140548706055,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:18:01.538359"
+        },
+        {
+          "thread_id": 4,
+          "request": 47,
+          "success": true,
+          "latency": 342.526912689209,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:18:01.931309"
+        },
+        {
+          "thread_id": 4,
+          "request": 48,
+          "success": true,
+          "latency": 275.09570121765137,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:18:02.257219"
+        },
+        {
+          "thread_id": 4,
+          "request": 49,
+          "success": true,
+          "latency": 180.48453330993652,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:18:02.488253"
+        }
+      ],
+      "benign_packets": [
+        {
+          "request": 0,
+          "success": true,
+          "latency": 711.5111351013184,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:31.842931"
+        },
+        {
+          "request": 1,
+          "success": true,
+          "latency": 191.56360626220703,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:32.136568"
+        },
+        {
+          "request": 2,
+          "success": true,
+          "latency": 180.32336235046387,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:32.417414"
+        },
+        {
+          "request": 3,
+          "success": true,
+          "latency": 167.69742965698242,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:32.686468"
+        },
+        {
+          "request": 4,
+          "success": true,
+          "latency": 219.57015991210938,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:33.006859"
+        },
+        {
+          "request": 5,
+          "success": true,
+          "latency": 171.2973117828369,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:33.279891"
+        },
+        {
+          "request": 6,
+          "success": true,
+          "latency": 434.25559997558594,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:33.818610"
+        },
+        {
+          "request": 7,
+          "success": true,
+          "latency": 197.51667976379395,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:34.117770"
+        },
+        {
+          "request": 8,
+          "success": true,
+          "latency": 188.0660057067871,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:34.407741"
+        },
+        {
+          "request": 9,
+          "success": true,
+          "latency": 152.36806869506836,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:34.661492"
+        },
+        {
+          "request": 10,
+          "success": true,
+          "latency": 155.6239128112793,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:34.918034"
+        },
+        {
+          "request": 11,
+          "success": true,
+          "latency": 127.36082077026367,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:35.145860"
+        },
+        {
+          "request": 12,
+          "success": true,
+          "latency": 118.19887161254883,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:35.365190"
+        },
+        {
+          "request": 13,
+          "success": true,
+          "latency": 131.82377815246582,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:35.598530"
+        },
+        {
+          "request": 14,
+          "success": true,
+          "latency": 137.3884677886963,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:35.837148"
+        },
+        {
+          "request": 15,
+          "success": true,
+          "latency": 155.55143356323242,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:36.094526"
+        },
+        {
+          "request": 16,
+          "success": true,
+          "latency": 146.3491916656494,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:36.341656"
+        },
+        {
+          "request": 17,
+          "success": true,
+          "latency": 166.9778823852539,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:36.610145"
+        },
+        {
+          "request": 18,
+          "success": true,
+          "latency": 157.28425979614258,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:36.869327"
+        },
+        {
+          "request": 19,
+          "success": true,
+          "latency": 158.51116180419922,
+          "prediction": "Attack",
+          "status_code": 200,
+          "timestamp": "2025-11-02T20:17:37.128730"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "total_targets": 1,
+    "total_attack_packets": 250,
+    "overall_detection_rate": 100.0,
+    "api_crashes": 0,
+    "status": "RESILIENT"
+  }
+}
