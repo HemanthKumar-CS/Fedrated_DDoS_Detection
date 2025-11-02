@@ -20,6 +20,7 @@ from sklearn.utils.class_weight import compute_class_weight
 import matplotlib.pyplot as plt
 import seaborn as sns
 import json
+import argparse
 
 logging.basicConfig(
     level=logging.INFO,
@@ -288,13 +289,27 @@ class ProductionTrainer:
         fig.suptitle('DDoS Detection Model Performance',
                      fontsize=16, fontweight='bold')
 
-        # Plot 1: Training history
-        if self.history:
+        # Plot 1: Training history or convergence across federated rounds
+        if self.convergence_data:
+            # Federated training: plot convergence across rounds
+            rounds = [d['round'] for d in self.convergence_data]
+            accuracies = [d['val_accuracy'] for d in self.convergence_data]
+            losses = [d['val_loss'] for d in self.convergence_data]
+            axes[0, 0].plot(rounds, accuracies, 'b-', marker='o',
+                            label=f'Val Accuracy (Final: {accuracies[-1]:.4f})', linewidth=2)
+            axes[0, 0].set_title(
+                f'Convergence Across {len(rounds)} Federated Rounds')
+            axes[0, 0].set_xlabel('Round')
+            axes[0, 0].set_ylabel('Accuracy')
+            axes[0, 0].legend()
+            axes[0, 0].grid(True, alpha=0.3)
+        elif self.history:
+            # Standard training: plot epoch-level history
             axes[0, 0].plot(self.history.history['accuracy'],
                             label='Train Acc')
             axes[0, 0].plot(
                 self.history.history['val_accuracy'], label='Val Acc')
-            axes[0, 0].set_title('Accuracy')
+            axes[0, 0].set_title('Training Accuracy')
             axes[0, 0].set_xlabel('Epoch')
             axes[0, 0].set_ylabel('Accuracy')
             axes[0, 0].legend()
@@ -346,11 +361,12 @@ class ProductionTrainer:
         plt.close()
 
 
-def main(federated_rounds=1):
+def main(federated_rounds=1, epochs=5):
     """Main training function
 
     Args:
         federated_rounds: Number of federated communication rounds (1 for standard, 50+ for production)
+        epochs: Number of epochs per federated round
     """
     try:
         logger.info("="*70)
@@ -414,7 +430,11 @@ def main(federated_rounds=1):
 
 
 if __name__ == "__main__":
-    import sys
-    # Support federated_rounds argument: python train.py 50
-    federated_rounds = int(sys.argv[1]) if len(sys.argv) > 1 else 1
-    main(federated_rounds=federated_rounds)
+    parser = argparse.ArgumentParser(description='DDoS Detection Training')
+    parser.add_argument('--federated-rounds', type=int, default=1,
+                        help='Number of federated rounds')
+    parser.add_argument('--epochs', type=int, default=5,
+                        help='Epochs per round')
+    args = parser.parse_args()
+
+    main(federated_rounds=args.federated_rounds, epochs=args.epochs)

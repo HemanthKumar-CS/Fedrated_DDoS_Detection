@@ -156,6 +156,30 @@ services:
       - SERVER_ADDRESS=fl-server:8080
       - LOG_LEVEL=INFO
 
+  # DDoS Detection Inference API Service
+  api-service:
+    build: .
+    container_name: api-service
+    command: python api_service.py
+    ports:
+      - "5000:5000"  # API port
+    volumes:
+      - ./results:/app/results
+      - ./data:/app/data
+    networks:
+      - federated_network
+    environment:
+      - FLASK_ENV=production
+      - LOG_LEVEL=INFO
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    depends_on:
+      - fl-server
+
 networks:
   federated_network:
     driver: bridge
