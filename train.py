@@ -151,13 +151,14 @@ class ProductionTrainer:
         self.model = model
         return model
 
-    def train(self, X_train, y_train, X_test, y_test, federated_rounds=1):
+    def train(self, X_train, y_train, X_test, y_test, federated_rounds=1, epochs=5):
         """Train on real data with optional federated rounds
 
         Args:
             X_train, y_train: Training data
             X_test, y_test: Test data
             federated_rounds: Number of federated communication rounds (default: 1, production: 50+)
+            epochs: Number of epochs per federated round (default: 5)
         """
         logger.info(
             f"\n🚀 Starting training... (Federated Rounds: {federated_rounds})")
@@ -191,15 +192,16 @@ class ProductionTrainer:
         # For federated rounds: multiple rounds with reduced epochs per round
         all_metrics = []
         convergence_history = []
+        last_history = None
 
         for round_num in range(federated_rounds):
             logger.info(f"\n{'='*70}")
             logger.info(f"FEDERATED ROUND {round_num + 1}/{federated_rounds}")
             logger.info(f"{'='*70}")
 
-            # Each round trains for fewer epochs (convergence across multiple rounds)
+            # Each round trains for specified epochs (convergence across multiple rounds)
             epochs_per_round = max(
-                2, 20 // federated_rounds) if federated_rounds > 1 else 20
+                1, epochs) if federated_rounds > 1 else epochs
 
             round_history = self.model.fit(
                 X_train, y_train,
@@ -211,6 +213,9 @@ class ProductionTrainer:
                 1 else [],  # Only EarlyStopping on last round
                 verbose=0
             )
+
+            # Store last history for fallback
+            last_history = round_history
 
             # Track metrics each round
             val_acc = round_history.history['val_accuracy'][-1] if 'val_accuracy' in round_history.history else 0
@@ -224,8 +229,9 @@ class ProductionTrainer:
             logger.info(
                 f"Round {round_num + 1}: Val Accuracy={val_acc:.4f}, Val Loss={val_loss:.4f}")
 
-        # Store convergence data
+        # Store convergence data and history as fallback
         self.convergence_data = convergence_history
+        self.history = last_history
         self.federated_rounds = federated_rounds
 
         logger.info(
@@ -285,74 +291,135 @@ class ProductionTrainer:
         y_pred = (y_pred_proba > 0.5).astype(int).flatten()
         cm = confusion_matrix(y_test, y_pred)
 
-        fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+        fig, axes = plt.subplots(2, 3, figsize=(18, 10))
         fig.suptitle('DDoS Detection Model Performance',
                      fontsize=16, fontweight='bold')
 
-        # Plot 1: Training history or convergence across federated rounds
-        if self.convergence_data:
-            # Federated training: plot convergence across rounds
-            rounds = [d['round'] for d in self.convergence_data]
-            accuracies = [d['val_accuracy'] for d in self.convergence_data]
-            losses = [d['val_loss'] for d in self.convergence_data]
-            axes[0, 0].plot(rounds, accuracies, 'b-', marker='o',
-                            label=f'Val Accuracy (Final: {accuracies[-1]:.4f})', linewidth=2)
-            axes[0, 0].set_title(
-                f'Convergence Across {len(rounds)} Federated Rounds')
-            axes[0, 0].set_xlabel('Round')
-            axes[0, 0].set_ylabel('Accuracy')
-            axes[0, 0].legend()
-            axes[0, 0].grid(True, alpha=0.3)
-        elif self.history:
-            # Standard training: plot epoch-level history
-            axes[0, 0].plot(self.history.history['accuracy'],
-                            label='Train Acc')
-            axes[0, 0].plot(
-                self.history.history['val_accuracy'], label='Val Acc')
-            axes[0, 0].set_title('Training Accuracy')
-            axes[0, 0].set_xlabel('Epoch')
-            axes[0, 0].set_ylabel('Accuracy')
-            axes[0, 0].legend()
-            axes[0, 0].grid(True, alpha=0.3)
+        # Plot 1: Training Accuracy (Train + Validation)
+        if self.history and hasattr(self.history, 'history'):
+            train_acc = self.history.history.get('accuracy', [])
+            val_acc = self.history.history.get('val_accuracy', [])
+            if train_acc and val_acc:
+                epochs_range = range(1, len(train_acc) + 1)
+                axes[0, 0].plot(epochs_range, train_acc, 'b-', marker='o',
+                                label='Train Accuracy', linewidth=2, markersize=6, markevery=5)
+                axes[0, 0].plot(epochs_range, val_acc, 'r-', marker='s',
+                                label='Validation Accuracy', linewidth=2, markersize=6, markevery=5)
+                axes[0, 0].set_title(
+                    'Training vs Validation Accuracy', fontweight='bold')
+                axes[0, 0].set_xlabel('Epoch')
+                axes[0, 0].set_ylabel('Accuracy')
 
-        # Plot 2: Confusion Matrix
-        sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=axes[0, 1],
-                    xticklabels=['Benign', 'Attack'], yticklabels=['Benign', 'Attack'])
-        axes[0, 1].set_title('Confusion Matrix')
-        axes[0, 1].set_ylabel('True Label')
-        axes[0, 1].set_xlabel('Predicted Label')
+                # Set x-axis to show every 5 epochs
+                max_epochs = len(train_acc)
+                if max_epochs > 1:
+                    epoch_ticks = list(range(1, max_epochs + 1, 5))
+                    if epoch_ticks[-1] != max_epochs:
+                        epoch_ticks.append(max_epochs)
+                    axes[0, 0].set_xticks(epoch_ticks)
 
-        # Plot 3: ROC Curve
+                axes[0, 0].legend()
+                axes[0, 0].grid(True, alpha=0.3)
+
+        # Plot 2: Training Loss (Train + Validation)
+        if self.history and hasattr(self.history, 'history'):
+            train_loss = self.history.history.get('loss', [])
+            val_loss = self.history.history.get('val_loss', [])
+            if train_loss and val_loss:
+                epochs_range = range(1, len(train_loss) + 1)
+                axes[0, 1].plot(epochs_range, train_loss, 'b-', marker='o',
+                                label='Train Loss', linewidth=2, markersize=6, markevery=5)
+                axes[0, 1].plot(epochs_range, val_loss, 'r-', marker='s',
+                                label='Validation Loss', linewidth=2, markersize=6, markevery=5)
+                axes[0, 1].set_title(
+                    'Training vs Validation Loss', fontweight='bold')
+                axes[0, 1].set_xlabel('Epoch')
+                axes[0, 1].set_ylabel('Loss')
+
+                # Set x-axis to show every 5 epochs
+                max_epochs = len(train_loss)
+                if max_epochs > 1:
+                    epoch_ticks = list(range(1, max_epochs + 1, 5))
+                    if epoch_ticks[-1] != max_epochs:
+                        epoch_ticks.append(max_epochs)
+                    axes[0, 1].set_xticks(epoch_ticks)
+
+                axes[0, 1].legend()
+                axes[0, 1].grid(True, alpha=0.3)
+
+        # Plot 3: Confusion Matrix
+        sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=axes[0, 2],
+                    xticklabels=['Benign', 'Attack'], yticklabels=['Benign', 'Attack'],
+                    cbar_kws={'label': 'Count'})
+        axes[0, 2].set_title('Confusion Matrix', fontweight='bold')
+        axes[0, 2].set_ylabel('True Label')
+        axes[0, 2].set_xlabel('Predicted Label')
+
+        # Plot 4: ROC Curve
         from sklearn.metrics import roc_curve, auc
         fpr, tpr, _ = roc_curve(y_test, y_pred_proba)
         roc_auc = auc(fpr, tpr)
         axes[1, 0].plot(
-            fpr, tpr, label=f'ROC (AUC={roc_auc:.3f})', linewidth=2)
+            fpr, tpr, label=f'ROC (AUC={roc_auc:.3f})', linewidth=2, color='blue')
         axes[1, 0].plot([0, 1], [0, 1], 'k--', label='Random', linewidth=1)
-        axes[1, 0].set_title('ROC Curve')
-        axes[1, 0].set_xlabel('FPR')
-        axes[1, 0].set_ylabel('TPR')
+        axes[1, 0].set_title('ROC Curve', fontweight='bold')
+        axes[1, 0].set_xlabel('False Positive Rate')
+        axes[1, 0].set_ylabel('True Positive Rate')
         axes[1, 0].legend()
         axes[1, 0].grid(True, alpha=0.3)
 
-        # Plot 4: Metrics
+        # Plot 5: Metrics Display
         axes[1, 1].axis('off')
         metrics_text = f"""
         PERFORMANCE METRICS
-        {'='*30}
+        {'='*35}
         Accuracy:  {metrics['accuracy']:.4f}
         Precision: {metrics['precision']:.4f}
         Recall:    {metrics['recall']:.4f}
         F1-Score:  {metrics['f1']:.4f}
         ROC-AUC:   {metrics['roc_auc']:.4f}
         
-        CONFUSION MATRIX
-        {'='*30}
-        TN: {cm[0, 0]:,} | FP: {cm[0, 1]:,}
-        FN: {cm[1, 0]:,} | TP: {cm[1, 1]:,}
+        CONFUSION MATRIX DETAILS
+        {'='*35}
+        TN (True Negatives):   {cm[0, 0]:,}
+        FP (False Positives):  {cm[0, 1]:,}
+        FN (False Negatives):  {cm[1, 0]:,}
+        TP (True Positives):   {cm[1, 1]:,}
         """
-        axes[1, 1].text(0.1, 0.5, metrics_text,
-                        fontsize=11, family='monospace')
+        axes[1, 1].text(0.05, 0.5, metrics_text,
+                        fontsize=10, family='monospace', verticalalignment='center')
+
+        # Plot 6: Federated Convergence (if applicable)
+        if self.convergence_data and len(self.convergence_data) > 0:
+            rounds = [d['round'] for d in self.convergence_data]
+            accuracies = [d['val_accuracy'] for d in self.convergence_data]
+            losses = [d['val_loss'] for d in self.convergence_data]
+
+            ax6_acc = axes[1, 2]
+            ax6_loss = ax6_acc.twinx()
+
+            line1 = ax6_acc.plot(rounds, accuracies, 'b-', marker='o',
+                                 label='Validation Accuracy', linewidth=2, markersize=6)
+            line2 = ax6_loss.plot(rounds, losses, 'r-', marker='s',
+                                  label='Validation Loss', linewidth=2, markersize=6)
+
+            ax6_acc.set_title(
+                'Federated Training Convergence', fontweight='bold')
+            ax6_acc.set_xlabel('Round')
+            ax6_acc.set_ylabel('Accuracy', color='b')
+            ax6_loss.set_ylabel('Loss', color='r')
+            ax6_acc.tick_params(axis='y', labelcolor='b')
+            ax6_loss.tick_params(axis='y', labelcolor='r')
+            ax6_acc.grid(True, alpha=0.3)
+
+            # Combine legends
+            lines = line1 + line2
+            labels = [l.get_label() for l in lines]
+            ax6_acc.legend(lines, labels, loc='upper left')
+        else:
+            axes[1, 2].axis('off')
+            axes[1, 2].text(0.5, 0.5, 'No Federated Data',
+                            ha='center', va='center', fontsize=12)
 
         plt.tight_layout()
         plt.savefig('results/training_results.png',
@@ -390,7 +457,7 @@ def main(federated_rounds=1, epochs=5):
 
         # Train with federated rounds
         trainer.train(X_train, y_train, X_test, y_test,
-                      federated_rounds=federated_rounds)
+                      federated_rounds=federated_rounds, epochs=epochs)
 
         # Evaluate
         metrics = trainer.evaluate(X_test, y_test)
