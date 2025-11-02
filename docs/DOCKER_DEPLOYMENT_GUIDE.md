@@ -1,61 +1,63 @@
-# Docker Distributed Deployment Guide
+# Docker Deployment Guide
 
 ## Overview
-This guide explains how to run your federated learning system as a truly distributed system using Docker containers.
 
-## Architecture
+This guide explains the Docker setup for the DDoS detection system. The current deployment focuses on **API Service** (production inference) with **optional** federated learning server.
+
+## Current Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    Docker Network (bridge)                   │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐    │
-│  │ Client 0 │  │ Client 1 │  │ Client 2 │  │ Client 3 │    │
-│  │Container │  │Container │  │Container │  │Container │    │
-│  └────┬─────┘  └────┬─────┘  └────┬─────┘  └────┬─────┘    │
-│       │              │              │              │          │
-│       └──────────────┼──────────────┼──────────────┘          │
-│                      │              │                         │
-│                 ┌────▼──────────────▼────┐                   │
-│                 │   FL-Server Container  │                   │
-│                 │  (Aggregation Engine)  │                   │
-│                 └────────────────────────┘                   │
-│                                                               │
-│ Shared Volumes: /data, /results                             │
-└─────────────────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────┐
+│                 Docker Container                       │
+│  ┌─────────────────────────────────────────────────┐  │
+│  │  API Service (Flask)                             │  │
+│  │  ├─ DDoS Detection Model (TensorFlow)            │  │
+│  │  ├─ Health Endpoint: GET /health                 │  │
+│  │  ├─ Predict Endpoint: POST /predict              │  │
+│  │  └─ Batch Endpoint: POST /batch                  │  │
+│  └─────────────────────────────────────────────────┘  │
+│                       ↑↓                               │
+│              Port 5000 (Mapped from Host)             │
+└────────────────────────────────────────────────────────┘
+
+Optional: FL Server for Federated Learning (port 8080)
+Optional: FL Clients (ports 5001-5004) for edge training
 ```
 
 ## Prerequisites
 
-1. **Docker installed** (version 20.10+)
-   ```bash
+1. **Docker installed**
+   ```powershell
    docker --version
    docker-compose --version
    ```
 
-2. **Project files in place**
+2. **Project structure intact**
    - `Dockerfile` - Container image definition
    - `docker-compose.yml` - Multi-container orchestration
-   - `requirements_prod.txt` - Python dependencies
-   - Data files in `data/optimized/clean_partitions/`
+   - `requirements_prod.txt` - Production dependencies
+   - `api_service.py` - Flask API service
+   - `results/ddos_model.h5` - Trained DDoS detection model
 
 ## Quick Start - 3 Commands
 
 ### Step 1: Build Docker Image
-```bash
-docker build -t federated-ddos:latest .
+```powershell
+docker build -t ddos-detection:latest .
 ```
-*Takes ~2-5 minutes first time (installs all dependencies)*
+*Takes 2-5 minutes first time (installs TensorFlow, Flask, etc.)*
 
-### Step 2: Start Distributed System
-```bash
+### Step 2: Start Service
+```powershell
 docker-compose up -d
 ```
-*Launches 1 server + 4 client containers*
+*Launches API service container*
 
-### Step 3: Monitor Training
-```bash
-docker-compose logs -f fl-server
+### Step 3: Verify Health
+```powershell
+curl http://localhost:5000/health
 ```
+*Expected response: `{"status": "healthy", ...}`*
 
 ---
 
@@ -63,415 +65,433 @@ docker-compose logs -f fl-server
 
 ### Building the Docker Image
 
-```bash
-# Build with progress output
-docker build -t federated-ddos:latest .
+```powershell
+# Standard build
+docker build -t ddos-detection:latest .
 
 # Build without cache (fresh install)
-docker build --no-cache -t federated-ddos:latest .
+docker build --no-cache -t ddos-detection:latest .
 
 # Build with custom tag
-docker build -t federated-ddos:v1.0 .
+docker build -t ddos-detection:v1.0 .
 ```
 
-### Running Distributed Training
+### Running with Docker-Compose
 
-#### Option 1: Using docker-compose (Recommended)
-
-**Start all containers:**
-```bash
+#### Start All Services
+```powershell
 docker-compose up -d
 ```
 
-**View logs:**
-```bash
-# All services
+#### Check Status
+```powershell
+docker-compose ps
+docker ps
+```
+
+Output should show:
+```
+NAME              STATUS      PORTS
+api-service       Up 1 min    0.0.0.0:5000->5000/tcp
+```
+
+#### View Logs
+```powershell
+# All logs
 docker-compose logs -f
 
-# Specific service
-docker-compose logs -f fl-server
-docker-compose logs -f fl-client-0
+# API service only
+docker-compose logs -f api-service
 
 # Last 50 lines
-docker-compose logs --tail=50 fl-server
+docker-compose logs --tail=50 api-service
 ```
 
-**Stop all containers:**
-```bash
+#### Stop Services
+```powershell
+# Stop but keep containers
+docker-compose stop
+
+# Stop and remove containers
 docker-compose down
-```
 
-**Remove containers and volumes:**
-```bash
+# Remove containers and volumes
 docker-compose down -v
 ```
 
 ---
 
-#### Option 2: Manual Docker Run (For Testing)
+## API Service Usage
 
-**Start Server:**
-```bash
-docker run -d \
-  --name fl-server \
-  --network federated_network \
-  -p 8080:8080 \
-  -v $(pwd)/data:/app/data \
-  -v $(pwd)/results:/app/results \
-  federated-ddos:latest \
-  python server.py
+### Health Check
+```powershell
+curl http://localhost:5000/health
 ```
 
-**Start Client 0:**
-```bash
-docker run -d \
-  --name fl-client-0 \
-  --network federated_network \
-  -v $(pwd)/data:/app/data \
-  -v $(pwd)/results:/app/results \
-  federated-ddos:latest \
-  python client.py --client-id 0
+### Single Prediction
+```powershell
+$payload = @{
+    features = @(6, 45000, 1500, 500, 1000, 250, 100, 50, 25, 10, 5, 2, 1, 0.5, 0.25, 0.1, 0.05, 0.02, 0.01, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+} | ConvertTo-Json
+
+curl -X POST http://localhost:5000/predict `
+  -H "Content-Type: application/json" `
+  -Body $payload
+```
+
+### Batch Predictions
+```powershell
+$payload = @{
+    samples = @(
+        @(6, 45000, 1500, 500, 1000, 250, 100, 50, 25, 10, 5, 2, 1, 0.5, 0.25, 0.1, 0.05, 0.02, 0.01, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+        @(6, 45000, 1500, 500, 1000, 250, 100, 50, 25, 10, 5, 2, 1, 0.5, 0.25, 0.1, 0.05, 0.02, 0.01, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+    )
+} | ConvertTo-Json
+
+curl -X POST http://localhost:5000/batch `
+  -H "Content-Type: application/json" `
+  -Body $payload
 ```
 
 ---
 
-## Understanding the Distributed Setup
+## Attack Simulation with Docker
 
-### What Happens With Docker-Compose?
+Once the API is running in Docker, test it with the attack simulator:
 
-1. **Network Creation** (`federated_network`)
-   - Isolated Docker network bridge
-   - All containers can communicate by service name
-   - Server: `fl-server:8080`
-   - Client 0: `fl-client-0:8080` (internal only)
+### Simple Attack Test
+```powershell
+# Verify API is running
+python attack_simulator.py --target api --packets 50 --threads 5 --skip-benign
+```
 
-2. **Volume Sharing**
-   - `/app/data` → Shared from `./data` (host)
-   - `/app/results` → Shared from `./results` (host)
-   - All containers see the same data files
+### Heavy Load Test
+```powershell
+# Stress test with 1000 packets
+python attack_simulator.py --target api --intensity heavy --skip-benign
+```
 
-3. **Container Startup Sequence**
-   ```
-   fl-server starts first
-   ↓ (health check passes)
-   fl-client-0 connects to server
-   fl-client-1 connects to server
-   fl-client-2 connects to server
-   fl-client-3 connects to server
-   ↓
-   Federated training begins
-   ```
+### Attack Multiple Targets (if FL server enabled)
+```powershell
+# Attack both API and FL server
+python attack_simulator.py --targets api,fl-server --intensity normal
+```
 
-4. **Data Distribution**
-   - Each client loads its own data partition:
-     - Client 0: `data/optimized/clean_partitions/client_0_train.csv`
-     - Client 1: `data/optimized/clean_partitions/client_1_train.csv`
-     - Client 2: `data/optimized/clean_partitions/client_2_train.csv`
-     - Client 3: `data/optimized/clean_partitions/client_3_train.csv`
-   
-   - Server aggregates updates via Multi-Krum
+Results saved to: `results/attack_resilience_test.json`
 
 ---
 
-## Production Configuration
+## Optional: Federated Learning Setup
 
-### Environment Variables
+The current system is simplified to focus on **API inference**. However, FL capabilities are available.
 
-Add to `docker-compose.yml` environment section:
+### Enable Federated Learning
 
-```yaml
-environment:
-  - SERVER_ADDRESS=fl-server:8080
-  - LOG_LEVEL=INFO           # DEBUG, INFO, WARNING, ERROR
-  - CLIENTS_PER_ROUND=4      # How many clients per round
-  - NUM_ROUNDS=10            # Total training rounds
-  - BATCH_SIZE=32            # Training batch size
-  - EPOCHS=5                 # Local epochs per round
-```
-
-### Resource Limits
-
-Add to each service in `docker-compose.yml`:
+To also run FL server + clients, ensure `docker-compose.yml` includes:
 
 ```yaml
   fl-server:
-    # ... existing config ...
-    deploy:
-      resources:
-        limits:
-          cpus: '2'
-          memory: 4G
-        reservations:
-          cpus: '1'
-          memory: 2G
-```
-
-### Persistent Storage
-
-For production, use named volumes:
-
-```yaml
-volumes:
-  fl_data:
-    driver: local
-  fl_results:
-    driver: local
-
-services:
-  fl-server:
+    build: .
+    container_name: fl-server
+    command: python server.py --rounds 10 --address 0.0.0.0:8080
+    ports:
+      - "8080:8080"
     volumes:
-      - fl_data:/app/data
-      - fl_results:/app/results
+      - ./data:/app/data
+      - ./results:/app/results
+    networks:
+      - federated_network
+
+  fl-client-0:
+    build: .
+    container_name: fl-client-0
+    command: python client.py --cid 0 --epochs 5
+    depends_on:
+      - fl-server
+    volumes:
+      - ./data:/app/data
+      - ./results:/app/results
+    networks:
+      - federated_network
 ```
+
+Then start all:
+```powershell
+docker-compose up -d
+```
+
+---
+
+## Volume Management
+
+### Docker Volumes
+
+```powershell
+# List volumes
+docker volume ls
+
+# Inspect specific volume
+docker volume inspect federated_ddos_detection_data
+
+# Remove unused volumes
+docker volume prune
+```
+
+### Host Mount Points
+
+The system mounts from host filesystem:
+
+- `./data` → Container `/app/data`
+- `./results` → Container `/app/results`
+
+Verify mounts:
+```powershell
+docker inspect api-service | findstr -A 10 "Mounts"
+```
+
+---
+
+## Network Configuration
+
+### Port Mapping
+
+| Service | Container Port | Host Port | Purpose |
+|---------|---|---|---|
+| API Service | 5000 | 5000 | REST API inference |
+| FL Server | 8080 | 8080 | Federated learning aggregation |
+| FL Client 0 | 5001 | (internal) | Edge training |
+| FL Client 1 | 5002 | (internal) | Edge training |
+| FL Client 2 | 5003 | (internal) | Edge training |
+| FL Client 3 | 5004 | (internal) | Edge training |
+
+### Custom Port Mapping
+
+To run API on different port:
+
+```yaml
+  api-service:
+    ports:
+      - "8000:5000"  # Host port 8000 → Container port 5000
+```
+
+Then access at: `http://localhost:8000`
 
 ---
 
 ## Monitoring & Debugging
 
 ### Check Container Status
-```bash
+```powershell
 docker-compose ps
 ```
 
-Output:
-```
-NAME              STATUS      PORTS
-fl-server         Up 2 min    0.0.0.0:8080->8080/tcp
-fl-client-0       Up 1 min    
-fl-client-1       Up 1 min    
-fl-client-2       Up 1 min    
-fl-client-3       Up 1 min    
-```
+### View Resource Usage
+```powershell
+# All containers
+docker stats
 
-### View Container Logs
-```bash
-# Server logs
-docker logs fl-server
-
-# Client logs
-docker logs fl-client-0
-
-# Real-time logs
-docker logs -f fl-server
-
-# Last N lines
-docker logs --tail 100 fl-server
+# Specific container
+docker stats api-service
 ```
 
 ### Connect to Running Container
-```bash
-docker exec -it fl-server bash
+```powershell
+# Open shell
+docker exec -it api-service powershell
 
-# Inside container, run Python
-python
->>> import flwr
->>> print(flwr.__version__)
+# Or bash (if available)
+docker exec -it api-service bash
+
+# Run Python commands
+docker exec api-service python -c "import tensorflow; print(tensorflow.__version__)"
 ```
 
-### Check Network Connectivity
-```bash
-# From one container, ping another
-docker exec fl-client-0 ping fl-server
-
-# Expected output: PONG (connection OK)
-```
-
----
-
-## Network Simulation in Docker
-
-Docker containers naturally introduce real network effects:
-
-1. **Latency** - Inter-container communication overhead
-2. **Packet Loss** - Can be simulated with tc (traffic control)
-3. **Bandwidth Limits** - Can be set per container
-
-### Simulate Network Conditions
-
-To add latency to Client 3 (simulating slow edge device):
-
-```bash
-docker exec fl-client-3 tc qdisc add dev eth0 root netem delay 150ms jitter 15ms
-```
-
-To simulate 2% packet loss:
-
-```bash
-docker exec fl-client-3 tc qdisc add dev eth0 root netem loss 2%
+### Test API from Container
+```powershell
+docker exec api-service curl http://localhost:5000/health
 ```
 
 ---
 
 ## Troubleshooting
 
-### Issue: Containers won't start
+### Issue: Container fails to start
 
-```bash
-# Check if port 8080 is already in use
-lsof -i :8080
+```powershell
+# View error logs
+docker-compose logs api-service
 
-# Check Docker daemon
-docker ps
-
-# View detailed error
-docker-compose logs fl-server
+# Try rebuilding
+docker-compose down
+docker build --no-cache -t ddos-detection:latest .
+docker-compose up
 ```
 
-### Issue: Clients can't connect to server
+### Issue: Port already in use
 
-```bash
-# Test network connectivity
-docker-compose exec fl-client-0 ping fl-server
+```powershell
+# Find what's using port 5000
+netstat -ano | findstr :5000
 
-# Check server is listening
-docker-compose exec fl-server netstat -tlnp | grep 8080
+# Change port in docker-compose.yml or stop conflicting container
 ```
 
-### Issue: Data files not found
+### Issue: API not responding
 
-```bash
-# Verify volumes are mounted
-docker inspect fl-server | grep Mounts
+```powershell
+# Check container is running
+docker ps | findstr api-service
 
-# Check file exists
-ls -la data/optimized/clean_partitions/
+# Test connectivity
+curl http://localhost:5000/health
+
+# View logs
+docker logs api-service
+```
+
+### Issue: Model not found
+
+```powershell
+# Verify results directory
+ls results/
+
+# Ensure ddos_model.h5 exists
+docker exec api-service ls -la /app/results/ddos_model.h5
 ```
 
 ### Issue: Out of disk space
 
-```bash
+```powershell
 # Clean up stopped containers
 docker container prune
 
 # Remove unused images
 docker image prune
 
-# Remove all unused data
+# Full cleanup (dangerous - removes all unused resources)
 docker system prune -a
 ```
 
 ---
 
-## Performance Comparison
+## Performance Optimization
 
-### Single Machine (Current)
-```
-Training Time: 2-3 hours
-Communication: All internal (fast)
-Bottleneck: Single CPU/GPU
-Network Latency: 0.1ms
-```
+### Resource Limits
 
-### Docker Distributed (This Setup)
-```
-Training Time: Similar (can parallelize)
-Communication: Inter-container (1-5ms)
-Bottleneck: Largest client or server
-Network Latency: 1-5ms (realistic)
-Scalability: Add more clients easily
-```
-
-### Multi-Machine (Production)
-```
-Training Time: Similar or faster
-Communication: Network (10-150ms)
-Bottleneck: Slowest network link
-Network Latency: 10-150ms (real-world)
-Scalability: Geographic distribution
-```
-
----
-
-## Scaling Beyond 4 Clients
-
-To add more clients (e.g., Client 4, 5, 6), add to `docker-compose.yml`:
+Add to `docker-compose.yml`:
 
 ```yaml
-  fl-client-4:
-    build: .
-    container_name: fl-client-4
-    command: python client.py --client-id 4
-    depends_on:
-      fl-server:
-        condition: service_healthy
-    volumes:
-      - ./data:/app/data
-      - ./results:/app/results
-    networks:
-      - federated_network
-    environment:
-      - CLIENT_ID=4
-      - SERVER_ADDRESS=fl-server:8080
+  api-service:
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+        reservations:
+          cpus: '1.0'
+          memory: 2G
 ```
 
-Then ensure data files exist:
-```bash
-# Copy client 4 data (or generate)
-cp data/optimized/clean_partitions/client_0_*.csv \
-   data/optimized/clean_partitions/client_4_*.csv
+### Environment Variables
+
+```yaml
+  api-service:
+    environment:
+      - TF_CPP_MIN_LOG_LEVEL=3  # Reduce TensorFlow logging
+      - FLASK_ENV=production
+      - THREADS=4               # API worker threads
 ```
 
 ---
 
 ## Production Deployment
 
-### Kubernetes (K8s)
+### Multi-Stage Build (Optimized)
 
-For production, consider Kubernetes:
+```dockerfile
+# Build stage
+FROM python:3.12-slim as builder
+WORKDIR /app
+COPY requirements_prod.txt .
+RUN pip install --user -r requirements_prod.txt
 
-1. Create StatefulSet for clients
-2. Create Deployment for server
-3. Use Services for communication
-4. Monitor with Prometheus/Grafana
+# Runtime stage
+FROM python:3.12-slim
+WORKDIR /app
+COPY --from=builder /root/.local /root/.local
+COPY . .
+ENV PATH=/root/.local/bin:$PATH
+EXPOSE 5000
+CMD ["python", "api_service.py"]
+```
 
-Example Kubernetes manifest:
+### Docker Swarm Deployment
+
+```bash
+# Initialize swarm
+docker swarm init
+
+# Deploy service
+docker service create --name api-service \
+  --publish 5000:5000 \
+  --replicas 3 \
+  ddos-detection:latest python api_service.py
+```
+
+### Kubernetes Deployment
+
 ```yaml
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
-  name: fl-clients
+  name: api-service
 spec:
-  serviceName: fl-clients
-  replicas: 4
+  replicas: 3
   selector:
     matchLabels:
-      app: fl-client
+      app: api-service
   template:
     metadata:
       labels:
-        app: fl-client
+        app: api-service
     spec:
       containers:
-      - name: fl-client
-        image: federated-ddos:latest
-        env:
-        - name: SERVER_ADDRESS
-          value: fl-server:8080
+      - name: api-service
+        image: ddos-detection:latest
+        ports:
+        - containerPort: 5000
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 5
 ```
 
 ---
 
 ## Summary
 
-| Aspect | Single Machine | Docker | Production |
-|--------|---|---|---|
-| **Setup Time** | 10 min | 5 min | 1-2 hours |
-| **Clients** | 1 process | 4 containers | 100+ nodes |
-| **Communication** | Memory (~0.1ms) | Network (~1-5ms) | Real network (10-150ms) |
+| Aspect | Local | Docker | K8s |
+|--------|-------|--------|-----|
+| **Setup Time** | 5 min | 2 min | 20 min |
 | **Scalability** | Limited | Easy | Excellent |
-| **Monitoring** | Basic | docker logs | Prometheus |
-| **Cost** | Your machine | Shared resources | Cloud provider |
+| **Isolation** | None | Full | Full + Orchestration |
+| **Resource Management** | Manual | Automatic | Advanced |
+| **Monitoring** | Basic | Good | Excellent |
 
 ---
 
 ## Next Steps
 
-1. **Build image:** `docker build -t federated-ddos:latest .`
-2. **Start system:** `docker-compose up -d`
-3. **Monitor:** `docker-compose logs -f`
-4. **Check results:** `ls results/`
-5. **Stop system:** `docker-compose down`
+1. **Build:** `docker build -t ddos-detection:latest .`
+2. **Start:** `docker-compose up -d`
+3. **Test:** `curl http://localhost:5000/health`
+4. **Simulate:** `python attack_simulator.py --target api --intensity heavy`
+5. **Monitor:** `docker-compose logs -f`
+6. **Stop:** `docker-compose down`
 
 ---
 
-*For questions or issues, check Docker logs and verify data files exist in `data/optimized/clean_partitions/`*
+*For more details on attack simulation, see `ATTACK_SIMULATOR_GUIDE.md`*
+*For deployment troubleshooting, check Docker logs with `docker-compose logs`*
