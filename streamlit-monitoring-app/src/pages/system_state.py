@@ -1,17 +1,22 @@
-from src.utils.data_processor import load_data
+from components.metrics import display_metrics
+from components.status_indicators import display_status_indicators
+from utils.data_processor import load_data
 import streamlit as st
-from src.components.status_indicators import display_status_indicators
-from src.components.metrics import display_metrics
 import sys
 from pathlib import Path
+
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 
-def main():
+def show():
     st.title("System State Monitoring")
 
     # Load data
     data = load_data()
+
+    if data is None:
+        st.error("Failed to load system data.")
+        return
 
     # Display system status indicators
     st.header("Current System Status")
@@ -22,20 +27,16 @@ def main():
     display_metrics(data)
 
     # Display alerts if any
-    if data['alerts']:
+    if data.get('alerts'):
         st.header("Alerts")
         for alert in data['alerts']:
-            st.warning(alert)
+            st.warning(alert.get('message', str(alert)))
     else:
         st.success("No alerts at this time.")
 
     # Display detection status
     st.header("Detection Status")
-    if data['detection_status']:
-        st.write(data['detection_status'])
+    if data.get('detection_status'):
+        st.write(f"Status: {data['detection_status'].get('status', 'N/A')}")
     else:
         st.success("No detection status available.")
-
-
-if __name__ == "__main__":
-    main()

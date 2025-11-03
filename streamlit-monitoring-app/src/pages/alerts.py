@@ -15,7 +15,7 @@ def display_alerts(alerts):
         st.markdown("---")
 
 
-def main():
+def show():
     st.title("Alerts Dashboard")
 
     # Load alerts from JSON data
@@ -25,7 +25,3 @@ def main():
         display_alerts(alerts)
     else:
         st.write("No alerts at this time.")
-
-
-if __name__ == "__main__":
-    main()
