@@ -1,0 +1,44 @@
+{
+  "detection_status": {
+    "timestamp": "2023-10-01T12:00:00Z",
+    "status": "active",
+    "details": {
+      "detections": [
+        {
+          "id": 1,
+          "type": "anomaly",
+          "confidence": 0.95,
+          "location": "sensor_1"
+        },
+        {
+          "id": 2,
+          "type": "normal",
+          "confidence": 0.99,
+          "location": "sensor_2"
+        }
+      ]
+    }
+  },
+  "alerts": [
+    {
+      "id": 1,
+      "message": "High temperature detected in sensor 1.",
+      "level": "critical",
+      "timestamp": "2023-10-01T12:05:00Z"
+    },
+    {
+      "id": 2,
+      "message": "Sensor 2 operating normally.",
+      "level": "info",
+      "timestamp": "2023-10-01T12:06:00Z"
+    }
+  ],
+  "system_state": {
+    "overall_status": "normal",
+    "last_checked": "2023-10-01T12:07:00Z",
+    "metrics": {
+      "uptime": "99.9%",
+      "response_time": "200ms"
+    }
+  }
+}

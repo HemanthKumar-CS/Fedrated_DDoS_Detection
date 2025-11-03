@@ -1,0 +1,11 @@
+[general]
+email = "your_email@example.com"
+server.port = 8501
+server.enableCORS = false
+
+[theme]
+primaryColor = "#1E90FF"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F0F0F0"
+textColor = "#000000"
+font = "sans serif"
