@@ -50,7 +50,6 @@ data/processed/
 *.hdf5
 
 # Model files
-*.h5
 *.pkl
 *.joblib
 models/saved/
