@@ -8,10 +8,9 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 def display_alerts(alerts):
     for alert in alerts:
-        st.markdown(f"### Alert: {alert['title']}")
-        st.markdown(f"**Description:** {alert['description']}")
-        st.markdown(f"**Severity:** {alert['severity']}")
-        st.markdown(f"**Timestamp:** {alert['timestamp']}")
+        st.markdown(f"### Alert: {alert.get('message', 'N/A')}")
+        st.markdown(f"**Level:** {alert.get('level', 'N/A')}")
+        st.markdown(f"**Timestamp:** {alert.get('timestamp', 'N/A')}")
         st.markdown("---")
 
 

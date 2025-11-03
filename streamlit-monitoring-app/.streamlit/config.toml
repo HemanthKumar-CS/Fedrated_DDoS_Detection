@@ -1,7 +1,12 @@
-[general]
-email = "your_email@example.com"
-server.port = 8501
-server.enableCORS = false
+[client]
+showErrorDetails = true
+
+[server]
+port = 8501
+enableCORS = false
+
+[logger]
+level = "info"
 
 [theme]
 primaryColor = "#1E90FF"
