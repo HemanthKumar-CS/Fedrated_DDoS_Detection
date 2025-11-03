@@ -113,40 +113,40 @@ class ProductionTrainer:
         logger.info("🏗️ Building CNN model...")
 
         model = tf.keras.Sequential([
-            # Conv Block 1 - with L2 regularization
+            # Conv Block 1 - with balanced L2 regularization
             tf.keras.layers.Conv1D(
                 64, 3, activation='relu', padding='same', input_shape=input_shape,
-                kernel_regularizer=tf.keras.regularizers.L2(0.001)),
+                kernel_regularizer=tf.keras.regularizers.L2(0.0005)),
             tf.keras.layers.BatchNormalization(),
             tf.keras.layers.Dropout(0.35),
             tf.keras.layers.MaxPooling1D(2),
 
-            # Conv Block 2 - with L2 regularization
+            # Conv Block 2 - with balanced L2 regularization
             tf.keras.layers.Conv1D(128, 3, activation='relu', padding='same',
-                                   kernel_regularizer=tf.keras.regularizers.L2(0.001)),
+                                   kernel_regularizer=tf.keras.regularizers.L2(0.0005)),
             tf.keras.layers.BatchNormalization(),
             tf.keras.layers.Dropout(0.35),
             tf.keras.layers.MaxPooling1D(2),
 
-            # Conv Block 3 - with L2 regularization
+            # Conv Block 3 - with balanced L2 regularization
             tf.keras.layers.Conv1D(256, 3, activation='relu', padding='same',
-                                   kernel_regularizer=tf.keras.regularizers.L2(0.001)),
+                                   kernel_regularizer=tf.keras.regularizers.L2(0.0005)),
             tf.keras.layers.BatchNormalization(),
             tf.keras.layers.Dropout(0.35),
             tf.keras.layers.GlobalAveragePooling1D(),
 
-            # Dense layers - with L2 regularization
+            # Dense layers - with balanced L2 regularization
             tf.keras.layers.Dense(128, activation='relu',
-                                  kernel_regularizer=tf.keras.regularizers.L2(0.001)),
+                                  kernel_regularizer=tf.keras.regularizers.L2(0.0005)),
             tf.keras.layers.Dropout(0.45),
             tf.keras.layers.Dense(64, activation='relu',
-                                  kernel_regularizer=tf.keras.regularizers.L2(0.001)),
+                                  kernel_regularizer=tf.keras.regularizers.L2(0.0005)),
             tf.keras.layers.Dropout(0.4),
             tf.keras.layers.Dense(1, activation='sigmoid')
         ])
 
         model.compile(
-            optimizer=tf.keras.optimizers.Adam(learning_rate=0.0005),
+            optimizer=tf.keras.optimizers.Adam(learning_rate=0.0008),
             loss='binary_crossentropy',
             metrics=['accuracy', tf.keras.metrics.Precision(), tf.keras.metrics.Recall(),
                      tf.keras.metrics.AUC()]
