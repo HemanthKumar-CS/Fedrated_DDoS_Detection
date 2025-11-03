@@ -47,7 +47,6 @@ data/raw/
 data/processed/
 *.csv
 *.parquet
-*.h5
 *.hdf5
 
 # Model files
