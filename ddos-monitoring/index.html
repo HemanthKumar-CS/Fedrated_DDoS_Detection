@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DDoS Detection Monitor - Real-time Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, sans-serif;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        color: #e2e8f0;
+        min-height: 100vh;
+      }
+
+      .container {
+        max-width: 1920px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      /* Header */
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding: 20px;
+        background: rgba(15, 23, 42, 0.8);
+        border: 1px solid rgba(71, 85, 105, 0.3);
+        border-radius: 12px;
+        backdrop-filter: blur(10px);
+      }
+
+      .header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #ff6b6b 0%, #f5576c 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background: rgba(34, 197, 94, 0.1);
+        border: 1px solid #22c55e;
+        border-radius: 8px;
+        color: #22c55e;
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+
+      .status-badge.critical {
+        background: rgba(239, 68, 68, 0.1);
+        border-color: #ef4444;
+        color: #ef4444;
+      }
+
+      .status-badge.warning {
+        background: rgba(245, 158, 11, 0.1);
+        border-color: #f59e0b;
+        color: #f59e0b;
+      }
+
+      .pulse {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: currentColor;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+
+      /* Grid Layout */
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+
+      /* Cards */
+      .card {
+        background: rgba(30, 41, 59, 0.6);
+        border: 1px solid rgba(71, 85, 105, 0.3);
+        border-radius: 12px;
+        padding: 24px;
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+      }
+
+      .card:hover {
+        border-color: rgba(71, 85, 105, 0.6);
+        background: rgba(30, 41, 59, 0.8);
+      }
+
+      .card h3 {
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #94a3b8;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .card .value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+
+      .card .subtext {
+        font-size: 0.875rem;
+        color: #64748b;
+      }
+
+      /* Metric Cards */
+      .metric-card {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .metric-card .value {
+        color: #60a5fa;
+      }
+
+      .metric-card.attack .value {
+        color: #ff6b6b;
+        animation: pulse 2s infinite;
+      }
+
+      .metric-card.safe .value {
+        color: #22c55e;
+      }
+
+      /* Charts Grid */
+      .charts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+
+      .chart-card {
+        background: rgba(30, 41, 59, 0.6);
+        border: 1px solid rgba(71, 85, 105, 0.3);
+        border-radius: 12px;
+        padding: 24px;
+        backdrop-filter: blur(10px);
+      }
+
+      .chart-card h3 {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 20px;
+        color: #e2e8f0;
+      }
+
+      canvas {
+        max-height: 300px;
+      }
+
+      /* Alerts */
+      .alerts-section {
+        margin-top: 30px;
+      }
+
+      .alert-item {
+        background: rgba(30, 41, 59, 0.6);
+        border-left: 4px solid;
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        animation: slideIn 0.3s ease;
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateX(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      .alert-item.critical {
+        border-left-color: #ef4444;
+        background: rgba(239, 68, 68, 0.1);
+      }
+
+      .alert-item.warning {
+        border-left-color: #f59e0b;
+        background: rgba(245, 158, 11, 0.1);
+      }
+
+      .alert-item.info {
+        border-left-color: #3b82f6;
+        background: rgba(59, 130, 246, 0.1);
+      }
+
+      .alert-message {
+        flex: 1;
+      }
+
+      .alert-message strong {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 0.95rem;
+      }
+
+      .alert-time {
+        font-size: 0.85rem;
+        color: #64748b;
+      }
+
+      .alert-source {
+        background: rgba(71, 85, 105, 0.3);
+        padding: 4px 12px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        margin-left: 16px;
+      }
+
+      /* Progress Bars */
+      .progress-bar {
+        width: 100%;
+        height: 8px;
+        background: rgba(71, 85, 105, 0.3);
+        border-radius: 4px;
+        overflow: hidden;
+        margin-top: 8px;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #60a5fa, #3b82f6);
+        border-radius: 4px;
+        transition: width 0.3s ease;
+      }
+
+      .progress-fill.attack {
+        background: linear-gradient(90deg, #ff6b6b, #f5576c);
+      }
+
+      /* Connection Status */
+      .connection-status {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 12px 16px;
+        background: rgba(30, 41, 59, 0.9);
+        border: 1px solid rgba(71, 85, 105, 0.3);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.9rem;
+        backdrop-filter: blur(10px);
+      }
+
+      .connection-status.connected {
+        border-color: #22c55e;
+        color: #22c55e;
+      }
+
+      .connection-status.disconnected {
+        border-color: #ef4444;
+        color: #ef4444;
+      }
+
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: currentColor;
+      }
+
+      .dot.connected {
+        animation: pulse 2s infinite;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .header {
+          flex-direction: column;
+          gap: 16px;
+          text-align: center;
+        }
+
+        .header h1 {
+          font-size: 1.5rem;
+        }
+
+        .grid {
+          grid-template-columns: 1fr;
+        }
+
+        .charts-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div class="container">
+        <!-- Header -->
+        <div class="header">
+          <h1>🚨 DDoS Detection Monitor</h1>
+          <div :class="['status-badge', detection.threat_level.toLowerCase()]">
+            <span class="pulse"></span>
+            {{ detection.threat_level }} - {{ detection.detection_rate }}%
+          </div>
+        </div>
+
+        <!-- Metrics Grid -->
+        <div class="grid">
+          <div
+            class="card metric-card"
+            :class="detection.is_under_attack ? 'attack' : 'safe'"
+          >
+            <h3>🎯 Threat Level</h3>
+            <div class="value">{{ detection.threat_level }}</div>
+            <div class="subtext">
+              {{ detection.is_under_attack ? 'Attack Detected' : 'No Attack' }}
+            </div>
+          </div>
+
+          <div class="card metric-card">
+            <h3>📊 Detection Rate</h3>
+            <div class="value">{{ detection.detection_rate }}%</div>
+            <div class="progress-bar">
+              <div
+                class="progress-fill"
+                :class="detection.is_under_attack ? 'attack' : ''"
+                :style="{ width: detection.detection_rate + '%' }"
+              ></div>
+            </div>
+            <div class="subtext">Real-time probability</div>
+          </div>
+
+          <div class="card metric-card">
+            <h3>📡 Packets/Second</h3>
+            <div class="value">{{ detection.packets_per_second }}</div>
+            <div class="subtext">
+              {{ detection.is_under_attack ? 'High Traffic' : 'Normal Traffic'
+              }}
+            </div>
+          </div>
+
+          <div class="card metric-card">
+            <h3>⚠️ Anomalies</h3>
+            <div class="value">{{ detection.anomalies }}</div>
+            <div class="subtext">Detected in last minute</div>
+          </div>
+
+          <div class="card metric-card">
+            <h3>💻 CPU Usage</h3>
+            <div class="value">{{ metrics.cpu_usage }}%</div>
+            <div class="progress-bar">
+              <div
+                class="progress-fill"
+                :style="{ width: metrics.cpu_usage + '%' }"
+              ></div>
+            </div>
+          </div>
+
+          <div class="card metric-card">
+            <h3>🧠 Memory Usage</h3>
+            <div class="value">{{ metrics.memory_usage }}%</div>
+            <div class="progress-bar">
+              <div
+                class="progress-fill"
+                :style="{ width: metrics.memory_usage + '%' }"
+              ></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-grid">
+          <div class="chart-card">
+            <h3>📈 Detection Rate (Last 60 seconds)</h3>
+            <canvas ref="detectionChart"></canvas>
+          </div>
+
+          <div class="chart-card">
+            <h3>🌊 Packets/Second (Last 60 seconds)</h3>
+            <canvas ref="packetsChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Alerts Section -->
+        <div class="alerts-section">
+          <h2 style="margin-bottom: 20px; font-size: 1.25rem">
+            🔔 Recent Alerts (Last {{ alerts.length }})
+          </h2>
+          <div v-if="alerts.length > 0">
+            <div
+              v-for="alert in alerts.slice(0, 10)"
+              :key="alert.id"
+              :class="['alert-item', alert.level]"
+            >
+              <div class="alert-message">
+                <strong>{{ alert.message }}</strong>
+                <div class="alert-time">
+                  {{ new Date(alert.timestamp).toLocaleTimeString() }}
+                </div>
+              </div>
+              <div class="alert-source">{{ alert.source }}</div>
+            </div>
+          </div>
+          <div v-else style="padding: 20px; text-align: center; color: #94a3b8">
+            ✅ No alerts at this time
+          </div>
+        </div>
+      </div>
+
+      <!-- Connection Status -->
+      <div
+        :class="['connection-status', isConnected ? 'connected' : 'disconnected']"
+      >
+        <div class="dot" :class="isConnected ? 'connected' : ''"></div>
+        {{ isConnected ? 'Connected' : 'Connecting...' }}
+      </div>
+    </div>
+
+    <script>
+      const { createApp, ref, computed, onMounted, onUnmounted } = Vue;
+
+      createApp({
+        setup() {
+          const isConnected = ref(false);
+          const detection = ref({
+            timestamp: new Date().toISOString(),
+            is_under_attack: false,
+            threat_level: "LOW",
+            detection_rate: 0,
+            benign_probability: 100,
+            packets_per_second: 0,
+            anomalies: 0,
+          });
+
+          const metrics = ref({
+            cpu_usage: 0,
+            memory_usage: 0,
+            active_connections: 0,
+            packets_processed: 0,
+            requests_per_second: 0,
+          });
+
+          const alerts = ref([]);
+          const detectionHistory = ref([]);
+          const packetsHistory = ref([]);
+          let detectionChart = null;
+          let packetsChart = null;
+          let ws1, ws2, ws3;
+
+          const connectWebSocket = () => {
+            const protocol =
+              window.location.protocol === "https:" ? "wss:" : "ws:";
+
+            // Detection WebSocket
+            ws1 = new WebSocket(
+              `${protocol}//localhost:8000/ws/live-detection`
+            );
+            ws1.onopen = () => {
+              console.log("✅ Detection WebSocket connected");
+              isConnected.value = true;
+            };
+            ws1.onmessage = (event) => {
+              const data = JSON.parse(event.data);
+              detection.value = data;
+
+              // Update detection history
+              detectionHistory.value.push({
+                x: new Date().toLocaleTimeString(),
+                y: data.detection_rate,
+              });
+              if (detectionHistory.value.length > 60) {
+                detectionHistory.value.shift();
+              }
+
+              packetsHistory.value.push({
+                x: new Date().toLocaleTimeString(),
+                y: data.packets_per_second,
+              });
+              if (packetsHistory.value.length > 60) {
+                packetsHistory.value.shift();
+              }
+
+              updateCharts();
+            };
+            ws1.onerror = () => (isConnected.value = false);
+            ws1.onclose = () => {
+              isConnected.value = false;
+              setTimeout(connectWebSocket, 3000);
+            };
+
+            // Alerts WebSocket
+            ws2 = new WebSocket(`${protocol}//localhost:8000/ws/alerts`);
+            ws2.onmessage = (event) => {
+              const alert = JSON.parse(event.data);
+              alerts.value.unshift(alert);
+              if (alerts.value.length > 100) {
+                alerts.value.pop();
+              }
+            };
+
+            // Metrics WebSocket
+            ws3 = new WebSocket(`${protocol}//localhost:8000/ws/metrics`);
+            ws3.onmessage = (event) => {
+              const data = JSON.parse(event.data);
+              metrics.value = data;
+            };
+          };
+
+          const updateCharts = () => {
+            if (detectionChart && detectionHistory.value.length > 0) {
+              detectionChart.data.labels = detectionHistory.value.map(
+                (d) => d.x
+              );
+              detectionChart.data.datasets[0].data = detectionHistory.value.map(
+                (d) => d.y
+              );
+              detectionChart.update("none");
+            }
+
+            if (packetsChart && packetsHistory.value.length > 0) {
+              packetsChart.data.labels = packetsHistory.value.map((d) => d.x);
+              packetsChart.data.datasets[0].data = packetsHistory.value.map(
+                (d) => d.y
+              );
+              packetsChart.update("none");
+            }
+          };
+
+          onMounted(() => {
+            connectWebSocket();
+
+            // Get all canvas elements
+            const canvases = document.querySelectorAll("canvas");
+
+            // Initialize Detection Rate Chart (first canvas)
+            if (canvases.length > 0) {
+              detectionChart = new Chart(canvases[0], {
+                type: "line",
+                data: {
+                  labels: [],
+                  datasets: [
+                    {
+                      label: "Detection Rate %",
+                      data: [],
+                      borderColor: "#ff6b6b",
+                      backgroundColor: "rgba(255, 107, 107, 0.1)",
+                      borderWidth: 2,
+                      fill: true,
+                      tension: 0.4,
+                      pointRadius: 0,
+                      pointHoverRadius: 6,
+                    },
+                  ],
+                },
+                options: {
+                  responsive: true,
+                  maintainAspectRatio: true,
+                  plugins: {
+                    legend: { display: false },
+                  },
+                  scales: {
+                    y: {
+                      beginAtZero: true,
+                      max: 100,
+                      ticks: { color: "#94a3b8" },
+                      grid: { color: "rgba(71, 85, 105, 0.1)" },
+                    },
+                    x: {
+                      ticks: { color: "#94a3b8" },
+                      grid: { display: false },
+                    },
+                  },
+                },
+              });
+            }
+
+            // Initialize Packets Chart (second canvas)
+            if (canvases.length > 1) {
+              packetsChart = new Chart(canvases[1], {
+                type: "bar",
+                data: {
+                  labels: [],
+                  datasets: [
+                    {
+                      label: "Packets/Second",
+                      data: [],
+                      backgroundColor: "rgba(59, 130, 246, 0.7)",
+                      borderColor: "#3b82f6",
+                      borderWidth: 1,
+                    },
+                  ],
+                },
+                options: {
+                  responsive: true,
+                  maintainAspectRatio: true,
+                  plugins: {
+                    legend: { display: false },
+                  },
+                  scales: {
+                    y: {
+                      beginAtZero: true,
+                      ticks: { color: "#94a3b8" },
+                      grid: { color: "rgba(71, 85, 105, 0.1)" },
+                    },
+                    x: {
+                      ticks: { color: "#94a3b8" },
+                      grid: { display: false },
+                    },
+                  },
+                },
+              });
+            }
+          });
+
+          onUnmounted(() => {
+            if (ws1) ws1.close();
+            if (ws2) ws2.close();
+            if (ws3) ws3.close();
+          });
+
+          return {
+            isConnected,
+            detection,
+            metrics,
+            alerts,
+          };
+        },
+      }).mount("#app");
+    </script>
+  </body>
+</html>

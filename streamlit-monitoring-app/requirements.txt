@@ -1,7 +1,0 @@
-streamlit
-pandas
-numpy
-matplotlib
-plotly
-jsonschema
-requests
