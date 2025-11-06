@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DDoS Detection - Real-time Dashboard</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        color: #fff;
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      h1 {
+        font-size: 2.5em;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 8px 20px;
+        border-radius: 20px;
+        font-weight: bold;
+        margin-top: 10px;
+      }
+
+      .status-badge.healthy {
+        background: #10b981;
+        color: white;
+      }
+
+      .status-badge.warning {
+        background: #f59e0b;
+        color: white;
+      }
+
+      .status-badge.critical {
+        background: #ef4444;
+        color: white;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+
+      .card {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 10px;
+        padding: 20px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      }
+
+      .card h3 {
+        margin-bottom: 15px;
+        font-size: 1.2em;
+        opacity: 0.8;
+      }
+
+      .metric {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 10px 0;
+        padding: 10px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 5px;
+      }
+
+      .metric label {
+        opacity: 0.8;
+      }
+
+      .metric-value {
+        font-size: 1.3em;
+        font-weight: bold;
+        color: #4ade80;
+      }
+
+      .metric-value.attack {
+        color: #ef4444;
+      }
+
+      .metric-value.benign {
+        color: #60a5fa;
+      }
+
+      .chart-container {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 30px;
+      }
+
+      .chart-container h3 {
+        margin-bottom: 20px;
+      }
+
+      .prediction-log {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 10px;
+        padding: 20px;
+        max-height: 400px;
+        overflow-y: auto;
+      }
+
+      .prediction-item {
+        padding: 10px;
+        margin: 5px 0;
+        border-radius: 5px;
+        font-size: 0.9em;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .prediction-item.attack {
+        background: rgba(239, 68, 68, 0.2);
+        border-left: 3px solid #ef4444;
+      }
+
+      .prediction-item.benign {
+        background: rgba(96, 165, 250, 0.2);
+        border-left: 3px solid #60a5fa;
+      }
+
+      .button-group {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+
+      button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.3s;
+        background: #3b82f6;
+        color: white;
+      }
+
+      button:hover {
+        background: #2563eb;
+        transform: translateY(-2px);
+      }
+
+      button:disabled {
+        background: #6b7280;
+        cursor: not-allowed;
+        opacity: 0.5;
+      }
+
+      button.secondary {
+        background: #ef4444;
+      }
+
+      button.secondary:hover {
+        background: #dc2626;
+      }
+
+      .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: #fff;
+        animation: spin 0.8s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .alert {
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 10px;
+      }
+
+      .alert.info {
+        background: rgba(96, 165, 250, 0.2);
+        border-left: 3px solid #3b82f6;
+      }
+
+      .alert.success {
+        background: rgba(16, 185, 129, 0.2);
+        border-left: 3px solid #10b981;
+      }
+
+      .alert.error {
+        background: rgba(239, 68, 68, 0.2);
+        border-left: 3px solid #ef4444;
+      }
+
+      canvas {
+        max-width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>🛡️ Federated DDoS Detection</h1>
+        <p>Real-time Attack Detection & System Resilience Monitoring</p>
+        <div id="status" class="status-badge healthy">
+          <span id="status-icon">●</span> System Healthy
+        </div>
+      </header>
+
+      <div class="button-group">
+        <button onclick="startMonitoring()">▶ Start Monitoring</button>
+        <button onclick="stopMonitoring()" id="stopBtn" disabled>
+          ⏹ Stop Monitoring
+        </button>
+        <button onclick="sendTestBenign()">📩 Send Benign Packet</button>
+        <button onclick="sendTestAttack()" class="secondary">
+          💥 Send Attack Packet
+        </button>
+        <button onclick="clearData()">🗑️ Clear Data</button>
+      </div>
+
+      <div id="alerts"></div>
+
+      <div class="grid">
+        <div class="card">
+          <h3>System Status</h3>
+          <div class="metric">
+            <label>API Status:</label>
+            <span id="api-status" class="metric-value">●</span>
+          </div>
+          <div class="metric">
+            <label>Models Loaded:</label>
+            <span id="models-loaded" class="metric-value">...</span>
+          </div>
+          <div class="metric">
+            <label>Uptime:</label>
+            <span id="uptime" class="metric-value">0s</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Detection Statistics</h3>
+          <div class="metric">
+            <label>Total Predictions:</label>
+            <span id="total-predictions" class="metric-value">0</span>
+          </div>
+          <div class="metric">
+            <label>Attacks Detected:</label>
+            <span id="attacks-detected" class="metric-value attack">0</span>
+          </div>
+          <div class="metric">
+            <label>Benign Packets:</label>
+            <span id="benign-detected" class="metric-value benign">0</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Performance Metrics</h3>
+          <div class="metric">
+            <label>Avg Latency:</label>
+            <span id="avg-latency" class="metric-value">0ms</span>
+          </div>
+          <div class="metric">
+            <label>Accuracy:</label>
+            <span id="accuracy" class="metric-value">0%</span>
+          </div>
+          <div class="metric">
+            <label>Detection Rate:</label>
+            <span id="detection-rate" class="metric-value attack">0%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-container">
+        <h3>Detection Timeline (Last 50 packets)</h3>
+        <canvas id="predictionChart"></canvas>
+      </div>
+
+      <div class="chart-container">
+        <h3>Recent Predictions</h3>
+        <div class="prediction-log" id="predictionLog">
+          <div class="alert info">Waiting for predictions...</div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      const API_URL = "http://localhost:5000";
+      let monitoringActive = false;
+      let predictions = [];
+      let latencies = [];
+      let chart = null;
+      let uptimeCounter = 0;
+
+      // Initialize Chart
+      function initChart() {
+        const ctx = document.getElementById("predictionChart").getContext("2d");
+        chart = new Chart(ctx, {
+          type: "scatter",
+          data: {
+            datasets: [
+              {
+                label: "Benign",
+                data: [],
+                backgroundColor: "rgba(96, 165, 250, 0.6)",
+                borderColor: "rgba(96, 165, 250, 1)",
+                radius: 6,
+              },
+              {
+                label: "Attack",
+                data: [],
+                backgroundColor: "rgba(239, 68, 68, 0.6)",
+                borderColor: "rgba(239, 68, 68, 1)",
+                radius: 6,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+              legend: {
+                labels: { color: "#fff" },
+              },
+            },
+            scales: {
+              x: {
+                title: { display: true, text: "Time (s)", color: "#fff" },
+                grid: { color: "rgba(255,255,255,0.1)" },
+                ticks: { color: "#fff" },
+              },
+              y: {
+                title: {
+                  display: true,
+                  text: "Prediction Score",
+                  color: "#fff",
+                },
+                min: 0,
+                max: 1,
+                grid: { color: "rgba(255,255,255,0.1)" },
+                ticks: { color: "#fff" },
+              },
+            },
+          },
+        });
+      }
+
+      // Check API health
+      async function checkHealth() {
+        try {
+          const response = await fetch(`${API_URL}/health`);
+          const data = await response.json();
+
+          document.getElementById("api-status").textContent = "●";
+          document.getElementById("api-status").style.color = "#10b981";
+          document.getElementById("models-loaded").textContent =
+            data.models_loaded ? "Yes" : "No";
+          uptimeCounter = Math.round(data.uptime_seconds);
+          document.getElementById("uptime").textContent = uptimeCounter + "s";
+
+          return true;
+        } catch (error) {
+          document.getElementById("api-status").textContent = "●";
+          document.getElementById("api-status").style.color = "#ef4444";
+          showAlert("API not reachable", "error");
+          return false;
+        }
+      }
+
+      // Send random benign packet
+      async function sendTestBenign() {
+        const benign = [
+          -0.8, -0.4, -0.1, 0.6, -0.3, 0.4, -0.2, 0.6, 0.3, -0.3, -0.1, -0.7,
+          -0.9, -0.1, 0.1, 0.2, 1.0, -0.6, -0.2, -0.2, -0.1, 0.8, 1.2, 0.2,
+          -0.8, -1.6, -0.2, -0.3, 0.5, -0.3,
+        ];
+        // Add small random noise
+        const noisy = benign.map((v) => v + (Math.random() - 0.5) * 0.1);
+        await makePrediction(noisy);
+      }
+
+      // Send random attack packet
+      async function sendTestAttack() {
+        const attack = [
+          0.4, 2.0, 1.4, 11.2, 1.8, 0.6, -0.0, -1.6, 0.6, 0.0, -0.0, -0.8, 0.8,
+          -0.2, 1.8, -0.6, -0.8, -0.2, -0.4, 0.6, -0.6, 1.6, 3.6, -0.4, -0.6,
+          -0.2, 2.0, 2.0, -0.4, -0.6,
+        ];
+        // Add small random noise
+        const noisy = attack.map((v) => v + (Math.random() - 0.5) * 0.2);
+        await makePrediction(noisy);
+      }
+
+      // Make prediction via API
+      async function makePrediction(features) {
+        try {
+          const startTime = performance.now();
+          const response = await fetch(`${API_URL}/predict`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ features: features }),
+          });
+
+          const latency = performance.now() - startTime;
+          const data = await response.json();
+
+          if (response.ok) {
+            predictions.push({
+              prediction: data.prediction,
+              confidence: data.confidence,
+              timestamp: new Date().toLocaleTimeString(),
+              latency: latency,
+            });
+
+            latencies.push(latency);
+            if (latencies.length > 100) latencies.shift();
+            if (predictions.length > 50) predictions.shift();
+
+            updateUI();
+            updateChart();
+          } else {
+            showAlert("Prediction failed: " + data.error, "error");
+          }
+        } catch (error) {
+          showAlert("Error making prediction: " + error.message, "error");
+        }
+      }
+
+      // Update UI metrics
+      function updateUI() {
+        const totalPredictions = predictions.length;
+        const attacksDetected = predictions.filter(
+          (p) => p.prediction === "Attack"
+        ).length;
+        const benignDetected = predictions.filter(
+          (p) => p.prediction === "Benign"
+        ).length;
+        const avgLatency =
+          latencies.length > 0
+            ? (latencies.reduce((a, b) => a + b, 0) / latencies.length).toFixed(
+                1
+              )
+            : 0;
+
+        document.getElementById("total-predictions").textContent =
+          totalPredictions;
+        document.getElementById("attacks-detected").textContent =
+          attacksDetected;
+        document.getElementById("benign-detected").textContent = benignDetected;
+        document.getElementById("avg-latency").textContent = avgLatency + "ms";
+
+        const accuracy =
+          totalPredictions > 0
+            ? (
+                ((benignDetected + attacksDetected) / totalPredictions) *
+                100
+              ).toFixed(1)
+            : 0;
+        document.getElementById("accuracy").textContent = accuracy + "%";
+
+        const detectionRate =
+          totalPredictions > 0
+            ? ((attacksDetected / totalPredictions) * 100).toFixed(1)
+            : 0;
+        document.getElementById("detection-rate").textContent =
+          detectionRate + "%";
+
+        // Update status badge
+        const status = document.getElementById("status");
+        if (attacksDetected > 0) {
+          status.className = "status-badge critical";
+          status.innerHTML = '<span id="status-icon">●</span> Under Attack!';
+        } else {
+          status.className = "status-badge healthy";
+          status.innerHTML = '<span id="status-icon">●</span> System Healthy';
+        }
+
+        // Update prediction log
+        const log = document.getElementById("predictionLog");
+        log.innerHTML = predictions
+          .slice()
+          .reverse()
+          .map(
+            (p, i) =>
+              `<div class="prediction-item ${p.prediction.toLowerCase()}">
+                    <span>${i + 1}. ${p.timestamp}</span>
+                    <span><strong>${p.prediction}</strong> (${(
+                p.confidence * 100
+              ).toFixed(1)}%, ${p.latency.toFixed(1)}ms)</span>
+                </div>`
+          )
+          .join("");
+      }
+
+      // Update chart
+      function updateChart() {
+        if (!chart) return;
+
+        const benignData = predictions
+          .map((p, i) =>
+            p.prediction === "Benign" ? { x: i, y: 1 - p.confidence } : null
+          )
+          .filter((p) => p !== null);
+
+        const attackData = predictions
+          .map((p, i) =>
+            p.prediction === "Attack" ? { x: i, y: p.confidence } : null
+          )
+          .filter((p) => p !== null);
+
+        chart.data.datasets[0].data = benignData;
+        chart.data.datasets[1].data = attackData;
+        chart.update();
+      }
+
+      // Start monitoring
+      async function startMonitoring() {
+        if (!(await checkHealth())) return;
+
+        monitoringActive = true;
+        document.getElementById("stopBtn").disabled = false;
+        showAlert(
+          "✅ Monitoring active - Run attack_simulator.py in terminal to send packets",
+          "success"
+        );
+
+        // Poll for predictions from API
+        const interval = setInterval(async () => {
+          if (!monitoringActive) {
+            clearInterval(interval);
+            return;
+          }
+
+          try {
+            const response = await fetch(`${API_URL}/predictions`);
+            if (response.ok) {
+              const data = await response.json();
+
+              // Update predictions from API
+              if (data.predictions && data.predictions.length > 0) {
+                predictions = data.predictions.map((p) => ({
+                  prediction: p.prediction,
+                  confidence: p.confidence,
+                  timestamp: new Date(p.timestamp).toLocaleTimeString(),
+                  latency: p.processing_time_ms || 0,
+                }));
+
+                // Keep only last 50
+                if (predictions.length > 50) {
+                  predictions = predictions.slice(-50);
+                }
+
+                // Extract latencies
+                latencies = predictions.map((p) => p.latency);
+
+                updateUI();
+                updateChart();
+              }
+            }
+          } catch (error) {
+            console.log("API polling: " + error.message);
+          }
+
+          await checkHealth();
+        }, 1000); // Poll every second
+      }
+
+      // Stop monitoring
+      function stopMonitoring() {
+        monitoringActive = false;
+        document.getElementById("stopBtn").disabled = true;
+        showAlert("Monitoring stopped", "success");
+      }
+
+      // Clear data
+      function clearData() {
+        predictions = [];
+        latencies = [];
+        uptimeCounter = 0;
+        updateUI();
+        updateChart();
+        showAlert("Data cleared", "success");
+      }
+
+      // Show alert
+      function showAlert(message, type) {
+        const alerts = document.getElementById("alerts");
+        const alert = document.createElement("div");
+        alert.className = `alert ${type}`;
+        alert.textContent = message;
+        alerts.appendChild(alert);
+        setTimeout(() => alert.remove(), 5000);
+      }
+
+      // Initialize
+      window.addEventListener("load", () => {
+        initChart();
+        checkHealth();
+      });
+    </script>
+  </body>
+</html>

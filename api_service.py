@@ -37,6 +37,9 @@ quantized_interpreter = None
 feature_names = None
 request_count = 0
 request_lock = threading.Lock()
+prediction_history = []
+prediction_history_lock = threading.Lock()
+MAX_HISTORY = 200  # Keep last 200 predictions
 
 
 class ModelManager:
@@ -236,6 +239,12 @@ def predict():
         result['processing_time_ms'] = (time.time() - start_time) * 1000
         result['timestamp'] = datetime.now().isoformat()
 
+        # Store in prediction history
+        with prediction_history_lock:
+            prediction_history.append(result)
+            if len(prediction_history) > MAX_HISTORY:
+                prediction_history.pop(0)
+
         logger.info(
             f"✅ Prediction: {result['prediction']} (confidence: {result['confidence']:.4f})")
 
@@ -333,6 +342,20 @@ def batch_predict():
     except Exception as e:
         logger.error(f"❌ Batch prediction error: {e}")
         return jsonify({'error': str(e)}), 500
+
+
+@app.route('/predictions', methods=['GET'])
+def get_predictions():
+    """Get recent predictions history (for dashboard)"""
+    with prediction_history_lock:
+        recent = prediction_history[-50:] if len(
+            prediction_history) > 50 else prediction_history
+
+    return jsonify({
+        'predictions': recent,
+        'total_count': len(prediction_history),
+        'timestamp': datetime.now().isoformat()
+    }), 200
 
 
 @app.route('/metrics', methods=['GET'])
