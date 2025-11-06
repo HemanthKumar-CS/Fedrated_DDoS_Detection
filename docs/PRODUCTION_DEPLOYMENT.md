@@ -67,11 +67,54 @@ docker-compose down
 API Service (port 5000)
 ├─ /predict endpoint
 ├─ /batch endpoint
+├─ /predictions endpoint (for dashboard)
 └─ /health endpoint
 
 Optional:
 FL Server (port 8080) + 4 FL Clients
 ```
+
+### Real-time Monitoring Dashboard
+
+**File:** `dashboard.html`
+
+**Features:**
+- ✅ Real-time attack detection visualization
+- ✅ Live prediction streaming from API
+- ✅ System health monitoring
+- ✅ Detection metrics and latency tracking
+- ✅ Interactive chart showing benign vs attack packets
+- ✅ Manual test buttons (Send Benign/Attack packets)
+
+**Usage:**
+```powershell
+# Step 1: Start API service
+python api_service.py
+
+# Step 2: Open dashboard in browser
+# File: dashboard.html (open in Firefox or Chrome)
+
+# Step 3: Click "Start Monitoring"
+# Dashboard will poll API for predictions every 1 second
+
+# Step 4: Run attack simulator in another terminal
+python attack_simulator.py --intensity light
+
+# Step 5: Watch dashboard update in real-time!
+# - Predictions appear in log
+# - Chart shows benign/attack scatter plot
+# - Metrics update: detection rate, avg latency, accuracy
+# - Status badge changes: Green (Healthy) → Red (Under Attack!)
+```
+
+**Metrics Displayed:**
+- Total Predictions: Count of all predictions received
+- Attacks Detected: Number of packets classified as attacks
+- Benign Packets: Number of packets classified as benign
+- Avg Latency: Average processing time per prediction
+- Accuracy: Percentage of predictions (always close to 100%)
+- Detection Rate: Percentage of detected attacks
+- System Status: Health badge (green/red based on attack detection)
 
 ---
 
@@ -150,6 +193,31 @@ API performance metrics.
     "quantized": true
   },
   "features_count": 30
+}
+```
+
+### `/predictions` - GET
+Get recent predictions history (last 50 predictions stored).
+```json
+{
+  "predictions": [
+    {
+      "prediction": "Attack",
+      "confidence": 0.87,
+      "risk_score": 0.87,
+      "processing_time_ms": 45.2,
+      "timestamp": "2025-11-06T12:30:45.123456"
+    },
+    {
+      "prediction": "Benign",
+      "confidence": 0.12,
+      "risk_score": 0.12,
+      "processing_time_ms": 42.1,
+      "timestamp": "2025-11-06T12:30:44.098765"
+    }
+  ],
+  "total_count": 350,
+  "timestamp": "2025-11-06T12:30:50.000000"
 }
 ```
 

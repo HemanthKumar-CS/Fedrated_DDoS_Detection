@@ -1,9 +1,6 @@
 version: '3.8'
 
 services:
-  # Note: Federated Learning Server and Clients disabled for simple API deployment
-  # To enable FL training, uncomment below and run: python server.py & python client.py (x4)
-
   # DDoS Detection Inference API Service
   api-service:
     build: .
@@ -21,6 +18,25 @@ services:
       - LOG_LEVEL=INFO
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # Dashboard Web Server (Nginx)
+  dashboard:
+    image: nginx:latest
+    container_name: dashboard-server
+    ports:
+      - "8080:80"  # Dashboard accessible at localhost:8080
+    volumes:
+      - ./dashboard.html:/usr/share/nginx/html/index.html:ro
+    networks:
+      - federated_network
+    depends_on:
+      - api-service
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/"]
       interval: 10s
       timeout: 5s
       retries: 3

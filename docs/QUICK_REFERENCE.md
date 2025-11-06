@@ -65,8 +65,22 @@ curl -X POST http://localhost:5000/batch `
   -H "Content-Type: application/json" `
   -d '{"samples": [[f1, f2, ..., f30], [f1, f2, ..., f30]]}'
 
+# Get recent predictions (for dashboard)
+curl http://localhost:5000/predictions
+
 # Health check
 curl http://localhost:5000/health
+```
+
+### Real-time Monitoring Dashboard
+```powershell
+# Open dashboard in browser (while API is running)
+# File: dashboard.html
+# Features: Real-time attack detection, metrics, prediction log
+
+# Start monitoring: Click "Start Monitoring" button
+# Run attacks: python attack_simulator.py --intensity light
+# Watch: Dashboard updates in real-time with predictions
 ```
 
 ---
@@ -96,6 +110,22 @@ docker-compose down --rmi all
 
 ## 🚨 Attack Simulation (Demo)
 
+### Dashboard + Attack Workflow
+```powershell
+# Terminal 1: Start API
+python api_service.py
+
+# Browser: Open dashboard (shows clean state initially)
+# File: dashboard.html
+# Click: "Start Monitoring"
+
+# Terminal 2: Run attack simulator (choose one)
+python attack_simulator.py --intensity light
+
+# Watch: Dashboard updates in real-time with predictions!
+```
+
+### Available Attack Intensities
 ```powershell
 # Light attack test (50 packets)
 python attack_simulator.py --intensity light --skip-benign

@@ -7,21 +7,26 @@ This guide explains the Docker setup for the DDoS detection system. The current 
 ## Current Architecture
 
 ```
-┌────────────────────────────────────────────────────────┐
-│                 Docker Container                       │
-│  ┌─────────────────────────────────────────────────┐  │
-│  │  API Service (Flask)                             │  │
-│  │  ├─ DDoS Detection Model (TensorFlow)            │  │
-│  │  ├─ Health Endpoint: GET /health                 │  │
-│  │  ├─ Predict Endpoint: POST /predict              │  │
-│  │  └─ Batch Endpoint: POST /batch                  │  │
-│  └─────────────────────────────────────────────────┘  │
-│                       ↑↓                               │
-│              Port 5000 (Mapped from Host)             │
-└────────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────────────┐
+│                    Docker Compose Services                        │
+├──────────────────────────────────┬──────────────────────────────┤
+│                                  │                              │
+│  API Service (Flask)             │  Dashboard (Nginx)           │
+│  ├─ DDoS Detection Model         │  ├─ Real-time Monitoring    │
+│  ├─ POST /predict                │  ├─ Attack Detection Chart   │
+│  ├─ POST /batch                  │  ├─ System Metrics          │
+│  ├─ GET /predictions             │  └─ Prediction Log          │
+│  ├─ GET /health                  │                              │
+│  └─ GET /metrics                 │  Port 8080 (Nginx)          │
+│                                  │                              │
+│  Port 5000 (Flask)               │  Connects to API on 5000    │
+└──────────────────────────────────┴──────────────────────────────┘
+              ↓
+         Federated Network Bridge
+         (internal communication)
 
-Optional: FL Server for Federated Learning (port 8080)
-Optional: FL Clients (ports 5001-5004) for edge training
+Optional: FL Server for Federated Learning (port 8080 local)
+Optional: FL Clients (ports 5001-5004 local) for edge training
 ```
 
 ## Prerequisites
@@ -33,10 +38,11 @@ Optional: FL Clients (ports 5001-5004) for edge training
    ```
 
 2. **Project structure intact**
-   - `Dockerfile` - Container image definition
-   - `docker-compose.yml` - Multi-container orchestration
-   - `requirements_prod.txt` - Production dependencies
+   - `Dockerfile` - Container image definition (production API)
+   - `docker-compose.yml` - Multi-container orchestration (API + Dashboard)
+   - `requirements_prod.txt` - Production dependencies (Flask, TensorFlow, etc.)
    - `api_service.py` - Flask API service
+   - `dashboard.html` - Real-time monitoring dashboard
    - `results/ddos_model.h5` - Trained DDoS detection model
 
 ## Quick Start - 3 Commands
@@ -47,17 +53,21 @@ docker build -t ddos-detection:latest .
 ```
 *Takes 2-5 minutes first time (installs TensorFlow, Flask, etc.)*
 
-### Step 2: Start Service
+### Step 2: Start Services (API + Dashboard)
 ```powershell
 docker-compose up -d
 ```
-*Launches API service container*
+*Launches API service container (port 5000) + Dashboard server (port 8080)*
 
-### Step 3: Verify Health
+### Step 3: Access Dashboard
 ```powershell
+# Open in browser: http://localhost:8080
+# Dashboard is ready for monitoring
+
+# Or verify API health
 curl http://localhost:5000/health
 ```
-*Expected response: `{"status": "healthy", ...}`*
+*Expected API response: `{"status": "healthy", ...}`*
 
 ---
 
@@ -123,6 +133,15 @@ docker-compose down -v
 
 ## API Service Usage
 
+### Dashboard Access
+```powershell
+# Open dashboard in browser
+http://localhost:8080
+
+# Click "Start Monitoring" button
+# Dashboard polls API every 1 second for new predictions
+```
+
 ### Health Check
 ```powershell
 curl http://localhost:5000/health
@@ -157,21 +176,56 @@ curl -X POST http://localhost:5000/batch `
 
 ## Attack Simulation with Docker
 
-Once the API is running in Docker, test it with the attack simulator:
+Once the API is running in Docker, test it with the attack simulator and monitor via dashboard:
+
+### Complete Workflow
+```powershell
+# Step 1: Start Docker services
+docker-compose up -d
+
+# Step 2: Open dashboard in browser
+# URL: http://localhost:8080
+
+# Step 3: Click "Start Monitoring" on dashboard
+
+# Step 4: Run attack simulator (from host, not in Docker)
+python attack_simulator.py --intensity light
+
+# Step 5: Watch dashboard update in real-time!
+# - Predictions appear in log
+# - Chart shows benign/attack scatter plot
+# - Metrics update: detection rate, avg latency, accuracy
+# - Status badge changes based on attack detection
+```
 
 ### Simple Attack Test
 ```powershell
-# Verify API is running
+# Verify API is running in Docker
+docker-compose ps
+
+# Check API health
+curl http://localhost:5000/health
+
+# Run attack simulation
 python attack_simulator.py --target api --packets 50 --threads 5 --skip-benign
 ```
 
-### Heavy Load Test
+### Heavy Load Test with Dashboard Monitoring
 ```powershell
-# Stress test with 1000 packets
+# Terminal 1: Start services
+docker-compose up -d
+
+# Terminal 2: Open dashboard
+# Browser: http://localhost:8080
+# Click "Start Monitoring"
+
+# Terminal 3: Run heavy attack
 python attack_simulator.py --target api --intensity heavy --skip-benign
+
+# Watch dashboard in Terminal 2 update in real-time!
 ```
 
-### Attack Multiple Targets (if FL server enabled)
+### Attack Multiple Services (if FL enabled)
 ```powershell
 # Attack both API and FL server
 python attack_simulator.py --targets api,fl-server --intensity normal

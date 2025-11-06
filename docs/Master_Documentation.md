@@ -69,6 +69,9 @@ Authoritative technical guide. Updated: November 2, 2025
 - `GET /health` - Health check
 - `POST /predict` - Single prediction on 30-feature input
 - `POST /batch` - Batch predictions (multiple samples)
+- `GET /predictions` - Recent predictions history (last 50, for dashboard)
+- `GET /metrics` - API performance metrics
+- `GET /info` - Model and system information
 
 **Input Format**:
 ```json
@@ -80,9 +83,23 @@ Authoritative technical guide. Updated: November 2, 2025
 **Output Format**:
 ```json
 {
-  "prediction": 0 or 1,
+  "prediction": "Attack" or "Benign",
   "confidence": 0.0-1.0,
-  "latency_ms": X
+  "risk_score": 0.0-1.0,
+  "processing_time_ms": X,
+  "timestamp": "ISO-8601"
+}
+```
+
+**Prediction History** (`/predictions`):
+```json
+{
+  "predictions": [
+    {"prediction": "Attack", "confidence": 0.87, ...},
+    {"prediction": "Benign", "confidence": 0.12, ...}
+  ],
+  "total_count": 350,
+  "timestamp": "ISO-8601"
 }
 ```
 
@@ -96,6 +113,13 @@ python api_service.py --port 8000        # Custom port
 ```powershell
 docker-compose up -d                     # Start API service
 curl http://localhost:5000/health        # Verify running
+```
+
+**Real-time Monitoring Dashboard**:
+```powershell
+# Open dashboard.html in browser while API is running
+# Dashboard polls /predictions endpoint for live updates
+# Shows: Real-time predictions, metrics, detection rate, latency
 ```
 
 ---
